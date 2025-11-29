@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.11.0
+    hooks:
+      - id: black
+        language_version: python3.12
+        exclude: 'migrations/|settings.*\.py$'
+
+  - repo: https://github.com/pycqa/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        name: isort
+        exclude: 'migrations/|settings.*\.py$'
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        exclude: 'migrations/|settings.*\.py$'
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v4.0.0
+    hooks:
+      - id: add-trailing-comma
+        exclude: 'migrations/|settings.*\.py$'
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.0
+    hooks:
+      - id: mypy
+        name: mypy
+        exclude: 'migrations/|settings.*\.py$'

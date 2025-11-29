@@ -1,0 +1,131 @@
+[tool.poetry]
+package-mode = false
+
+[project]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = [
+    { name = "Konstantin Kiselev", email = "konstantin.kiselev.1998@mail.ru" }
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django-ninja (>=1.5.0,<2.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "psycopg[binary] (>=3.2.13,<4.0.0)",
+    "gunicorn (>=23.0.0,<24.0.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "pillow (>=12.0.0,<13.0.0)",
+    "django (>=5.2,<6.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "black (>=25.11.0,<26.0.0)",
+    "isort (>=7.0.0,<8.0.0)",
+    "mypy (>=1.18.2,<2.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "pre-commit (>=4.5.0,<5.0.0)",
+    "django-stubs (>=5.2.7,<6.0.0)",
+    "mypy-extensions (>=1.1.0,<2.0.0)",
+    "ipython (>=9.7.0,<10.0.0)"
+]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+line_length = 80
+lines_after_imports = 2
+lines_between_sections = 1
+lines_between_types = 0
+force_alphabetical_sort_within_sections = true
+ensure_newline_before_comments = true
+combine_as_imports = true
+combine_star = true
+skip_gitignore = true
+balanced_wrapping = true
+force_grid_wrap = 2
+src_paths = ["backend", ]
+skip_glob = [
+    ".git",
+    ".idea",
+    "venv",
+    ".env",
+    "**/migrations/*.py",
+    "*/settings*.py",
+]
+known_django = ["django", ]
+known_first_party = ["backend"]
+sections = [
+    "FUTURE",
+    "STDLIB",
+    "DJANGO",
+    "THIRDPARTY",
+    "FIRSTPARTY",
+    "LOCALFOLDER",
+]
+
+[tool.flake8]
+max-line-length = 80
+max-complexity = 6
+statistics = false
+accept-encodings = "utf-8"
+enable-extensions = "G"
+isort-show-traceback = true
+
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "dist",
+    "build",
+    "*/migrations/*.py",
+    "*settings*.py",
+    "*tests*"
+]
+
+ignore = [
+    "W503",
+    "D100",
+    "D101",
+    "D104",
+    "D106"
+]
+
+
+[tool.black]
+line-length = 79
+target-version = ["py312"]
+skip-string-normalization = true
+include = '\.py$'
+exclude = '''
+(
+  /migrations/
+  | settings.*\.py
+)
+'''
+[tool.mypy]
+ignore_missing_imports = true
+show_column_numbers = true
+strict = true
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "myproject.settings"
+strict_settings = true
+strict_model_abstract_attrs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.*",
+    "myproject.settings",
+    "apps.users.migrations",
+    "apps.devices.migrations",
+]
+ignore_errors = true
