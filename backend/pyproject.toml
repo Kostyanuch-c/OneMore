@@ -17,7 +17,8 @@ dependencies = [
     "gunicorn (>=23.0.0,<24.0.0)",
     "uvicorn (>=0.38.0,<0.39.0)",
     "pillow (>=12.0.0,<13.0.0)",
-    "django (>=5.2,<6.0)"
+    "django (>=5.2,<6.0)",
+    "django-cors-headers (>=4.9.0,<5.0.0)"
 ]
 
 
@@ -34,7 +35,9 @@ dev = [
     "pre-commit (>=4.5.0,<5.0.0)",
     "django-stubs (>=5.2.7,<6.0.0)",
     "mypy-extensions (>=1.1.0,<2.0.0)",
-    "ipython (>=9.7.0,<10.0.0)"
+    "ipython (>=9.7.0,<10.0.0)",
+    "django-debug-toolbar (>=6.1.0,<7.0.0)",
+    "django-extensions (>=4.1,<5.0)"
 ]
 
 [tool.isort]
@@ -60,42 +63,17 @@ skip_glob = [
     "**/migrations/*.py",
     "*/settings*.py",
 ]
-known_django = ["django", ]
+known_ninja = ["ninja"]
+known_django=["django",]
 known_first_party = ["backend"]
 sections = [
     "FUTURE",
     "STDLIB",
     "DJANGO",
+    "NINJA",
     "THIRDPARTY",
     "FIRSTPARTY",
     "LOCALFOLDER",
-]
-
-[tool.flake8]
-max-line-length = 80
-max-complexity = 6
-statistics = false
-accept-encodings = "utf-8"
-enable-extensions = "G"
-isort-show-traceback = true
-
-exclude = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "dist",
-    "build",
-    "*/migrations/*.py",
-    "*settings*.py",
-    "*tests*"
-]
-
-ignore = [
-    "W503",
-    "D100",
-    "D101",
-    "D104",
-    "D106"
 ]
 
 
@@ -129,3 +107,4 @@ module = [
     "apps.devices.migrations",
 ]
 ignore_errors = true
+
