@@ -12,17 +12,15 @@ from django.urls import path
 
 from ninja import NinjaAPI
 
+from api.v1.schemas import (
+    ApiError,
+    ApiResponse,
+)
 from api.v1.urls import router as v1_router
 from apps.common.base_exeption import ApplicationError
 
 
 api = NinjaAPI()
-
-
-# @api.get("/ping", response=PingResponseSchema)
-# def ping(request: HttpRequest) -> PingResponseSchema:
-#     return PingResponseSchema(result=True)
-
 
 api.add_router('v1/', v1_router)
 
@@ -40,18 +38,26 @@ def exception_handler(
     if isinstance(exc, ApplicationError):
         return api.create_response(
             request,
-            {"message": exc.message, "extra": exc.extra},
+            ApiResponse.failure(errors=exc.as_list()),
             status=exc.status_code,
         )
 
     # Django validation errors
     if isinstance(exc, DjangoValidationError):
+        errors = [
+            ApiError(
+                message=(
+                    ", ".join(messages)
+                    if isinstance(messages, list)
+                    else str(messages)
+                ),
+                extra={"field": field},
+            )
+            for field, messages in exc.message_dict.items()
+        ]
         return api.create_response(
             request,
-            {
-                "message": "Validation error",
-                "extra": {"fields": exc.message_dict},
-            },
+            ApiResponse.failure(errors=errors),
             status=422,
         )
 
@@ -59,7 +65,7 @@ def exception_handler(
     if isinstance(exc, Http404):
         return api.create_response(
             request,
-            {"message": "Not found", "extra": {}},
+            ApiResponse.failure(message="Not found", extra={}),
             status=404,
         )
 
@@ -67,7 +73,7 @@ def exception_handler(
     if isinstance(exc, PermissionDenied):
         return api.create_response(
             request,
-            {"message": "Permission denied", "extra": {}},
+            ApiResponse.failure(message="Permission denied", extra={}),
             status=403,
         )
 
@@ -75,19 +81,22 @@ def exception_handler(
     if isinstance(exc, IntegrityError):
         return api.create_response(
             request,
-            {"message": "Integrity error", "extra": {"details": str(exc)}},
+            ApiResponse.failure(
+                message="Integrity error",
+                extra={"details": str(exc)},
+            ),
             status=409,
         )
 
     # Other errors
     return api.create_response(
         request,
-        {
-            "message": "Internal server error",
-            "extra": {
+        ApiResponse.failure(
+            message="Internal server error",
+            extra={
                 "error": str(exc.__class__.__name__),
                 "details": str(exc),
             },
-        },
+        ),
         status=500,
     )

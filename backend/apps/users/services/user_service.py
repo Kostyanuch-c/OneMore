@@ -13,6 +13,9 @@ from apps.users.repositories.user_repository import UserRepository
 class UserService:
     repository = UserRepository()
 
+    def get_users_count(self) -> int:
+        return self.repository.get_users_count()
+
     def get_all_objects(self) -> list[UserEntity]:
         return self.repository.get_all_objects()
 

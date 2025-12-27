@@ -23,6 +23,9 @@ class UserRepository:
             Q(username=username) & ~Q(id=user_id),
         ).exists()
 
+    def get_users_count(self) -> int:
+        return self.user_model.objects.count()
+
     def get_all_objects(self) -> list[UserEntity]:
         return [
             self.converter.to_entity(user)
