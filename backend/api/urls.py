@@ -12,7 +12,7 @@ from django.urls import path
 
 from ninja import NinjaAPI
 
-from api.v1.schemas import (
+from api.schemas import (
     ApiError,
     ApiResponse,
 )

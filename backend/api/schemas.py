@@ -6,7 +6,7 @@ from typing import (
 
 from ninja import Schema
 
-from api.v1.filters import PaginationOut
+from api.filters import PaginationOut
 from pydantic.fields import Field
 
 

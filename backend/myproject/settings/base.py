@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.users.apps.UserConfig',
     'apps.posts.apps.PostsConfig',
     'apps.devices.apps.DevicesConfig',
+    'apps.basket.apps.BasketConfig',
 ]
 
 MIDDLEWARE = [

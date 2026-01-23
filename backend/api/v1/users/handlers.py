@@ -5,11 +5,11 @@ from ninja import (
     Router,
 )
 
-from api.v1.filters import (
+from api.filters import (
     PaginationIn,
     PaginationOut,
 )
-from api.v1.schemas import (
+from api.schemas import (
     ApiResponse,
     ListPaginationResponse,
 )

@@ -1,15 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
-from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from ninja import Schema
-
-from apps.common.base_entities import BaseEntity
-
-
-if TYPE_CHECKING:
-    from apps.devices.entities import DeviceEntity
 
 
 @dataclass
@@ -35,17 +27,3 @@ class UserUpdateSchema(Schema):
     password: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-
-
-@dataclass
-class BasketEntity(BaseEntity):
-    user: UserEntity
-    is_active: bool
-    item: list["BasketItemEntity"]
-
-
-@dataclass
-class BasketItemEntity(BaseEntity):
-    device: "DeviceEntity"
-    quantity: int
-    price_to_added: Decimal

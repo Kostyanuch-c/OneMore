@@ -1,6 +1,6 @@
 from typing import Any
 
-from api.v1.schemas import ApiError
+from api.schemas import ApiError
 
 
 class ApplicationError(Exception):
