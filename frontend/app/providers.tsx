@@ -26,6 +26,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider
         {...themeProps}
+        disableTransitionOnChange
         enableSystem
         attribute="class"
         defaultTheme="system"

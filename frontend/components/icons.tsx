@@ -66,6 +66,22 @@ export const TwitterIcon: React.FC<IconSvgProps> = ({
   );
 };
 
+export const BeakerIcon = (props: IconSvgProps) => (
+  <svg
+    fill="none"
+    height="1em"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width="1em"
+    {...props}
+  >
+    <path d="M4.5 3h15M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3M6 14h12" />
+  </svg>
+);
+
 export const GithubIcon: React.FC<IconSvgProps> = ({
   size = 24,
   width,

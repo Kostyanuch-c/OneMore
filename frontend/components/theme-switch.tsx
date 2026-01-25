@@ -1,10 +1,9 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import { SwitchProps, useSwitch } from "@heroui/switch";
 import { useTheme } from "next-themes";
-import { useIsSSR } from "@react-aria/ssr";
 import clsx from "clsx";
 
 import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
@@ -18,8 +17,11 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   className,
   classNames,
 }) => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const isSSR = useIsSSR();
+  const { setTheme, resolvedTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const onChange = () => {
     setTheme(resolvedTheme === "light" ? "dark" : "light");
@@ -33,10 +35,12 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
     getInputProps,
     getWrapperProps,
   } = useSwitch({
-    isSelected: theme === "light" || isSSR,
-    "aria-label": `Switch to ${theme === "light" || isSSR ? "dark" : "light"} mode`,
+    isSelected: resolvedTheme === "light",
+    "aria-label": `Switch to ${resolvedTheme === "light" ? "dark" : "light"} mode`,
     onChange,
   });
+
+  if (!mounted) return <button className="w-6 h-6 opacity-0" />;
 
   return (
     <Component
@@ -70,7 +74,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
           ),
         })}
       >
-        {!isSelected || isSSR ? (
+        {isSelected ? (
           <SunFilledIcon size={22} />
         ) : (
           <MoonFilledIcon size={22} />
