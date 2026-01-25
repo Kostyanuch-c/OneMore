@@ -19,13 +19,29 @@ staticfiles/
 
 # Node / JavaScript
 node_modules/
-.yarn/cache/
-.yarn/unplugged/
-.yarn/build-state.yml
-.pnp.*
-dist/
+
+# Bun
+.bun/
+
+# Next.js
 .next/
 out/
+build/
+*.next/
+
+# TypeScript
+*.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# HeroUI
+.hero/
 
 # Editor / IDE
 .idea/
