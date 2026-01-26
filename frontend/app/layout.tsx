@@ -1,5 +1,7 @@
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+
 import clsx from "clsx";
 
 import { Providers } from "./providers";
@@ -27,11 +29,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <head />
@@ -41,7 +39,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6 grow">

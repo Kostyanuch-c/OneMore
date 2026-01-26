@@ -14,7 +14,7 @@ export const siteConfig = {
     },
     {
       label: "Наборы задач",
-      href: "/problem-sets",
+      href: "/about",
     },
   ],
   navMenuItems: [
@@ -24,11 +24,11 @@ export const siteConfig = {
     },
     {
       label: "Все задачи",
-      href: "/problems",
+      href: "/about",
     },
     {
       label: "Наборы задач",
-      href: "/problem-sets",
+      href: "/about",
     },
   ],
   links: {

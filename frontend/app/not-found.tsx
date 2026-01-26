@@ -1,5 +1,5 @@
 import { Button } from "@heroui/button";
-import Link from "next/link";
+import { Link } from "@heroui/link";
 
 import { subtitle, title } from "@/components/primitives";
 

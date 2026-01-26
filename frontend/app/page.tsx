@@ -1,6 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import Link from "next/link";
+import { Link } from "@heroui/link";
 import { Button } from "@heroui/button";
 
 import { problemsData } from "@/lib/data/problemsData";
@@ -115,12 +115,7 @@ export default function Home() {
                 </p>
               </CardBody>
               <CardFooter>
-                <Button
-                  className="w-full"
-                  color="primary"
-                  href={`/problems/${problem.id}`}
-                  variant="flat"
-                >
+                <Button className="w-full" color="primary" variant="flat">
                   Посмотреть решение
                 </Button>
               </CardFooter>
