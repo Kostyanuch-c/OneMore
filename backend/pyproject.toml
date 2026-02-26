@@ -56,6 +56,7 @@ ignore = [
     "TD004", # missing colon in TODO
     "FIX002", # line contains TODO/FIXME/XXX
 
+    "ARG001", #, Unused function args
 
     "Q000", # double quotes found but single quotes preferred
     "Q003", # change outer quotes to avoid escaping inner quotes

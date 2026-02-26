@@ -1,4 +1,3 @@
-
 from django.http import HttpRequest
 
 from ninja import (
@@ -39,8 +38,8 @@ router = Router(tags=['devices'])
 
 @router.post('/brand', response=ApiResponse[BrandOutShema])
 def create_brand(
-        _request: HttpRequest,
-        payload: BrandInputSchema,
+    request: HttpRequest,
+    payload: BrandInputSchema,
 ) -> ApiResponse[BrandOutShema]:
     brand = BrandService().create_brand(payload.name)
     return ApiResponse.success(
@@ -53,8 +52,8 @@ def create_brand(
     response=ApiResponse[ListPaginationResponse[BrandOutShema]],
 )
 def get_brand_list(
-        _request: HttpRequest,
-        pagination_in: Query[PaginationIn],
+    request: HttpRequest,
+    pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[BrandOutShema]]:
     items = [
         BrandOutShema.from_entity(obj)
@@ -76,8 +75,8 @@ def get_brand_list(
     response=ApiResponse[ListPaginationResponse[TypeOutShema]],
 )
 def get_types_list(
-        _request: HttpRequest,
-        pagination_in: Query[PaginationIn],
+    request: HttpRequest,
+    pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[TypeOutShema]]:
     items = [
         TypeOutShema.from_entity(obj) for obj in TypeService().get_list_types()
@@ -95,8 +94,8 @@ def get_types_list(
 
 @router.post('/type', response=ApiResponse[TypeOutShema])
 def create_type(
-        _request: HttpRequest,
-        payload: TypeInputSchema,
+    request: HttpRequest,
+    payload: TypeInputSchema,
 ) -> ApiResponse[TypeOutShema]:
     type_f = TypeService().create_type(payload.name)
     return ApiResponse.success(
@@ -106,9 +105,9 @@ def create_type(
 
 @router.post('/device', response=ApiResponse[DeviceOutShema])
 def create_device(
-        _request: HttpRequest,
-        payload: Form[DeviceInputSchema],
-        img: UploadedFile | None = File(None),  # type: ignore[type-arg]  # noqa: B008
+    request: HttpRequest,
+    payload: Form[DeviceInputSchema],
+    img: UploadedFile | None = File(None),  # type: ignore[type-arg]  # noqa: B008
 ) -> ApiResponse[DeviceOutShema]:
     device = DeviceService().create_device(
         name=payload.name,
@@ -127,8 +126,8 @@ def create_device(
     response=ApiResponse[ListPaginationResponse[DeviceOutShema]],
 )
 def get_devices_list(
-        _request: HttpRequest,
-        pagination_in: Query[PaginationIn],
+    request: HttpRequest,
+    pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[DeviceOutShema]]:
     items = [
         DeviceOutShema.from_entity(obj)

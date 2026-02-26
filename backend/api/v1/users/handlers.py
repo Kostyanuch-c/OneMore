@@ -40,7 +40,7 @@ def create_user_view(
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
 )
 def get_user_list(
-    _request: HttpRequest,
+    request: HttpRequest,
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[UserOutSchema]]:
     service = UserService()

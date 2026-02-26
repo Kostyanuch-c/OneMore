@@ -11,5 +11,5 @@ router = Router(tags=['posts'])
 
 
 @router.get('/hello')
-def hello(_request: HttpRequest) -> dict[str, str]:
+def hello(request: HttpRequest) -> dict[str, str]:
     return {'message': 'Hello World'}

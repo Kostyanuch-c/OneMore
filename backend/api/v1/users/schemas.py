@@ -3,7 +3,6 @@ from datetime import datetime
 from ninja import Schema
 
 from apps.users.entities import UserEntity
-from apps.users.models import Role
 
 
 class UserOutSchema(Schema):
@@ -12,7 +11,7 @@ class UserOutSchema(Schema):
     last_name: str | None = None
     full_name: str | None = None
     username: str
-    role: Role
+    role: str
     created_at: datetime
 
     @staticmethod

@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from apps.users.models import Role
-
 
 @dataclass
 class UserEntity:
@@ -15,5 +13,5 @@ class UserEntity:
     first_name: str | None
     last_name: str | None
     full_name: str | None
-    role: Role
+    role: str
     created_at: datetime
