@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import (
+    TYPE_CHECKING,
     Any,
-    Callable,
     ParamSpec,
     TypeVar,
 )
@@ -11,8 +11,12 @@ from django.db import IntegrityError
 from .base_exeption import ApplicationError
 
 
-P = ParamSpec("P")
-R = TypeVar("R")
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+
+P = ParamSpec('P')
+R = TypeVar('R')
 
 
 def handle_unique_field(
@@ -29,15 +33,16 @@ def handle_unique_field(
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
         def wrapper(self: Any, *args: P.args, **kwargs: P.kwargs) -> R:
-            data, object_id = args[data_index], (
-                args[id_index] if id_index is not None else None
+            data, object_id = (
+                args[data_index],
+                (args[id_index] if id_index is not None else None),
             )
 
             value = getattr(data, field, None)
             if value is not None and not check_exist_func(value, object_id):
                 raise ApplicationError(
-                    message=f"{field.capitalize()} already exists",
-                    extra={"field": field},
+                    message=f'{field.capitalize()} already exists',
+                    extra={'field': field},
                     status_code=409,
                 )
 
@@ -46,8 +51,8 @@ def handle_unique_field(
             except IntegrityError as e:
                 if field in str(e):
                     raise ApplicationError(
-                        message=f"{field.capitalize()} already exists",
-                        extra={"field": field},
+                        message=f'{field.capitalize()} already exists',
+                        extra={'field': field},
                         status_code=409,
                     ) from e
                 raise

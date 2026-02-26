@@ -1,3 +1,4 @@
+
 from django.http import HttpRequest
 
 from ninja import (
@@ -32,12 +33,14 @@ from apps.devices.services.device_service import (
     TypeService,
 )
 
+
 router = Router(tags=['devices'])
 
 
 @router.post('/brand', response=ApiResponse[BrandOutShema])
 def create_brand(
-    request: HttpRequest, payload: BrandInputSchema
+        _request: HttpRequest,
+        payload: BrandInputSchema,
 ) -> ApiResponse[BrandOutShema]:
     brand = BrandService().create_brand(payload.name)
     return ApiResponse.success(
@@ -46,10 +49,12 @@ def create_brand(
 
 
 @router.get(
-    '/brand', response=ApiResponse[ListPaginationResponse[BrandOutShema]]
+    '/brand',
+    response=ApiResponse[ListPaginationResponse[BrandOutShema]],
 )
 def get_brand_list(
-    request: HttpRequest, pagination_in: Query[PaginationIn]
+        _request: HttpRequest,
+        pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[BrandOutShema]]:
     items = [
         BrandOutShema.from_entity(obj)
@@ -57,7 +62,9 @@ def get_brand_list(
     ]
 
     pagination_out = PaginationOut(
-        limit=pagination_in.limit, offset=pagination_in.offset, total=20
+        limit=pagination_in.limit,
+        offset=pagination_in.offset,
+        total=20,
     )
     return ApiResponse.success(
         data=ListPaginationResponse(items=items, pagination=pagination_out),
@@ -65,17 +72,21 @@ def get_brand_list(
 
 
 @router.get(
-    '/type', response=ApiResponse[ListPaginationResponse[TypeOutShema]]
+    '/type',
+    response=ApiResponse[ListPaginationResponse[TypeOutShema]],
 )
 def get_types_list(
-    request: HttpRequest, pagination_in: Query[PaginationIn]
+        _request: HttpRequest,
+        pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[TypeOutShema]]:
     items = [
         TypeOutShema.from_entity(obj) for obj in TypeService().get_list_types()
     ]
 
     pagination_out = PaginationOut(
-        limit=pagination_in.limit, offset=pagination_in.offset, total=20
+        limit=pagination_in.limit,
+        offset=pagination_in.offset,
+        total=20,
     )
     return ApiResponse.success(
         data=ListPaginationResponse(items=items, pagination=pagination_out),
@@ -84,19 +95,20 @@ def get_types_list(
 
 @router.post('/type', response=ApiResponse[TypeOutShema])
 def create_type(
-    request: HttpRequest, payload: TypeInputSchema
+        _request: HttpRequest,
+        payload: TypeInputSchema,
 ) -> ApiResponse[TypeOutShema]:
-    type = TypeService().create_type(payload.name)
+    type_f = TypeService().create_type(payload.name)
     return ApiResponse.success(
-        data=TypeOutShema.from_entity(type),
+        data=TypeOutShema.from_entity(type_f),
     )
 
 
 @router.post('/device', response=ApiResponse[DeviceOutShema])
 def create_device(
-    request: HttpRequest,
-    payload: Form[DeviceInputSchema],
-    img: UploadedFile | None = File(None),  # type: ignore
+        _request: HttpRequest,
+        payload: Form[DeviceInputSchema],
+        img: UploadedFile | None = File(None),  # type: ignore[type-arg]  # noqa: B008
 ) -> ApiResponse[DeviceOutShema]:
     device = DeviceService().create_device(
         name=payload.name,
@@ -110,12 +122,22 @@ def create_device(
     )
 
 
-@router.get('/device', response=ApiResponse[ListPaginationResponse[DeviceOutShema]])
+@router.get(
+    '/device',
+    response=ApiResponse[ListPaginationResponse[DeviceOutShema]],
+)
 def get_devices_list(
-    request: HttpRequest, pagination_in: Query[PaginationIn]) -> ApiResponse[ListPaginationResponse[DeviceOutShema]]:
-    items = [DeviceOutShema.from_entity(obj) for obj in DeviceService().get_list_devices()]
+        _request: HttpRequest,
+        pagination_in: Query[PaginationIn],
+) -> ApiResponse[ListPaginationResponse[DeviceOutShema]]:
+    items = [
+        DeviceOutShema.from_entity(obj)
+        for obj in DeviceService().get_list_devices()
+    ]
     pagination_out = PaginationOut(
-        limit=pagination_in.limit, offset=pagination_in.offset, total=20
+        limit=pagination_in.limit,
+        offset=pagination_in.offset,
+        total=20,
     )
     return ApiResponse.success(
         data=ListPaginationResponse(items=items, pagination=pagination_out),

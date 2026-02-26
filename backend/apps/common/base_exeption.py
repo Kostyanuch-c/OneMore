@@ -29,7 +29,7 @@ class ApplicationError(Exception):
             return self.errors
         return [
             ApiError(
-                message=self.message or "Unknown error",
+                message=self.message or 'Unknown error',
                 extra=self.extra,
             ),
         ]

@@ -11,7 +11,7 @@ class Basket(BaseTimedModel):
         on_delete=models.CASCADE,
     )
     is_active = models.BooleanField(default=False)
-    devices: "models.ManyToManyField[Device, BasketItem]" = (
+    devices: models.ManyToManyField[Device, BasketItem] = (
         models.ManyToManyField(
             Device,
             through='BasketItem',
@@ -27,8 +27,8 @@ class Basket(BaseTimedModel):
 
     def __str__(self) -> str:
         return (
-            f"Basket {self.id} for {self.user.username}"
-            f" (active: {self.is_active})"
+            f'Basket {self.id} for {self.user.username}'
+            f' (active: {self.is_active})'
         )
 
 
@@ -52,11 +52,12 @@ class BasketItem(BaseTimedModel):
         verbose_name_plural = 'Элементы корзины'
         constraints = [
             models.UniqueConstraint(
-                fields=['basket', 'device'], name='unique_basket_device'
-            )
+                fields=['basket', 'device'],
+                name='unique_basket_device',
+            ),
         ]
 
     def __str__(self) -> str:
         return (
-            f"{self.device.name} x {self.quantity} in Basket {self.basket.id}"
+            f'{self.device.name} x {self.quantity} in Basket {self.basket.id}'
         )

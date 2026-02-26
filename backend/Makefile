@@ -1,4 +1,4 @@
-MANAGE := poetry run python manage.py
+MANAGE := uv run python manage.py
 PORT ?= 8000
 
 # ------------------------------
@@ -6,11 +6,11 @@ PORT ?= 8000
 # ------------------------------
 .PHONY: install
 install:
-	@poetry install
+	@uv sync
 
 .PHONY: build
 build:
-	@poetry install --only main
+	@uv sync --no-dev
 
 # ------------------------------
 # Data base
@@ -35,22 +35,22 @@ shell:
 # ------------------------------
 .PHONY: dev
 dev:
-	@poetry run uvicorn myproject.asgi:application --reload --host 0.0.0.0 --port $(PORT)
+	@uv run uvicorn myproject.asgi:application --reload --host 0.0.0.0 --port $(PORT)
 
 .PHONY: start
 start: migrate
-	@poetry run gunicorn -w 5 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) myproject.asgi:application
+	@uv run gunicorn -w 5 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) myproject.asgi:application
 
 # ------------------------------
 # Pre-commit
 # ------------------------------
 .PHONY: pre-commit-install
 pre-commit-install:
-	@poetry run pre-commit install
+	@uv run pre-commit install
 
 .PHONY: pre-commit-run
 pre-commit-run:
-	@poetry run pre-commit run --files $(shell find apps api -type f -name "*.py")
+	@uv run pre-commit run --files $(shell find apps api -type f -name "*.py")
 
 # ------------------------------
 # Formatters/linters
@@ -58,16 +58,19 @@ pre-commit-run:
 
 .PHONY: format
 format:
-	@poetry run black apps api
-	@poetry run isort apps api
+	@uv run ruff format apps api
 
 .PHONY: lint
 lint:
-	@poetry run flake8 apps api
+	@uv run ruff check apps api
+
+.PHONY: lint-fix
+lint-fix:
+	@uv run ruff check --fix --unsafe-fixes apps api
 
 .PHONY: type
 type:
-	@poetry run mypy apps api
+	@uv run mypy apps api
 
 .PHONY: check
-check: format lint type
+check: format lint-fix lint type

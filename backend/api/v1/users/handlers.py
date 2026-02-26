@@ -13,41 +13,34 @@ from api.schemas import (
     ApiResponse,
     ListPaginationResponse,
 )
-from api.v1.users.schemas import UserOutSchema
-from apps.users.entities import UserInputSchema
-from apps.users.services.user_service import UserService
+from api.v1.users.schemas import (
+    UserInputSchema,
+    UserOutSchema,
+)
+from apps.users.services.user_service import UserCreator, UserService
 
 
 router = Router(tags=['users'])
 
 
 @router.post(
-    "/",
+    '/',
     response=ApiResponse[UserOutSchema],
 )
 def create_user_view(
-    request: HttpRequest,
+    _request: HttpRequest,
     payload: UserInputSchema,
 ) -> ApiResponse[UserOutSchema]:
-    user = UserService().create_object(payload)
-    return ApiResponse.success(
-        data=UserOutSchema(
-            id=user.id,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            full_name=user.full_name,
-            username=user.username,
-            created_at=user.created_at,
-        ),
-    )
+    user = UserCreator(payload)()
+    return ApiResponse.success(data=UserOutSchema.from_entity(user))
 
 
 @router.get(
-    "/",
+    '/',
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
 )
 def get_user_list(
-    request: HttpRequest,
+    _request: HttpRequest,
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[UserOutSchema]]:
     service = UserService()

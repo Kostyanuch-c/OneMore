@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'apps.posts.apps.PostsConfig',
     'apps.devices.apps.DevicesConfig',
     'apps.basket.apps.BasketConfig',
+    'apps.problems.apps.ProblemsConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,7 +141,6 @@ AUTH_USER_MODEL = "users.User"
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -149,3 +149,5 @@ APP_DOMAIN = os.getenv("APP_DOMAIN", default="http://localhost:8000")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MAX_STR_LENGTH = 25

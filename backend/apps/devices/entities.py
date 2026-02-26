@@ -1,10 +1,15 @@
 from dataclasses import dataclass
-from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from ninja import Schema
 
 from apps.common.base_entities import BaseEntity
-from apps.users.entities import UserEntity
+
+
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from apps.users.entities import UserEntity
 
 
 @dataclass

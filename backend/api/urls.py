@@ -25,7 +25,7 @@ api = NinjaAPI()
 api.add_router('v1/', v1_router)
 
 urlpatterns = [
-    path("", api.urls),
+    path('', api.urls),
 ]
 
 
@@ -47,11 +47,11 @@ def exception_handler(
         errors = [
             ApiError(
                 message=(
-                    ", ".join(messages)
+                    ', '.join(messages)
                     if isinstance(messages, list)
                     else str(messages)
                 ),
-                extra={"field": field},
+                extra={'field': field},
             )
             for field, messages in exc.message_dict.items()
         ]
@@ -65,7 +65,7 @@ def exception_handler(
     if isinstance(exc, Http404):
         return api.create_response(
             request,
-            ApiResponse.failure(message="Not found", extra={}),
+            ApiResponse.failure(message='Not found', extra={}),
             status=404,
         )
 
@@ -73,7 +73,7 @@ def exception_handler(
     if isinstance(exc, PermissionDenied):
         return api.create_response(
             request,
-            ApiResponse.failure(message="Permission denied", extra={}),
+            ApiResponse.failure(message='Permission denied', extra={}),
             status=403,
         )
 
@@ -82,8 +82,8 @@ def exception_handler(
         return api.create_response(
             request,
             ApiResponse.failure(
-                message="Integrity error",
-                extra={"details": str(exc)},
+                message='Integrity error',
+                extra={'details': str(exc)},
             ),
             status=409,
         )
@@ -92,10 +92,10 @@ def exception_handler(
     return api.create_response(
         request,
         ApiResponse.failure(
-            message="Internal server error",
+            message='Internal server error',
             extra={
-                "error": str(exc.__class__.__name__),
-                "details": str(exc),
+                'error': str(exc.__class__.__name__),
+                'details': str(exc),
             },
         ),
         status=500,

@@ -1,7 +1,11 @@
 from dataclasses import dataclass
-from datetime import datetime
+from typing import TYPE_CHECKING
 
-from ninja import Schema
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
+    from apps.users.models import Role
 
 
 @dataclass
@@ -11,19 +15,5 @@ class UserEntity:
     first_name: str | None
     last_name: str | None
     full_name: str | None
+    role: Role
     created_at: datetime
-
-
-class UserInputSchema(Schema):
-    password: str
-    email: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
-    username: str
-
-
-class UserUpdateSchema(Schema):
-    username: str | None = None
-    password: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None

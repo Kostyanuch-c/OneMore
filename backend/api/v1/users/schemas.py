@@ -3,6 +3,7 @@ from datetime import datetime
 from ninja import Schema
 
 from apps.users.entities import UserEntity
+from apps.users.models import Role
 
 
 class UserOutSchema(Schema):
@@ -11,10 +12,11 @@ class UserOutSchema(Schema):
     last_name: str | None = None
     full_name: str | None = None
     username: str
+    role: Role
     created_at: datetime
 
     @staticmethod
-    def from_entity(entity: UserEntity) -> 'UserOutSchema':
+    def from_entity(entity: UserEntity) -> UserOutSchema:
         return UserOutSchema(
             id=entity.id,
             first_name=entity.first_name,
@@ -22,4 +24,24 @@ class UserOutSchema(Schema):
             full_name=entity.full_name,
             username=entity.username,
             created_at=entity.created_at,
+            role=entity.role,
         )
+
+
+class UserInputSchema(Schema):
+    password: str
+    email: str | None = None
+    username: str
+
+    class Config:
+        extra = 'forbid'
+
+
+class UserUpdateSchema(Schema):
+    username: str | None = None
+    password: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+
+    class Config:
+        extra = 'forbid'

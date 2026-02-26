@@ -1,13 +1,17 @@
-from datetime import datetime
-from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from ninja import Schema
 
-from apps.devices.entities import (
-    BrandEntity,
-    DeviceEntity,
-    TypeEntity,
-)
+
+if TYPE_CHECKING:
+    from datetime import datetime
+    from decimal import Decimal
+
+    from apps.devices.entities import (
+        BrandEntity,
+        DeviceEntity,
+        TypeEntity,
+    )
 
 
 class BrandOutShema(Schema):
@@ -17,7 +21,7 @@ class BrandOutShema(Schema):
     updated_at: datetime
 
     @staticmethod
-    def from_entity(entity: BrandEntity) -> 'BrandOutShema':
+    def from_entity(entity: BrandEntity) -> BrandOutShema:
         return BrandOutShema(
             id=entity.id,
             name=entity.name,
@@ -33,7 +37,7 @@ class TypeOutShema(Schema):
     updated_at: datetime
 
     @staticmethod
-    def from_entity(entity: TypeEntity) -> 'TypeOutShema':
+    def from_entity(entity: TypeEntity) -> TypeOutShema:
         return TypeOutShema(
             id=entity.id,
             name=entity.name,
@@ -53,7 +57,7 @@ class DeviceOutShema(Schema):
     updated_at: datetime
 
     @staticmethod
-    def from_entity(entity: DeviceEntity) -> 'DeviceOutShema':
+    def from_entity(entity: DeviceEntity) -> DeviceOutShema:
         return DeviceOutShema(
             id=entity.id,
             name=entity.name,

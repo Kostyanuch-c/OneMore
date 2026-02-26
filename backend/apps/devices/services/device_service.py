@@ -1,6 +1,4 @@
-from decimal import Decimal
-
-from ninja import UploadedFile
+from typing import TYPE_CHECKING
 
 from apps.devices.entities import (
     BrandEntity,
@@ -12,6 +10,12 @@ from apps.devices.models import (
     Device,
     Type,
 )
+
+
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from ninja import UploadedFile
 
 
 def brand_converter(brand_instance: Brand) -> BrandEntity:
@@ -83,8 +87,10 @@ class DeviceService:
                 brand_id=brand_id,
                 type_id=type_id,
                 img=img_file,
-            )
+            ),
         )
 
     def get_list_devices(self) -> list[DeviceEntity]:
-        return [device_converter(obj) for obj in self.device_model.objects.all()]
+        return [
+            device_converter(obj) for obj in self.device_model.objects.all()
+        ]

@@ -1,16 +1,21 @@
 from dataclasses import dataclass
-from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from apps.common.base_entities import BaseEntity
-from apps.devices.entities import DeviceEntity
-from apps.users.entities import UserEntity
+
+
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from apps.devices.entities import DeviceEntity
+    from apps.users.entities import UserEntity
 
 
 @dataclass
 class BasketEntity(BaseEntity):
     user: UserEntity
     is_active: bool
-    items: list["BasketItemEntity"]
+    items: list[BasketItemEntity]
 
 
 @dataclass
