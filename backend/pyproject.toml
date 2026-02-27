@@ -148,7 +148,7 @@ section-order = [
     "first-party",
     "local-folder",
 ]
-known-local-folder = ["apps", "api", "myproject"]
+known-local-folder = ["apps", "api", "project"]
 combine-as-imports = true
 force-wrap-aliases = true
 split-on-trailing-comma = true
@@ -173,14 +173,14 @@ show_column_numbers = true
 strict = true
 
 [tool.django-stubs]
-django_settings_module = "myproject.settings"
+django_settings_module = "project.settings"
 strict_model_abstract_attrs = true
 strict_settings = true
 
 [[tool.mypy.overrides]]
 module = [
     "tests.*",
-    "myproject.settings",
+    "project.settings",
     "apps.users.migrations",
     "apps.devices.migrations",
 ]

@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: ruff-check
         name: ruff-check
+        files: ^src/
         args: [ --fix ]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -11,4 +12,5 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        exclude: 'migrations/|settings.*\.py$'
+        files: ^src/
+        exclude: 'migrations/|settings.*\.py$|^tests/'

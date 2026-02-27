@@ -6,3 +6,10 @@ dev:
 build:
 	@bun run build
 
+.PHONY: start
+start:
+	@bun run start
+
+.PHONY: lint
+lint:
+	@bun run lint

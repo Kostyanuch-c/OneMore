@@ -10,6 +10,7 @@ venv/
 ENV/
 *.sqlite3
 *.log
+.python-version
 
 # Django
 *.pyc
