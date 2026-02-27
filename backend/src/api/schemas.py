@@ -2,9 +2,9 @@ from typing import (
     Any,
 )
 
-from ninja import Schema
-
 from pydantic.fields import Field
+
+from ninja import Schema
 
 from api.filters import PaginationOut
 
@@ -38,9 +38,10 @@ class ApiResponse[TData](Schema):
         message: str | None = None,
         extra: dict[str, Any] | None = None,
         errors: list[ApiError] | None = None,
+        meta: dict[str, Any] | None = None,
     ) -> ApiResponse[TData]:
         if errors:
-            return cls(errors=errors)
+            return cls(errors=errors, meta=meta or {})
 
         return cls(
             errors=[
@@ -49,4 +50,5 @@ class ApiResponse[TData](Schema):
                     extra=extra or {},
                 ),
             ],
+            meta=meta or {},
         )

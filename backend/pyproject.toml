@@ -142,8 +142,9 @@ ignore = [
 section-order = [
     "future",
     "standard-library",
-    "django",
+    "pydantic",
     "ninja",
+    "django",
     "third-party",
     "first-party",
     "local-folder",
@@ -157,6 +158,7 @@ lines-after-imports = 2
 [tool.ruff.lint.isort.sections]
 django = ["django"]
 ninja = ["ninja"]
+pydantic = ["pydantic"]
 
 [tool.ruff.lint.per-file-ignores]
 "*/factory.py" = ["ANN"]

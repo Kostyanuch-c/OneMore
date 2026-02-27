@@ -1,5 +1,3 @@
-from django.http import HttpRequest
-
 from ninja import (
     File,
     Form,
@@ -7,6 +5,8 @@ from ninja import (
     Router,
     UploadedFile,
 )
+
+from django.http import HttpRequest
 
 from api.filters import (
     PaginationIn,

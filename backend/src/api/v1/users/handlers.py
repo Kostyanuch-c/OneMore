@@ -1,9 +1,9 @@
-from django.http import HttpRequest
-
 from ninja import (
     Query,
     Router,
 )
+
+from django.http import HttpRequest
 
 from api.filters import (
     PaginationIn,
@@ -17,10 +17,11 @@ from api.v1.users.filters import UserFiltersIn
 from api.v1.users.schemas import (
     UserInputSchema,
     UserOutSchema,
+    UserUpdateSchema,
 )
 from apps.users.filters import UserFilters
-from apps.users.repositories.user_repository import UserRepository
-from apps.users.services import UserCreator, UsersListCount
+from apps.users.services import UserService
+from apps.users.use_cases import CreateUser, SearchUsers, UpdateUser
 
 
 router = Router(tags=['users'])
@@ -34,7 +35,25 @@ def create_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
 ) -> ApiResponse[UserOutSchema]:
-    user = UserCreator(payload)()
+    user = CreateUser(
+        service=UserService(),
+        create_data=payload,
+    )()
+    return ApiResponse.success(data=UserOutSchema.from_entity(user))
+
+
+@router.post(
+    '/update',
+    response=ApiResponse[UserOutSchema],
+)
+def update_user_view(
+    request: HttpRequest,
+    payload: UserUpdateSchema,
+) -> ApiResponse[UserOutSchema]:
+    user = UpdateUser(
+        service=UserService(),
+        update_data=payload,
+    )()
     return ApiResponse.success(data=UserOutSchema.from_entity(user))
 
 
@@ -47,12 +66,12 @@ def get_user_list(
     filters: Query[UserFiltersIn],
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[UserOutSchema]]:
-    users_page = UsersListCount(
-        repo=UserRepository(),
+    users_page = SearchUsers(
+        service=UserService(),
         filters=UserFilters(**filters.dict()),
-        offset=pagination_in.offset,
-        limit=pagination_in.limit,
+        pagination=pagination_in,
     )()
+
     pagination_out = PaginationOut(
         limit=pagination_in.limit,
         offset=pagination_in.offset,

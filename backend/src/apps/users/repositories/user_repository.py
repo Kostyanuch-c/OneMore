@@ -1,7 +1,8 @@
+from typing import Any
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from api.v1.users.schemas import UserUpdateSchema
 from apps.users.entities import (
     UserEntity,
 )
@@ -68,16 +69,15 @@ class UserRepository:
     def update_user(
         self,
         user_id: int,
-        user_data: UserUpdateSchema,
+        user_data: dict[str, Any],
     ) -> UserEntity:
         user_instance = self.user_model.objects.get(id=user_id)
 
-        update_data = user_data.dict(exclude_unset=True)
-        password = update_data.pop('password', None)
+        password = user_data.pop('password', None)
         if password:
             user_instance.set_password(password)
 
-        for key, value in update_data.items():
+        for key, value in user_data.items():
             setattr(user_instance, key, value)
 
         user_instance.save()

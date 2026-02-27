@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from apps.common.base_entities import BaseEntity
+from apps.common import BaseEntity
 
 
 if TYPE_CHECKING:

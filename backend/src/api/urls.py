@@ -1,3 +1,5 @@
+from ninja import NinjaAPI
+
 from django.core.exceptions import (
     PermissionDenied,
     ValidationError as DjangoValidationError,
@@ -10,14 +12,12 @@ from django.http import (
 )
 from django.urls import path
 
-from ninja import NinjaAPI
-
 from api.schemas import (
     ApiError,
     ApiResponse,
 )
 from api.v1.urls import router as v1_router
-from apps.common.base_exeption import ApplicationError
+from apps.common.exception import ApplicationError
 
 
 api = NinjaAPI()
@@ -38,23 +38,26 @@ def exception_handler(
     if isinstance(exc, ApplicationError):
         return api.create_response(
             request,
-            ApiResponse.failure(errors=exc.as_list()),
+            ApiResponse.failure(errors=exc.as_list(), meta=exc.meta),
             status=exc.status_code,
         )
 
     # Django validation errors
     if isinstance(exc, DjangoValidationError):
-        errors = [
-            ApiError(
-                message=(
-                    ', '.join(messages)
-                    if isinstance(messages, list)
-                    else str(messages)
-                ),
-                extra={'field': field},
-            )
-            for field, messages in exc.message_dict.items()
-        ]
+        errors: list[ApiError] = []
+
+        error_dict = getattr(exc, 'error_dict', None)
+        if error_dict:
+            for field, err_list in error_dict.items():
+                errors.append(
+                    ApiError(
+                        message=', '.join(str(e) for e in err_list),
+                        extra={'field': field},
+                    )
+                )
+        else:
+            errors.append(ApiError(message=', '.join(map(str, exc.messages))))
+
         return api.create_response(
             request,
             ApiResponse.failure(errors=errors),

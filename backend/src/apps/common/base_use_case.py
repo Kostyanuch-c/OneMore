@@ -3,11 +3,11 @@ from collections.abc import Callable
 from typing import Any
 
 
-class BaseService(metaclass=ABCMeta):
-    """This is a template of a base service.
-    All services in the app should follow this rules:
+class BaseUseCase(metaclass=ABCMeta):
+    """This is a template of a base use case.
+    All use cases in the app should follow this rules:
       * Input variables should be done at the __init__ phase
-      * Service should implement a single entrypoint without arguments
+      * Use case should implement a single entrypoint without arguments
     """
 
     def __call__(self) -> Any:
@@ -24,4 +24,4 @@ class BaseService(metaclass=ABCMeta):
 
     @abstractmethod
     def act(self) -> Any:
-        raise NotImplementedError('Please implement in the service class')
+        raise NotImplementedError('Please implement in the use case.')
