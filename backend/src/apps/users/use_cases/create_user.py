@@ -13,7 +13,7 @@ class GetOrCreateUser(BaseUseCase):
 
     @property
     def username(self) -> str:
-        return f"{self.email.split('@', 1)[0][:50]}_{uuid.uuid4().hex[:12]}"
+        return f'{self.email.split("@", 1)[0][:50]}_{uuid.uuid4().hex[:12]}'
 
     def act(self) -> tuple[UserEntity, bool]:
         existing_user = self.service.get_user_by_email(

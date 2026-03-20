@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from ninja import Query, Router
 from ninja.security import django_auth_is_staff
 
@@ -18,8 +20,8 @@ router = Router(tags=['admin'], auth=django_auth_is_staff)
 @router.post(
     '/user',
     response={
-        201: ApiResponse[UserOutSchema],
-        200: ApiResponse[UserOutSchema],
+        HTTPStatus.CREATED: ApiResponse[UserOutSchema],
+        HTTPStatus.OK: ApiResponse[UserOutSchema],
     },
 )
 def get_or_create_user_view(
@@ -32,7 +34,7 @@ def get_or_create_user_view(
         email=payload.email,
     )()
     return (
-        201 if created else 200,
+        HTTPStatus.CREATED if created else HTTPStatus.OK,
         ApiResponse.success(data=UserOutSchema.from_entity(user)),
     )
 

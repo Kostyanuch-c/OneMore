@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from http import HTTPStatus
 from typing import Any
 
 from api.schemas import ApiError
@@ -10,7 +11,7 @@ class ApplicationError(Exception):
     meta: dict[str, Any] = field(default_factory=dict)
     extra: dict[str, Any] = field(default_factory=dict)
     errors: list[ApiError] = field(default_factory=list)
-    status_code: int = 422
+    status_code: int = HTTPStatus.INTERNAL_SERVER_ERROR
 
     def __post_init__(self) -> None:
         """Needed to use error.args and str(error)"""

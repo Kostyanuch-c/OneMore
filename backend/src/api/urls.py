@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from ninja import NinjaAPI
 
 from django.core.exceptions import (
@@ -61,7 +63,7 @@ def exception_handler(
         return api.create_response(
             request,
             ApiResponse.failure(errors=errors),
-            status=422,
+            status=HTTPStatus.UNPROCESSABLE_CONTENT,
         )
 
     # 404 errors
@@ -69,7 +71,7 @@ def exception_handler(
         return api.create_response(
             request,
             ApiResponse.failure(message='Not found', extra={}),
-            status=404,
+            status=HTTPStatus.NOT_FOUND,
         )
 
     # Permission errors
@@ -77,7 +79,7 @@ def exception_handler(
         return api.create_response(
             request,
             ApiResponse.failure(message='Permission denied', extra={}),
-            status=403,
+            status=HTTPStatus.FORBIDDEN,
         )
 
     # DB constraint / unique errors
@@ -88,7 +90,7 @@ def exception_handler(
                 message='Integrity error',
                 extra={'details': str(exc)},
             ),
-            status=409,
+            status=HTTPStatus.CONFLICT,
         )
 
     # Other errors
@@ -101,5 +103,5 @@ def exception_handler(
                 'details': str(exc),
             },
         ),
-        status=500,
+        status=HTTPStatus.INTERNAL_SERVER_ERROR,
     )

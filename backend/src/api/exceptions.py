@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from http import HTTPStatus
 from typing import Any
 
 from apps.common.exception import ApplicationError
@@ -18,10 +19,11 @@ class InvalidTimeFilterError(ApiRequestError):
             'related_field': 'created_to',
         }
     )
-    status_code: int = 400
+    status_code: int = HTTPStatus.BAD_REQUEST
 
 
 @dataclass(eq=False)
 class EmailMustBeStringError(ApiRequestError):
     message: str = 'Email must be a string'
     extra: dict[str, Any] = field(default_factory=lambda: {'field': 'email'})
+    status_code: int = HTTPStatus.BAD_REQUEST

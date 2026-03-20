@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from http import HTTPStatus
 from typing import Any
 
 from apps.common.exception import ApplicationError
@@ -15,11 +16,11 @@ class UserNameAlreadyExistsError(UserServiceError):
     extra: dict[str, Any] = field(
         default_factory=lambda: {'field': 'username'}
     )
-    status_code: int = 409
+    status_code: int = HTTPStatus.CONFLICT
 
 
 @dataclass(eq=False)
 class EmailAlreadyExistsError(UserServiceError):
     message: str = 'User with this email already exists'
     extra: dict[str, Any] = field(default_factory=lambda: {'field': 'email'})
-    status_code: int = 409
+    status_code: int = HTTPStatus.CONFLICT
