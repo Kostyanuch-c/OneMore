@@ -12,6 +12,7 @@ from apps.users.entities import (
 )
 from apps.users.excepions.users import (
     EmailAlreadyExistsError,
+    UserEmailNotFoundError,
     UserNameAlreadyExistsError,
 )
 from apps.users.filters import UserFilters
@@ -28,10 +29,11 @@ def map_user_integrity_errors[**P, R](
             return method(self, *args, **kwargs)
         except IntegrityError as e:
             cname = constraint_name(e)
-            if cname == self.repository.USERNAME_CONSTRAINT:
-                raise UserNameAlreadyExistsError from e
             if cname == self.repository.EMAIL_CONSTRAINT:
                 raise EmailAlreadyExistsError from e
+            if cname == self.repository.USERNAME_CONSTRAINT:
+                raise UserNameAlreadyExistsError from e
+
             raise
 
     return wrapper  # type: ignore
@@ -80,16 +82,16 @@ class UserService:
         except User.DoesNotExist:
             raise Http404
 
+    def get_user_by_email(self, email: str) -> UserEntity | None:
+        try:
+            return self.repository.get_user_by_email(email)
+        except User.DoesNotExist:
+            raise UserEmailNotFoundError
+
     @map_user_integrity_errors
-    def create_user(
-        self,
-        password: str,
-        username: str,
-        email: str | None = None,
-    ) -> UserEntity:
+    def create_user(self, username: str, email: str) -> UserEntity:
 
         return self.repository.create_user(
-            password=password,
             username=username,
             email=email,
         )
@@ -98,9 +100,7 @@ class UserService:
     def update_user(
         self,
         user_id: int,
-        user_data: dict[
-            str, Any
-        ],  # подумать как про типизировать даже когда появится токе
+        user_data: dict[str, Any],
     ) -> UserEntity:
 
         return self.repository.update_user(

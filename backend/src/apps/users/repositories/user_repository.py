@@ -52,15 +52,21 @@ class UserRepository:
             self.user_model.objects.get(id=user_id),
         )
 
+    def get_user_by_email(self, email: str) -> UserEntity | None:
+        user = self.user_model.objects.filter(
+            email__iexact=email, is_active=True
+        ).first()
+        if user:
+            return self.converter.to_entity(user)
+        return None
+
     def create_user(
         self,
-        password: str,
         username: str,
-        email: str | None = None,
+        email: str,
     ) -> UserEntity:
         return self.converter.to_entity(
-            self.user_model.objects.create_user(
-                password=password,
+            self.user_model.objects.create(
                 username=username,
                 email=email,
             ),

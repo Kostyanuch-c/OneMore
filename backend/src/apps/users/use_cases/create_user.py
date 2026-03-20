@@ -1,19 +1,28 @@
+import uuid
 from dataclasses import dataclass
 
-from api.v1.users.schemas import UserInputSchema
+from django.utils.functional import cached_property
+
+from api.v1.profile.schemas import UserInputSchema
 from apps.common import BaseUseCase
 from apps.users.entities import UserEntity
 from apps.users.services import UserService
 
 
 @dataclass
-class CreateUser(BaseUseCase):
+class GetOrCreateUser(BaseUseCase):
     service: UserService
     create_data: UserInputSchema
 
+    @cached_property
+    def username(self) -> str:
+        return self.create_data.email or str(uuid.uuid4())
+
     def act(self) -> UserEntity:
+        existing_user = self.service.get_user_by_email(self.create_data.email)
+        if existing_user is not None:
+            return existing_user
+
         return self.service.create_user(
-            username=self.create_data.username,
-            email=self.create_data.email,
-            password=self.create_data.password,
+            username=self.username, email=self.create_data.email
         )

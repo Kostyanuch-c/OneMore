@@ -13,7 +13,7 @@ class ApplicationError(Exception):
     status_code: int = 422
 
     def __post_init__(self) -> None:
-        """Needed for use error.args and str(error)"""
+        """Needed to use error.args and str(error)"""
         super().__init__(self.message)
 
     def as_list(self) -> list[ApiError]:

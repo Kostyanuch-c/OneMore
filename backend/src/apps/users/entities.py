@@ -9,6 +9,6 @@ class UserEntity:
     first_name: str | None
     last_name: str | None
     full_name: str | None
-    email: str | None
+    email: str
     role: str
     created_at: datetime

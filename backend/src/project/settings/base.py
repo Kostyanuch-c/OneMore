@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "corsheaders",
     "django_extensions",
+    'apps.a12n.apps.A12nConfig',
     'apps.users.apps.UserConfig',
     'apps.posts.apps.PostsConfig',
-    'apps.devices.apps.DevicesConfig',
-    'apps.basket.apps.BasketConfig',
     'apps.problems.apps.ProblemsConfig',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +65,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,6 +149,16 @@ APP_DOMAIN = os.getenv("APP_DOMAIN", default="http://localhost:8000")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
+ANYMAIL = {
+    "POSTMARK_SERVER_TOKEN": os.getenv('POSTMARK_TOKEN'),
+}
+DEFAULT_FROM_EMAIL = os.getenv('POSTMARK_SENDER', default='no-reply@example.com')
+EMAIL_CODE_TTL_SECONDS=300
+SITE_NAME = "StudyNotPain"
+SITE_URL = "https://studynotpain.com"
+SUPPORT_EMAIL = "support@studynotpain.com"
 
 MAX_STR_LENGTH = 25
 PAGE_LIMIT = 10

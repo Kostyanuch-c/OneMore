@@ -1,64 +1,37 @@
-from ninja import (
-    Query,
-    Router,
-)
+from ninja import Query, Router
+from ninja.security import SessionAuthIsStaff  # type: ignore # noqa
 
 from django.http import HttpRequest
 
-from api.filters import (
-    PaginationIn,
-    PaginationOut,
-)
-from api.schemas import (
-    ApiResponse,
-    ListPaginationResponse,
-)
-from api.v1.users.filters import UserFiltersIn
-from api.v1.users.schemas import (
-    UserInputSchema,
-    UserOutSchema,
-    UserUpdateSchema,
-)
+from api.filters import PaginationIn, PaginationOut
+from api.schemas import ApiResponse, ListPaginationResponse
+from api.v1.profile.filters import UserFiltersIn
+from api.v1.profile.schemas import UserInputSchema, UserOutSchema
 from apps.users.filters import UserFilters
 from apps.users.services import UserService
-from apps.users.use_cases import CreateUser, SearchUsers, UpdateUser
+from apps.users.use_cases import GetOrCreateUser, SearchUsers
 
 
-router = Router(tags=['users'])
+router = Router(tags=['admin'], auth=SessionAuthIsStaff())
 
 
 @router.post(
-    '/',
+    '/user',
     response=ApiResponse[UserOutSchema],
 )
 def create_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
 ) -> ApiResponse[UserOutSchema]:
-    user = CreateUser(
+    user = GetOrCreateUser(
         service=UserService(),
         create_data=payload,
     )()
     return ApiResponse.success(data=UserOutSchema.from_entity(user))
 
 
-@router.post(
-    '/update',
-    response=ApiResponse[UserOutSchema],
-)
-def update_user_view(
-    request: HttpRequest,
-    payload: UserUpdateSchema,
-) -> ApiResponse[UserOutSchema]:
-    user = UpdateUser(
-        service=UserService(),
-        update_data=payload,
-    )()
-    return ApiResponse.success(data=UserOutSchema.from_entity(user))
-
-
 @router.get(
-    '/',
+    '/users',
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
 )
 def get_user_list(

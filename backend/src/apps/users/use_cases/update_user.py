@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from api.v1.users.schemas import UserUpdateSchema
+from api.v1.profile.schemas import UserUpdateSchema
 from apps.common import BaseUseCase
 from apps.users.entities import UserEntity
 from apps.users.services import UserService

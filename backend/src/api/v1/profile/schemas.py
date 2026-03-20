@@ -13,7 +13,7 @@ from apps.users.entities import UserEntity
 
 
 class EmailSchema(Schema):
-    email: str | None = None
+    email: str
 
     @field_validator('email', mode='before')
     @classmethod
@@ -53,14 +53,13 @@ class UserOutSchema(Schema):
 
 
 class UserInputSchema(EmailSchema):
-    password: str
-    username: str
+    email: str
 
     class Config:
         extra = 'forbid'
 
 
-class UserUpdateSchema(EmailSchema):
+class UserUpdateSchema(Schema):
     # Потом здесь вместо user_id будет token и будет расшифровывать и проверять
     user_id: int
     username: str | None = None
