@@ -23,10 +23,3 @@ class EmailAlreadyExistsError(UserServiceError):
     message: str = 'User with this email already exists'
     extra: dict[str, Any] = field(default_factory=lambda: {'field': 'email'})
     status_code: int = 409
-
-
-@dataclass(eq=False)
-class UserEmailNotFoundError(UserServiceError):
-    message: str = 'User with this email not found'
-    extra: dict[str, Any] = field(default_factory=lambda: {'field': 'email'})
-    status_code: int = 404

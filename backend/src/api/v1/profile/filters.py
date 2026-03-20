@@ -9,7 +9,7 @@ from api.exceptions import InvalidTimeFilterError
 
 class UserFiltersIn(Schema):
     search: str | None = None
-    is_active: bool = True
+    is_active: bool | None = None
 
     created_from: datetime | None = None
     created_to: datetime | None = None

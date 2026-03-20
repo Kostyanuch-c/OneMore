@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "django_extensions",
     'apps.a12n.apps.A12nConfig',
     'apps.users.apps.UserConfig',
-    'apps.posts.apps.PostsConfig',
     'apps.problems.apps.ProblemsConfig',
     'anymail',
 ]
@@ -125,9 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -150,15 +149,13 @@ APP_DOMAIN = os.getenv("APP_DOMAIN", default="http://localhost:8000")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
-ANYMAIL = {
-    "POSTMARK_SERVER_TOKEN": os.getenv('POSTMARK_TOKEN'),
-}
 DEFAULT_FROM_EMAIL = os.getenv('POSTMARK_SENDER', default='no-reply@example.com')
-EMAIL_CODE_TTL_SECONDS=300
+EMAIL_CODE_TTL_SECONDS = 300
+
 SITE_NAME = "StudyNotPain"
 SITE_URL = "https://studynotpain.com"
 SUPPORT_EMAIL = "support@studynotpain.com"
 
 MAX_STR_LENGTH = 25
 PAGE_LIMIT = 10
+MAX_PAGE_LIMIT = 100

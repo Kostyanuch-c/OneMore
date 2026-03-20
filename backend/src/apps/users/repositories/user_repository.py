@@ -16,26 +16,8 @@ class UserRepository:
     EMAIL_CONSTRAINT = 'uniq_user_email_when_present'
     USERNAME_CONSTRAINT = 'uniq_user_username'
 
-    def is_username_free(
-        self,
-        username: str,
-        user_id: int | None = None,
-    ) -> bool:
-        return not self.user_model.objects.filter(
-            Q(username=username) & ~Q(id=user_id),
-        ).exists()
-
-    def is_email_free(self, email: str) -> bool:
-        return not self.user_model.objects.filter(email__iexact=email).exists()
-
     def get_users_count(self, filters: Q | None = None) -> int:
         return self.user_model.objects.filter(filters or Q()).count()
-
-    def get_all_users(self) -> list[UserEntity]:
-        return [
-            self.converter.to_entity(user)
-            for user in self.user_model.objects.all()
-        ]
 
     def get_users_list(
         self, filters: Q, limit: int, offset: int
@@ -47,15 +29,14 @@ class UserRepository:
             ]
         ]
 
-    def get_user_by_id(self, user_id: int) -> UserEntity:
-        return self.converter.to_entity(
-            self.user_model.objects.get(id=user_id),
-        )
+    def get_user_by_email(
+        self, *, email: str, include_inactive: bool = False
+    ) -> UserEntity | None:
+        query = Q(email__iexact=email)
+        if not include_inactive:
+            query &= Q(is_active=True)
 
-    def get_user_by_email(self, email: str) -> UserEntity | None:
-        user = self.user_model.objects.filter(
-            email__iexact=email, is_active=True
-        ).first()
+        user = self.user_model.objects.filter(query).first()
         if user:
             return self.converter.to_entity(user)
         return None
@@ -88,6 +69,3 @@ class UserRepository:
 
         user_instance.save()
         return self.converter.to_entity(user_instance)
-
-    def delete_object(self, user_id: int) -> None:
-        self.user_model.objects.filter(id=user_id).delete()

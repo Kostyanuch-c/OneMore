@@ -9,6 +9,11 @@ install:
 build:
 	@uv sync --no-dev
 
+.PHONY: superuser
+superuser:
+	@$(MANAGE) createsuperuser
+
+
 .PHONY: create_migrations
 create_migrations:
 	@$(MANAGE) makemigrations

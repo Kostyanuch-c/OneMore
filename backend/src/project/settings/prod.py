@@ -36,3 +36,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 #         "LOCATION": "redis://127.0.0.1:6379/1",
 #     }
 # }
+
+
+EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
+ANYMAIL = {
+    "POSTMARK_SERVER_TOKEN": os.getenv('POSTMARK_TOKEN'),
+}

@@ -1,5 +1,5 @@
 from ninja import Query, Router
-from ninja.security import SessionAuthIsStaff  # type: ignore # noqa
+from ninja.security import django_auth_is_staff
 
 from django.http import HttpRequest
 
@@ -12,22 +12,29 @@ from apps.users.services import UserService
 from apps.users.use_cases import GetOrCreateUser, SearchUsers
 
 
-router = Router(tags=['admin'], auth=SessionAuthIsStaff())
+router = Router(tags=['admin'], auth=django_auth_is_staff)
 
 
 @router.post(
     '/user',
-    response=ApiResponse[UserOutSchema],
+    response={
+        201: ApiResponse[UserOutSchema],
+        200: ApiResponse[UserOutSchema],
+    },
 )
-def create_user_view(
+def get_or_create_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
-) -> ApiResponse[UserOutSchema]:
-    user = GetOrCreateUser(
+) -> tuple[int, ApiResponse[UserOutSchema]]:
+
+    user, created = GetOrCreateUser(
         service=UserService(),
-        create_data=payload,
+        email=payload.email,
     )()
-    return ApiResponse.success(data=UserOutSchema.from_entity(user))
+    return (
+        201 if created else 200,
+        ApiResponse.success(data=UserOutSchema.from_entity(user)),
+    )
 
 
 @router.get(
@@ -42,7 +49,8 @@ def get_user_list(
     users_page = SearchUsers(
         service=UserService(),
         filters=UserFilters(**filters.dict()),
-        pagination=pagination_in,
+        offset=pagination_in.offset,
+        limit=pagination_in.limit,
     )()
 
     pagination_out = PaginationOut(

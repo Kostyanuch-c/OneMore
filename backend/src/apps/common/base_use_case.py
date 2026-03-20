@@ -5,7 +5,7 @@ from typing import Any
 
 class BaseUseCase(metaclass=ABCMeta):
     """This is a template of a base use case.
-    All use cases in the app should follow this rules:
+    All use cases in the app should follow this rule:
       * Input variables should be done at the __init__ phase
       * Use case should implement a single entrypoint without arguments
     """

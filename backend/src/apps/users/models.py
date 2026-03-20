@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Q
@@ -13,9 +14,7 @@ class Role(models.TextChoices):
 
 
 class User(AbstractUser):
-    uuid = models.UUIDField(
-        db_index=True, unique=True, default=uuid.uuid4, editable=False
-    )
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     username = models.CharField(
         verbose_name='Имя пользователя', max_length=150
     )
@@ -28,11 +27,10 @@ class User(AbstractUser):
 
     @property
     def full_name(self) -> str:
-        """Returns the user full name."""
-        return f'{self.first_name} {self.last_name}'
+        return self.get_full_name()
 
     def __str__(self) -> str:
-        return self.username
+        return self.username[: settings.MAX_STR_LENGTH]
 
     class Meta:
         ordering = ['-date_joined']
@@ -47,8 +45,4 @@ class User(AbstractUser):
                 condition=Q(email__isnull=False),
                 name='uniq_user_email_when_present',
             ),
-        ]
-        indexes = [
-            models.Index(fields=['date_joined']),
-            models.Index(fields=['email']),
         ]

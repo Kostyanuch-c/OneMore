@@ -21,11 +21,12 @@ router = Router(tags=['profile'], auth=SessionAuth())
     response=ApiResponse[UserOutSchema],
 )
 def update_user_view(
-        request: HttpRequest,
-        payload: UserUpdateSchema,
+    request: HttpRequest,
+    payload: UserUpdateSchema,
 ) -> ApiResponse[UserOutSchema]:
     user = UpdateUser(
         service=UserService(),
-        update_data=payload,
+        user_id=payload.user_id,
+        update_data=payload.dict(exclude={'user_id'}, exclude_none=True),
     )()
     return ApiResponse.success(data=UserOutSchema.from_entity(user))

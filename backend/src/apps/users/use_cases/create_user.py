@@ -1,9 +1,6 @@
 import uuid
 from dataclasses import dataclass
 
-from django.utils.functional import cached_property
-
-from api.v1.profile.schemas import UserInputSchema
 from apps.common import BaseUseCase
 from apps.users.entities import UserEntity
 from apps.users.services import UserService
@@ -12,17 +9,20 @@ from apps.users.services import UserService
 @dataclass
 class GetOrCreateUser(BaseUseCase):
     service: UserService
-    create_data: UserInputSchema
+    email: str
 
-    @cached_property
+    @property
     def username(self) -> str:
-        return self.create_data.email or str(uuid.uuid4())
+        return f"{self.email.split('@', 1)[0][:50]}_{uuid.uuid4().hex[:12]}"
 
-    def act(self) -> UserEntity:
-        existing_user = self.service.get_user_by_email(self.create_data.email)
+    def act(self) -> tuple[UserEntity, bool]:
+        existing_user = self.service.get_user_by_email(
+            email=self.email, include_inactive=True
+        )
         if existing_user is not None:
-            return existing_user
+            return existing_user, False
 
-        return self.service.create_user(
-            username=self.username, email=self.create_data.email
+        return (
+            self.service.create_user(username=self.username, email=self.email),
+            True,
         )

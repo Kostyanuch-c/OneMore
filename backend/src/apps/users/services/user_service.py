@@ -4,7 +4,6 @@ from typing import Any, Concatenate
 
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import Http404
 
 from apps.common.utils import constraint_name
 from apps.users.entities import (
@@ -12,11 +11,9 @@ from apps.users.entities import (
 )
 from apps.users.excepions.users import (
     EmailAlreadyExistsError,
-    UserEmailNotFoundError,
     UserNameAlreadyExistsError,
 )
 from apps.users.filters import UserFilters
-from apps.users.models import User
 from apps.users.repositories.user_repository import UserRepository
 
 
@@ -43,7 +40,10 @@ class UserService:
     repository = UserRepository()
 
     def _build_user_query(self, filters: UserFilters) -> Q:
-        query = Q(is_active=filters.is_active)
+        query = Q()
+
+        if filters.is_active is not None:
+            query &= Q(is_active=filters.is_active)
 
         if filters.search:
             query &= (
@@ -73,20 +73,12 @@ class UserService:
             limit=limit,
         )
 
-    def get_all_objects(self) -> list[UserEntity]:
-        return self.repository.get_all_users()
-
-    def get_user(self, user_id: int) -> UserEntity:
-        try:
-            return self.repository.get_user_by_id(user_id)
-        except User.DoesNotExist:
-            raise Http404
-
-    def get_user_by_email(self, email: str) -> UserEntity | None:
-        try:
-            return self.repository.get_user_by_email(email)
-        except User.DoesNotExist:
-            raise UserEmailNotFoundError
+    def get_user_by_email(
+        self, *, email: str, include_inactive: bool = False
+    ) -> UserEntity | None:
+        return self.repository.get_user_by_email(
+            email=email, include_inactive=include_inactive
+        )
 
     @map_user_integrity_errors
     def create_user(self, username: str, email: str) -> UserEntity:
@@ -106,7 +98,3 @@ class UserService:
         return self.repository.update_user(
             user_id=user_id, user_data=user_data
         )
-
-    def delete_user(self, user_id: int) -> None:
-
-        return self.repository.delete_object(user_id)
