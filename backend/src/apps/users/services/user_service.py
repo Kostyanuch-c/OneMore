@@ -1,43 +1,43 @@
-from collections.abc import Callable
-from functools import wraps
-from typing import Any, Concatenate
+from typing import Any
 
 from django.db import IntegrityError
 from django.db.models import Q
 
-from apps.common.utils import constraint_name
 from apps.users.entities import (
     UserEntity,
 )
 from apps.users.excepions.users import (
     EmailAlreadyExistsError,
+    UserCreateConflictError,
     UserNameAlreadyExistsError,
 )
 from apps.users.filters import UserFilters
 from apps.users.repositories.user_repository import UserRepository
 
 
-def map_user_integrity_errors[**P, R](
-    method: Callable[Concatenate[UserService, P], R],
-) -> Callable[Concatenate[UserService, P], R]:
-    @wraps(method)
-    def wrapper(self: UserService, *args: P.args, **kwargs: P.kwargs) -> R:
-        try:
-            return method(self, *args, **kwargs)
-        except IntegrityError as e:
-            cname = constraint_name(e)
-            if cname == self.repository.EMAIL_CONSTRAINT:
-                raise EmailAlreadyExistsError from e
-            if cname == self.repository.USERNAME_CONSTRAINT:
-                raise UserNameAlreadyExistsError from e
-
-            raise
-
-    return wrapper  # type: ignore
-
-
 class UserService:
     repository = UserRepository()
+
+    @staticmethod
+    def _detect_user_conflict_field(exc: IntegrityError) -> str | None:
+        cause = exc.__cause__
+
+        diag = getattr(cause, 'diag', None)
+        constraint_name = getattr(diag, 'constraint_name', None)
+        if constraint_name:
+            lowered = constraint_name.lower()
+            if 'email' in lowered:
+                return 'email'
+            if 'username' in lowered:
+                return 'username'
+
+        message = str(exc).lower()
+        if 'email' in message:
+            return 'email'
+        if 'username' in message:
+            return 'username'
+
+        return None
 
     def _build_user_query(self, filters: UserFilters) -> Q:
         query = Q()
@@ -80,21 +80,35 @@ class UserService:
             email=email, include_inactive=include_inactive
         )
 
-    @map_user_integrity_errors
     def create_user(self, username: str, email: str) -> UserEntity:
+        try:
+            return self.repository.create_user(
+                username=username,
+                email=email,
+            )
+        except IntegrityError as e:
+            field = self._detect_user_conflict_field(e)
 
-        return self.repository.create_user(
-            username=username,
-            email=email,
-        )
+            if field == 'email':
+                raise EmailAlreadyExistsError from e
 
-    @map_user_integrity_errors
+            if field == 'username':
+                raise UserNameAlreadyExistsError from e
+
+            raise UserCreateConflictError from e
+
     def update_user(
         self,
         user_id: int,
         user_data: dict[str, Any],
     ) -> UserEntity:
 
-        return self.repository.update_user(
-            user_id=user_id, user_data=user_data
-        )
+        try:
+            return self.repository.update_user(
+                user_id=user_id,
+                user_data=user_data,
+            )
+        except IntegrityError as e:
+            if 'username' in user_data:
+                raise UserNameAlreadyExistsError from e
+            raise

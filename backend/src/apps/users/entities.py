@@ -10,5 +10,4 @@ class UserEntity:
     last_name: str | None
     full_name: str | None
     email: str
-    role: str
     created_at: datetime

@@ -9,9 +9,13 @@ from api.filters import PaginationIn, PaginationOut
 from api.schemas import ApiResponse, ListPaginationResponse
 from api.v1.profile.filters import UserFiltersIn
 from api.v1.profile.schemas import UserInputSchema, UserOutSchema
+from api.v1.utils import get_authenticated_user
+from apps.a12n.services import CodeService
+from apps.access.services import TutorStudentMembershipService
 from apps.users.filters import UserFilters
 from apps.users.services import UserService
-from apps.users.use_cases import GetOrCreateUser, SearchUsers
+from apps.users.use_cases import SearchUsers
+from apps.users.use_cases.create_user import InviteUser
 
 
 router = Router(tags=['admin'], auth=django_auth_is_staff)
@@ -24,14 +28,20 @@ router = Router(tags=['admin'], auth=django_auth_is_staff)
         HTTPStatus.OK: ApiResponse[UserOutSchema],
     },
 )
-def get_or_create_user_view(
+def invite_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
 ) -> tuple[int, ApiResponse[UserOutSchema]]:
 
-    user, created = GetOrCreateUser(
-        service=UserService(),
-        email=payload.email,
+    tutor = get_authenticated_user(request)
+
+    user, created = InviteUser(
+        user_service=UserService(),
+        code_service=CodeService(),
+        tutor_user_membership_service=TutorStudentMembershipService(),
+        student_email=payload.email,
+        tutor_email=tutor.email,
+        tutor_id=tutor.id,
     )()
     return (
         HTTPStatus.CREATED if created else HTTPStatus.OK,

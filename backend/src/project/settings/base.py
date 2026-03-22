@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.a12n.apps.A12nConfig',
     'apps.users.apps.UserConfig',
     'apps.problems.apps.ProblemsConfig',
+    'apps.access.apps.AccessConfig',
     'anymail',
 ]
 
@@ -143,11 +144,73 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-APP_DOMAIN = os.getenv("APP_DOMAIN", default="http://localhost:8000")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOG_LEVEL = 'DEBUG'
+LOG_FORMAT = (
+    '[%(asctime)s] #%(levelname)-8s %(filename)s:'
+    '%(lineno)d - %(name)s - %(message)s'
+)
+LOG_DIR = BASE_DIR / 'logs'
+LOG_FILE_NAME = 'app.log'
+LOG_MAX_BYTES = 10 * 1024 * 1024
+LOG_BACKUP_COUNT = 5
+LOG_ENCODING = 'utf-8'
+
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': LOG_FORMAT,
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stdout',
+            'formatter': 'default',
+            'level': LOG_LEVEL,
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(LOG_DIR / LOG_FILE_NAME),
+            'maxBytes': LOG_MAX_BYTES,
+            'backupCount': LOG_BACKUP_COUNT,
+            'encoding': LOG_ENCODING,
+            'formatter': 'default',
+            'level': LOG_LEVEL,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.db.backends.base': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'apps': {
+            'handlers': ['console', 'file'],
+            'level': LOG_LEVEL,
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': LOG_LEVEL,
+    },
+}
+
+APP_DOMAIN = os.getenv("APP_DOMAIN", default="http://localhost:8000")
 
 DEFAULT_FROM_EMAIL = os.getenv('POSTMARK_SENDER', default='no-reply@example.com')
 EMAIL_CODE_TTL_SECONDS = 300

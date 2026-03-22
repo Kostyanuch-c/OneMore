@@ -24,3 +24,9 @@ class EmailAlreadyExistsError(UserServiceError):
     message: str = 'User with this email already exists'
     extra: dict[str, Any] = field(default_factory=lambda: {'field': 'email'})
     status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class UserCreateConflictError(UserServiceError):
+    message: str = 'User create conflict by unique constraint'
+    status_code: int = HTTPStatus.CONFLICT

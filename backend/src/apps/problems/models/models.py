@@ -10,6 +10,7 @@ from apps.common.models import BaseTimedModel
 from project.settings import MAX_STR_LENGTH
 
 
+# TODO change on settings AUTH_USER_MODEL
 User = get_user_model()
 
 

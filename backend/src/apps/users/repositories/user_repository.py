@@ -13,9 +13,6 @@ class UserRepository:
     user_model = get_user_model()
     converter = UserConverter
 
-    EMAIL_CONSTRAINT = 'uniq_user_email_when_present'
-    USERNAME_CONSTRAINT = 'uniq_user_username'
-
     def get_users_count(self, filters: Q | None = None) -> int:
         return self.user_model.objects.filter(filters or Q()).count()
 
