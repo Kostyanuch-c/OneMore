@@ -5,7 +5,7 @@ from functools import partial
 
 from django.db import transaction
 
-from apps.a12n.services import CodeService
+from apps.a12n.services import AuthEmailService
 from apps.access.exceptions import TutorSelfInviteError
 from apps.access.services import TutorStudentMembershipService
 from apps.common import BaseUseCase
@@ -17,7 +17,7 @@ from apps.users.services import UserService
 class InviteUser(BaseUseCase):
     user_service: UserService
     tutor_user_membership_service: TutorStudentMembershipService
-    code_service: CodeService
+    code_service: AuthEmailService
     student_email: str
     tutor_email: str
     tutor_id: int
@@ -36,7 +36,7 @@ class InviteUser(BaseUseCase):
             # TODO сделать тест on commit
             transaction.on_commit(
                 partial(
-                    self.code_service.send_invite_link,  # type: ignore
+                    self.code_service.send_invite_link,
                     email=self.student_email,
                 ),
                 robust=True,

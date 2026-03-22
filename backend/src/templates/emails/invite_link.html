@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ site_name }} — добро пожаловать!</title>
+  </head>
+
+  <body style="margin:0;padding:0;background:#0f172a;">
+    <div style="padding:28px 16px;">
+      <div style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:14px;padding:26px;border:1px solid #e6e8ee;">
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;color:#475569;font-family:Arial,sans-serif;">
+            {{ site_name }}
+          </div>
+          <h2 style="margin:8px 0 0 0;font-family:Arial,sans-serif;color:#0f172a;">
+            Добро пожаловать!
+          </h2>
+        </div>
+
+        <p style="margin:0 0 14px 0;color:#334155;font-family:Arial,sans-serif;">
+          Вас пригласили на сайт <strong>{{ site_name }}</strong>. Чтобы завершить регистрацию и войти в свой аккаунт, перейдите по ссылке ниже:
+        </p>
+
+        <div style="margin: 24px 0;">
+          <a href="{{ link }}" style="
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+          ">
+            Перейти на сайт
+          </a>
+        </div>
+
+        <p style="margin:0;color:#64748b;font-size:12px;font-family:Arial,sans-serif;">
+          Если кнопка выше не работает, скопируйте и вставьте эту ссылку в адресную строку браузера:<br>
+          <a href="{{ link }}" style="color:#2563eb; word-break: break-all;">{{ link }}</a>
+        </p>
+
+        <p style="margin:16px 0 0 0;color:#64748b;font-size:12px;font-family:Arial,sans-serif;">
+          Ссылка действует {{ ttl_minutes }} минут. Если вы получили это письмо по ошибке — просто игнорируйте его.
+        </p>
+
+        <hr style="border:none;border-top:1px solid #eef0f4;margin:22px 0;" />
+
+        <div style="color:#94a3b8;font-size:11px;line-height:1.45;font-family:Arial,sans-serif;">
+          <div>Отправитель: {{ sender_name }}</div>
+          <div>Поддержка: {{ support_email }}</div>
+          <div style="margin-top:6px;">
+            Пожалуйста, не отвечайте на это письмо — если нужна помощь, напишите в поддержку.
+          </div>
+        </div>
+      </div>
+
+      <div style="max-width:520px; margin: 16px auto 0; text-align: center; color: #64748b; font-size: 11px; font-family:Arial,sans-serif;">
+        © {% now "Y" %} {{ site_name }}. Все права защищены.
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -10,7 +10,7 @@ from api.schemas import ApiResponse, ListPaginationResponse
 from api.v1.profile.filters import UserFiltersIn
 from api.v1.profile.schemas import UserInputSchema, UserOutSchema
 from api.v1.utils import get_authenticated_user
-from apps.a12n.services import CodeService
+from apps.a12n.services import AuthEmailService
 from apps.access.services import TutorStudentMembershipService
 from apps.users.filters import UserFilters
 from apps.users.services import UserService
@@ -37,7 +37,7 @@ def invite_user_view(
 
     user, created = InviteUser(
         user_service=UserService(),
-        code_service=CodeService(),
+        code_service=AuthEmailService(),
         tutor_user_membership_service=TutorStudentMembershipService(),
         student_email=payload.email,
         tutor_email=tutor.email,

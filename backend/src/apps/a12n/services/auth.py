@@ -3,7 +3,7 @@ from typing import Any, Protocol
 from django.contrib.auth import get_user_model, login
 from django.http import HttpRequest
 
-from .code import CodeService
+from .code import AuthEmailService
 from apps.users.entities import UserEntity
 from apps.users.repositories.converter import UserConverter
 from apps.users.services import UserService
@@ -20,11 +20,11 @@ class SessionLoginStrategy(LoginStrategy):
 
 class AuthService:
     user_service = UserService()
-    code_service = CodeService()
+    code_service = AuthEmailService()
     login_strategy = SessionLoginStrategy()
 
     def authorise(self, email: str) -> None:
-        self.code_service.send_code(email)
+        self.code_service.send_login_code(email)
 
     def confirm(
         self,
@@ -32,7 +32,8 @@ class AuthService:
         email: str,
         code: str,
     ) -> UserEntity | None:
-        self.code_service.verify_code(email, code)
+        # TODO сделать проверку code и добавить обработку ошибок , если пользователь по емайл не найден например
+        self.code_service.verify_login_code(email, code)
         user = get_user_model().objects.get(email=email)
 
         self.login_strategy.login(request, user)

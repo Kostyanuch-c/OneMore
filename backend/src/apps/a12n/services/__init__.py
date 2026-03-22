@@ -1,5 +1,5 @@
 from apps.a12n.services.auth import AuthService
-from apps.a12n.services.code import CodeService
+from apps.a12n.services.code import AuthEmailService
 
 
-__all__ = ['AuthService', 'CodeService']
+__all__ = ['AuthEmailService', 'AuthService']
