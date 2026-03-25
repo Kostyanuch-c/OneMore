@@ -9,6 +9,7 @@ env/
 venv/
 ENV/
 *.sqlite3
+backend/src/logs
 *.log
 .python-version
 

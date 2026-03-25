@@ -14,5 +14,7 @@ class UserConverter:
             last_name=model.last_name,
             full_name=model.full_name,
             email=model.email,
+            is_active=model.is_active,
+            is_staff=model.is_staff,
             created_at=model.date_joined,
         )

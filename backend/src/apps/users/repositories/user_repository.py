@@ -38,17 +38,14 @@ class UserRepository:
             return self.converter.to_entity(user)
         return None
 
-    def create_user(
-        self,
-        username: str,
-        email: str,
-    ) -> UserEntity:
-        return self.converter.to_entity(
-            self.user_model.objects.create(
-                username=username,
-                email=email,
-            ),
+    def create_user(self, username: str, email: str) -> UserEntity:
+        user = self.user_model(
+            username=username,
+            email=email,
         )
+        user.set_unusable_password()
+        user.save()
+        return self.converter.to_entity(user)
 
     def update_user(
         self,

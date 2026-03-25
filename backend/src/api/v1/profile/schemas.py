@@ -35,6 +35,8 @@ class UserOutSchema(Schema):
     full_name: str | None = None
     email: str
     username: str
+    is_active: bool
+    is_staff: bool
     created_at: datetime
 
     @staticmethod
@@ -46,6 +48,8 @@ class UserOutSchema(Schema):
             full_name=entity.full_name,
             email=entity.email,
             username=entity.username,
+            is_active=entity.is_active,
+            is_staff=entity.is_staff,
             created_at=entity.created_at,
         )
 

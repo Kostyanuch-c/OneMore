@@ -46,15 +46,15 @@ pre-commit-run:
 
 .PHONY: format
 format:
-	@uv run ruff format src/apps src/api
+	@uv run ruff format src/apps src/api tests
 
 .PHONY: lint
 lint:
-	@uv run ruff check src/apps src/api
+	@uv run ruff check src/apps src/api tests
 
 .PHONY: lint-fix
 lint-fix:
-	@uv run ruff check --fix --unsafe-fixes src/apps src/api
+	@uv run ruff check --fix --unsafe-fixes src/apps src/api tests
 
 .PHONY: type
 type:

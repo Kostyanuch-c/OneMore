@@ -166,12 +166,8 @@ ninja = ["ninja"]
 pydantic = ["pydantic"]
 
 [tool.ruff.lint.per-file-ignores]
-"*/factory.py" = ["ANN"]
-"*/fixtures.py" = ["ANN"]
-"*/fixtures/*" = ["ANN"]
 "*/management/*" = ["ANN"]
 "*/migrations/*" = ["ANN"]
-"*/tests/*" = ["ANN"]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -201,6 +197,7 @@ markers = [
 module = [
     "tests.*",
     "project.settings",
-    "apps.users.migrations",
+    "*.migrations.*",
+    "*.migrations",
 ]
 ignore_errors = true
