@@ -9,6 +9,7 @@ from api.schemas import (
     ApiResponse,
 )
 from api.v1.profile.schemas import UserOutSchema, UserUpdateSchema
+from api.v1.utils import get_authenticated_user
 from apps.users.services import UserService
 from apps.users.use_cases import UpdateUser
 
@@ -24,9 +25,10 @@ def update_user_view(
     request: HttpRequest,
     payload: UserUpdateSchema,
 ) -> ApiResponse[UserOutSchema]:
+    auth_user = get_authenticated_user(request=request)
     user = UpdateUser(
         service=UserService(),
-        user_id=payload.user_id,
-        update_data=payload.dict(exclude={'user_id'}, exclude_none=True),
+        user_id=auth_user.id,
+        update_data=payload.dict(exclude_none=True),
     )()
     return ApiResponse.success(data=UserOutSchema.from_entity(user))

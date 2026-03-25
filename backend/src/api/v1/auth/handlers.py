@@ -24,7 +24,11 @@ def authorise_view(
     request: HttpRequest, payload: AuthInputSchema
 ) -> ApiResponse[AuthOutSchema]:
     AuthService().authorise(payload.email)
-    return ApiResponse.success(data=AuthOutSchema(ok=True))
+    return ApiResponse.success(
+        data=AuthOutSchema(
+            message='If this email is registered, a confirmation code has been sent'
+        )
+    )
 
 
 @router.post(
@@ -37,7 +41,5 @@ def confirm_view(
     user = AuthService().confirm(
         email=payload.email, code=payload.code, request=request
     )
-    if user is None:
-        raise ValueError('Invalid code')
     user_data = UserOutSchema.from_entity(user)
     return ApiResponse.success(data=ConfirmEmailOutSchema(user=user_data))

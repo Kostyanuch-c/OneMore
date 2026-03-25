@@ -56,7 +56,7 @@ class UserRepository:
         user_data: dict[str, Any],
     ) -> UserEntity:
         user_instance = self.user_model.objects.get(id=user_id)
-
+        # TODO move change password logic in other method
         password = user_data.pop('password', None)
         if password:
             user_instance.set_password(password)

@@ -33,7 +33,7 @@ class UserOutSchema(Schema):
     first_name: str | None = None
     last_name: str | None = None
     full_name: str | None = None
-    email: str | None = None
+    email: str
     username: str
     created_at: datetime
 
@@ -58,10 +58,7 @@ class UserInputSchema(EmailSchema):
 
 
 class UserUpdateSchema(Schema):
-    # Потом здесь вместо user_id будет token и будет расшифровывать и проверять
-    user_id: int
     username: str | None = None
-    password: str | None = None
     first_name: str | None = None
     last_name: str | None = None
 

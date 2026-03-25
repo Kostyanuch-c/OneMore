@@ -7,7 +7,7 @@ class AuthInputSchema(EmailSchema): ...
 
 
 class AuthOutSchema(Schema):
-    ok: bool
+    message: str
 
 
 class ConfirmEmailInputSchema(EmailSchema):

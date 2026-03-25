@@ -64,9 +64,7 @@ class AuthEmailService:
     def send_login_code(self, email: str) -> None:
         cooldown_key = self._login_code_cooldown_key(email)
         if cache.get(cooldown_key):
-            raise ValueError(
-                'Код уже был недавно отправлен. Попробуйте позже.'
-            )
+            return
 
         code = self._generate_code()
 
@@ -93,20 +91,33 @@ class AuthEmailService:
 
     def verify_login_code(self, email: str, code: str) -> bool:
         attempts_key = self._login_code_attempts_key(email)
-        attempts = cache.get(attempts_key, 0)
+        code_key = self._login_code_key(email)
 
-        if attempts >= settings.EMAIL_CODE_MAX_VERIFY_ATTEMPTS:
+        attempts = cache.get(attempts_key, 0)
+        cached_code = cache.get(code_key)
+
+        if not cached_code:
             return False
 
-        cached_code = cache.get(self._login_code_key(email))
-        if cached_code and secrets.compare_digest(cached_code, code):
-            cache.delete(self._login_code_key(email))
+        if attempts >= settings.EMAIL_CODE_MAX_VERIFY_ATTEMPTS:
+            cache.delete(code_key)
+            cache.delete(attempts_key)
+            return False
+
+        if secrets.compare_digest(cached_code, code):
+            cache.delete(code_key)
             cache.delete(attempts_key)
             return True
 
+        attempts += 1
+        if attempts >= settings.EMAIL_CODE_MAX_VERIFY_ATTEMPTS:
+            cache.delete(code_key)
+            cache.delete(attempts_key)
+            return False
+
         cache.set(
             attempts_key,
-            attempts + 1,
+            attempts,
             timeout=settings.EMAIL_CODE_TTL_SECONDS,
         )
         return False
@@ -114,9 +125,7 @@ class AuthEmailService:
     def send_invite_link(self, email: str) -> None:
         cooldown_key = self._invite_email_cooldown_key(email)
         if cache.get(cooldown_key):
-            raise ValueError(
-                'Ссылка уже была недавно отправлена. Попробуйте позже.'
-            )
+            return
 
         token = self._generate_token()
 
@@ -154,4 +163,4 @@ class AuthEmailService:
             return None
 
         cache.delete(cache_key)
-        return payload['email']
+        return payload.get('email')
