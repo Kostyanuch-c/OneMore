@@ -16,7 +16,7 @@ class LoginStrategy(Protocol):
 
 
 class SessionLoginStrategy(LoginStrategy):
-    def login(self, request: HttpRequest, user: Any) -> None:
+    def login(self, request: HttpRequest, user: User) -> None:
         login(request, user)
 
 

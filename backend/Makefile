@@ -62,3 +62,20 @@ type:
 
 .PHONY: check
 check: format lint-fix lint type
+
+
+.PHONY: test
+test:
+	@uv run pytest -s
+
+.PHONY: test-unit
+test-unit:
+	@uv run pytest -m unit
+
+.PHONY: test-integration
+test-integration:
+	@uv run pytest -m integration
+
+.PHONY: test-api
+test-api:
+	@uv run pytest -m api

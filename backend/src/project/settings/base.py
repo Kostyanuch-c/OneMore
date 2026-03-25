@@ -198,11 +198,17 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
+        'faker': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            'propagate': False,
+        },
         'apps': {
             'handlers': ['console', 'file'],
             'level': LOG_LEVEL,
             'propagate': False,
         },
+
     },
     'root': {
         'handlers': ['console', 'file'],

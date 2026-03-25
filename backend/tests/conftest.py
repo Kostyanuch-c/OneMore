@@ -1,0 +1,22 @@
+from django.test import Client
+
+import pytest
+
+from tests.factories.user_factory import UserFactory
+
+
+@pytest.fixture
+def api_client():
+    """Фикстура для Django Ninja клиента."""
+    return Client()
+
+@pytest.fixture
+def user(db):
+    """Фикстура для создания пользователя через фабрику."""
+    return UserFactory()
+
+@pytest.fixture
+def auth_client(api_client, user):
+    """Фикстура для аутентифицированного клиента."""
+    api_client.force_login(user)
+    return api_client
