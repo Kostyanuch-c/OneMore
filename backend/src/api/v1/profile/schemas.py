@@ -37,7 +37,7 @@ class UserOutSchema(Schema):
     username: str
     is_active: bool
     is_staff: bool
-    created_at: datetime
+    date_joined: datetime
 
     @staticmethod
     def from_entity(entity: UserEntity) -> UserOutSchema:
@@ -50,7 +50,7 @@ class UserOutSchema(Schema):
             username=entity.username,
             is_active=entity.is_active,
             is_staff=entity.is_staff,
-            created_at=entity.created_at,
+            date_joined=entity.date_joined,
         )
 
 

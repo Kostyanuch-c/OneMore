@@ -26,6 +26,11 @@ def repository():
 
 
 @pytest.fixture
+def user_model():
+    return get_user_model()
+
+
+@pytest.fixture
 def payload_create():
     return {
         'email': f'{TEST_USER_PREFIX}@example.com',
@@ -34,5 +39,9 @@ def payload_create():
 
 
 @pytest.fixture
-def user_model():
-    return get_user_model()
+def payload_update():
+    return {
+        'username': f'{TEST_USER_PREFIX}_updated_username',
+        'first_name': 'Updated',
+        'last_name': 'User_updated',
+    }

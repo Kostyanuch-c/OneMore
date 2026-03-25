@@ -12,6 +12,7 @@ from apps.users.repositories.converter import UserConverter
 class UserRepository:
     user_model = get_user_model()
     converter = UserConverter
+    updatable_fields = {'username', 'first_name', 'last_name'}
 
     def get_users_count(self, filters: Q | None = None) -> int:
         return self.user_model.objects.filter(filters or Q()).count()
@@ -21,9 +22,9 @@ class UserRepository:
     ) -> list[UserEntity]:
         return [
             self.converter.to_entity(user)
-            for user in self.user_model.objects.filter(filters)[
-                offset : offset + limit
-            ]
+            for user in self.user_model.objects.filter(filters).order_by(
+                '-date_joined'
+            )[offset : offset + limit]
         ]
 
     def get_user_by_email(
@@ -53,12 +54,10 @@ class UserRepository:
         user_data: dict[str, Any],
     ) -> UserEntity:
         user_instance = self.user_model.objects.get(id=user_id)
-        # TODO move change password logic in other method
-        password = user_data.pop('password', None)
-        if password:
-            user_instance.set_password(password)
 
         for key, value in user_data.items():
+            if key not in self.updatable_fields:
+                raise ValueError(f"Field '{key}' is not allowed for update")
             setattr(user_instance, key, value)
 
         user_instance.save()

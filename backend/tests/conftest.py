@@ -22,3 +22,9 @@ def auth_client(api_client, user):
     """Фикстура для аутентифицированного клиента."""
     api_client.force_login(user)
     return api_client
+
+
+@pytest.fixture
+def user_factory():
+    """Фикстура для создания пользователей через фабрику."""
+    return UserFactory

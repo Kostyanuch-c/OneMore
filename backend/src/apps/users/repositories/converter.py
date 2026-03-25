@@ -16,5 +16,5 @@ class UserConverter:
             email=model.email,
             is_active=model.is_active,
             is_staff=model.is_staff,
-            created_at=model.date_joined,
+            date_joined=model.date_joined,
         )

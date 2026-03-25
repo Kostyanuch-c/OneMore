@@ -12,4 +12,4 @@ class UserEntity:
     email: str
     is_active: bool
     is_staff: bool
-    created_at: datetime
+    date_joined: datetime
