@@ -5,17 +5,16 @@ from django.utils import timezone
 from tests.factories.tutor_student_membership import (
     TutorStudentMembershipFactory,
 )
-from tests.factories.user import UserFactory
 
 from apps.access.entities import TutorStudentMembershipEntity
 from apps.access.repositories.converter import TutorStudentMembershipConverter
 
 
-def test_tutor_student_membership_converter_to_entity():
+def test_tutor_student_membership_converter_to_entity(user_factory):
     now = timezone.now()
 
-    tutor = UserFactory.build(id=1)
-    student = UserFactory.build(id=2)
+    tutor = user_factory.build(pk=1)
+    student = user_factory.build(pk=2)
 
     model = TutorStudentMembershipFactory.build(
         pk=1,
@@ -30,8 +29,8 @@ def test_tutor_student_membership_converter_to_entity():
 
     assert isinstance(entity, TutorStudentMembershipEntity)
     assert entity.id == model.pk
-    assert entity.tutor_id == model.tutor.id
-    assert entity.student_id == model.student.id
+    assert entity.tutor_id == model.tutor.pk
+    assert entity.student_id == model.student.pk
     assert entity.is_active == model.is_active
     assert entity.created_at == model.created_at
     assert entity.updated_at == model.updated_at

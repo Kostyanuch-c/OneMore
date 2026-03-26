@@ -6,6 +6,7 @@ from django.utils import timezone
 
 import pytest
 
+from apps.access.models import TutorStudentMembership
 from apps.access.repositories import TutorStudentMembershipRepository
 from apps.users.repositories import UserRepository
 
@@ -29,11 +30,6 @@ def repository():
 
 
 @pytest.fixture
-def tutor_student_membership_repository():
-    return TutorStudentMembershipRepository()
-
-
-@pytest.fixture
 def user_model():
     return get_user_model()
 
@@ -51,7 +47,7 @@ def users(user_factory):
 
 
 @pytest.fixture
-def payload_create():
+def payload_create_user():
     return {
         'email': f'{TEST_USER_PREFIX}@example.com',
         'username': f'{TEST_USER_PREFIX}_username',
@@ -59,9 +55,24 @@ def payload_create():
 
 
 @pytest.fixture
-def payload_update():
+def payload_update_user():
     return {
         'username': f'{TEST_USER_PREFIX}_updated_username',
         'first_name': 'Updated',
         'last_name': 'User_updated',
     }
+
+
+@pytest.fixture
+def tutor_student_membership_repository():
+    return TutorStudentMembershipRepository()
+
+
+@pytest.fixture
+def membership_model():
+    return TutorStudentMembership
+
+
+@pytest.fixture
+def payload_create_membership(user_factory):
+    return user_factory.create(), user_factory.create()

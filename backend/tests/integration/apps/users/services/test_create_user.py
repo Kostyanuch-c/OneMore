@@ -9,11 +9,14 @@ from apps.users.exceptions.users import (
 
 
 def test_create_user_success(
-    user_service, payload_create, user_factory, user_model
+    user_service, payload_create_user, user_factory, user_model
 ):
-    email, username = payload_create['email'], payload_create['username']
+    email, username = (
+        payload_create_user['email'],
+        payload_create_user['username'],
+    )
 
-    user_entity = user_service.create_user(**payload_create)
+    user_entity = user_service.create_user(**payload_create_user)
 
     db_user = user_model.objects.get(email=email)
 

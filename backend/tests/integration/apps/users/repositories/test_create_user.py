@@ -7,10 +7,10 @@ from tests.integration.helpers import (
 )
 
 
-def test_create_user_success(repository, payload_create, user_model):
-    created_user = repository.create_user(**payload_create)
+def test_create_user_success(repository, payload_create_user, user_model):
+    created_user = repository.create_user(**payload_create_user)
 
-    db_user = user_model.objects.get(email=payload_create['email'])
+    db_user = user_model.objects.get(email=payload_create_user['email'])
 
     assert user_model.objects.count() == 1
 
@@ -18,8 +18,8 @@ def test_create_user_success(repository, payload_create, user_model):
         user_entity=created_user,
         db_user=db_user,
         user_id=db_user.id,
-        email=payload_create['email'],
-        username=payload_create['username'],
+        email=payload_create_user['email'],
+        username=payload_create_user['username'],
     )
 
 

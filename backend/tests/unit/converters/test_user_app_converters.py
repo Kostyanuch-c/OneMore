@@ -1,13 +1,11 @@
 from datetime import datetime
 
-from tests.factories.user import UserFactory
-
 from apps.users.entities import UserEntity
 from apps.users.repositories.converter import UserConverter
 
 
-def test_user_converter_to_entity():
-    model = UserFactory.build(
+def test_user_converter_to_entity(user_factory):
+    model = user_factory.build(
         pk=1,
         username='Tes_user',
         first_name='testing',

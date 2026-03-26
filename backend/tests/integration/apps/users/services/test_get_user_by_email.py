@@ -15,14 +15,14 @@ from tests.integration.helpers import assert_user_entity
 def test_get_user_by_email_returns_expected_user_depends_on_include_inactive(
     user_factory,
     user_model,
-    payload_create,
+    payload_create_user,
     user_service,
     is_active,
     include_inactive,
     should_return_user,
 ):
-    email = payload_create['email']
-    username = payload_create['username']
+    email = payload_create_user['email']
+    username = payload_create_user['username']
 
     user_factory.create(
         is_active=is_active,
