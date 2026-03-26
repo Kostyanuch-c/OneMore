@@ -170,3 +170,41 @@ def test_update_user_calls_repository_and_returns_result(mocker, user_service):
         user_id=user_id, user_data=user_data
     )
     assert result is expected_user
+
+
+@pytest.mark.parametrize(
+    ('message', 'expected_field'),
+    [
+        (
+            'duplicate key value violates unique constraint "users_user_email_key"',
+            'email',
+        ),
+        (
+            'duplicate key value violates unique constraint "users_user_username_key"',
+            'username',
+        ),
+        ('some other error', None),
+    ],
+)
+def test_detect_user_conflict_field_by_message(
+    user_service, message, expected_field
+):
+    exc = IntegrityError(message)
+    assert user_service._detect_user_conflict_field(exc) == expected_field
+
+
+def test_detect_user_conflict_field_by_diag(mocker, user_service):
+    diag_mock = mocker.Mock()
+    diag_mock.constraint_name = 'users_user_email_key'
+    cause_mock = Exception()
+    cause_mock.diag = diag_mock
+    exc = IntegrityError('some message')
+    exc.__cause__ = cause_mock
+
+    assert user_service._detect_user_conflict_field(exc) == 'email'
+
+    diag_mock.constraint_name = 'users_user_username_key'
+    assert user_service._detect_user_conflict_field(exc) == 'username'
+
+    diag_mock.constraint_name = 'some_other_key'
+    assert user_service._detect_user_conflict_field(exc) is None

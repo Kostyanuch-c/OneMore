@@ -1,6 +1,8 @@
+from datetime import timedelta
 from pathlib import Path
 
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 import pytest
 
@@ -28,6 +30,18 @@ def repository():
 @pytest.fixture
 def user_model():
     return get_user_model()
+
+
+@pytest.fixture
+def users(user_factory):
+    now = timezone.now()
+    return [
+        user_factory.create(
+            is_active=i < 5,  # noqa
+            date_joined=now - timedelta(minutes=i),
+        )
+        for i in range(15)
+    ]
 
 
 @pytest.fixture

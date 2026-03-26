@@ -1,4 +1,3 @@
-from django.db.models import Q
 
 import pytest
 
@@ -7,44 +6,54 @@ from apps.users.filters import UserFilters
 
 
 @pytest.mark.parametrize(
-    ('filters', 'expected_count', 'limit', 'offset'),
+    ('is_active', 'limit', 'offset', 'expected_count'),
     [
-        (UserFilters(), 10, 10, 0),
-        (UserFilters(), 2, 2, 1),
-        (UserFilters(is_active=True), 1, 1, 0),
-        (UserFilters(is_active=False), 2, 2, 0),
+        (None, 15, 0, 15),
+        (None, 4, 0, 4),
+        (None, 5, 5, 5),
+        (False, 15, 0, 10),
+        (True, 5, 0, 5),
     ],
 )
-def test_get_users_list_returns_users_with_filters_pagination_and_default_sort(
+def test_get_users_list_returns_expected_users(
     user_service,
-    user_factory,
+    users,
     user_model,
+    is_active,
     limit,
     offset,
-    filters,
     expected_count,
 ):
-    user_factory.create_batch(5)
-    user_factory.create_batch(10, is_active=False)
+    filters = UserFilters(is_active=is_active)
 
-    users_entity = user_service.get_users_list(
+    expected_source = users
+    if is_active is not None:
+        expected_source = [
+            user for user in users if user.is_active is is_active
+        ]
+
+    expected_users = expected_source[offset : offset + limit]
+
+    users_list = user_service.get_users_list(
         filters=filters,
         limit=limit,
         offset=offset,
     )
 
-    assert all(isinstance(user, UserEntity) for user in users_entity)
-    assert len(users_entity) == expected_count
-    assert user_model.objects.count() == 15  # noqa
+    assert len(users_list) == expected_count
+    assert all(isinstance(user, UserEntity) for user in users_list)
+    assert [user.id for user in users_list] == [
+        user.id for user in expected_users
+    ]
+    assert user_model.objects.count() == len(users)
 
-    q_filters = Q()
-    if filters.is_active is not None:
-        q_filters &= Q(is_active=filters.is_active)
-
-    db_users = (
-        user_model.objects.filter(q_filters)
-        .order_by('-date_joined')
-        .all()[offset : offset + limit]
+def test_get_users_list_returns_empty_list_when_no_users_match(
+    user_service, users
+):
+    users_list = user_service.get_users_list(
+        filters=UserFilters(search='missing@example.com', is_active=False),
+        limit=10,
+        offset=0,
     )
 
-    assert [user.id for user in users_entity] == [user.id for user in db_users]
+    assert users_list == []

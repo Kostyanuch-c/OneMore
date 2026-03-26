@@ -1,63 +1,61 @@
 from django.db.models import Q
 
+import pytest
+
 from apps.users.entities import UserEntity
 
 
-def test_get_users_list_returns_all_users_with_empty_filters_and_full_limit(
-    repository, user_factory, user_model
+@pytest.mark.parametrize(
+    ('is_active', 'limit', 'offset', 'expected_count'),
+    [
+        (None, 15, 0, 15),
+        (None, 4, 0, 4),
+        (None, 5, 5, 5),
+        (False, 15, 0, 10),
+        (True, 5, 0, 5),
+    ],
+)
+def test_get_users_list_returns_expected_users(
+    repository,
+    users,
+    is_active,
+    limit,
+    offset,
+    expected_count,
+    user_model,
 ):
-    user_factory.create_batch(5)
-    user_factory.create_batch(5, is_active=False)
+    filters = Q()
+    expected_source = users
 
-    users = repository.get_users_list(filters=Q(), limit=10, offset=0)
+    if is_active is not None:
+        filters &= Q(is_active=is_active)
+        expected_source = [
+            user for user in users if user.is_active is is_active
+        ]
 
-    assert len(users) == user_model.objects.count()
-    assert all(isinstance(user, UserEntity) for user in users)
+    expected_users = expected_source[offset : offset + limit]
 
-
-def test_get_users_list_applies_limit(repository, user_factory):
-    limit = 4
-    user_factory.create_batch(10)
-
-    users = repository.get_users_list(filters=Q(), limit=limit, offset=0)
-
-    assert len(users) == limit
-
-
-def test_get_users_list_applies_offset(repository, user_factory):
-    created_users = user_factory.create_batch(15)
-
-    expected_users = sorted(
-        created_users,
-        key=lambda user: user.date_joined,
-        reverse=True,
-    )[5:10]
-
-    users = repository.get_users_list(filters=Q(), limit=5, offset=5)
-
-    assert [user.id for user in users] == [user.id for user in expected_users]
-
-
-def test_get_users_list_applies_filters(repository, user_factory):
-    user_factory.create_batch(3, is_active=True)
-    user_factory.create_batch(4, is_active=False)
-
-    users = repository.get_users_list(
-        filters=Q(is_active=False), limit=10, offset=0
+    users_list = repository.get_users_list(
+        filters=filters,
+        limit=limit,
+        offset=offset,
     )
 
-    assert len(users) == 4  # noqa
-    assert all(user.is_active is False for user in users)
+    assert len(users_list) == expected_count
+    assert all(isinstance(user, UserEntity) for user in users_list)
+    assert [user.id for user in users_list] == [
+        user.id for user in expected_users
+    ]
+    assert user_model.objects.count() == len(users)
 
 
 def test_get_users_list_returns_empty_list_when_no_users_match(
-    repository, user_factory
+    repository, users
 ):
-    user_factory.create_batch(3, is_active=False)
-    users = repository.get_users_list(
-        filters=Q(email='missing.email.com') & Q(is_active=False),
+    users_list = repository.get_users_list(
+        filters=Q(email='missing@example.com') & Q(is_active=False),
         limit=10,
         offset=0,
     )
 
-    assert users == []
+    assert users_list == []
