@@ -1,13 +1,25 @@
+from datetime import (
+    datetime,
+    timezone as dt_timezone,
+)
+
 from django.db import IntegrityError
+from django.db.models import Q
 
 import pytest
 
-from apps.users.excepions.users import (
+from tests.integration.helpers import assert_q_equal
+
+from apps.users.exceptions.users import (
     EmailAlreadyExistsError,
     UserCreateConflictError,
     UserNameAlreadyExistsError,
 )
 from apps.users.filters import UserFilters
+
+
+DATE_FROM = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
+DATE_TO = datetime(2024, 12, 31, tzinfo=dt_timezone.utc)
 
 
 def test_get_users_count_calls_build_query_and_repository(
@@ -173,6 +185,34 @@ def test_update_user_calls_repository_and_returns_result(mocker, user_service):
 
 
 @pytest.mark.parametrize(
+    ('constraint_name', 'expected_field'),
+    [
+        ('users_user_email_key', 'email'),
+        ('users_user_username_key', 'username'),
+        ('some_other_key', None),
+        ('USERS_USER_EMAIL_KEY', 'email'),
+        ('USERS_USER_USERNAME_KEY', 'username'),
+    ],
+)
+def test_detect_user_conflict_field_by_diag(
+    mocker,
+    user_service,
+    constraint_name,
+    expected_field,
+):
+    diag_mock = mocker.Mock()
+    diag_mock.constraint_name = constraint_name
+
+    cause_mock = Exception()
+    cause_mock.diag = diag_mock
+
+    exc = IntegrityError('some message')
+    exc.__cause__ = cause_mock
+
+    assert user_service._detect_user_conflict_field(exc) == expected_field
+
+
+@pytest.mark.parametrize(
     ('message', 'expected_field'),
     [
         (
@@ -183,28 +223,79 @@ def test_update_user_calls_repository_and_returns_result(mocker, user_service):
             'duplicate key value violates unique constraint "users_user_username_key"',
             'username',
         ),
+        ('EMAIL already exists', 'email'),
+        ('USERNAME already exists', 'username'),
         ('some other error', None),
     ],
 )
 def test_detect_user_conflict_field_by_message(
-    user_service, message, expected_field
+    user_service,
+    message,
+    expected_field,
 ):
     exc = IntegrityError(message)
+
     assert user_service._detect_user_conflict_field(exc) == expected_field
 
 
-def test_detect_user_conflict_field_by_diag(mocker, user_service):
+def test_detect_user_conflict_field_falls_back_to_message_when_diag_not_matched(
+    mocker,
+    user_service,
+):
     diag_mock = mocker.Mock()
-    diag_mock.constraint_name = 'users_user_email_key'
+    diag_mock.constraint_name = 'some_other_key'
+
     cause_mock = Exception()
     cause_mock.diag = diag_mock
-    exc = IntegrityError('some message')
+
+    exc = IntegrityError(
+        'duplicate key value violates unique constraint "users_user_email_key"'
+    )
     exc.__cause__ = cause_mock
 
     assert user_service._detect_user_conflict_field(exc) == 'email'
 
-    diag_mock.constraint_name = 'users_user_username_key'
-    assert user_service._detect_user_conflict_field(exc) == 'username'
 
-    diag_mock.constraint_name = 'some_other_key'
-    assert user_service._detect_user_conflict_field(exc) is None
+@pytest.mark.parametrize(
+    ('filters', 'expected_query'),
+    [
+        (UserFilters(), Q()),
+        (UserFilters(is_active=False), Q(is_active=False)),
+        (
+            UserFilters(search='john'),
+            (
+                Q(username__icontains='john')
+                | Q(email__icontains='john')
+                | Q(first_name__icontains='john')
+                | Q(last_name__icontains='john')
+            ),
+        ),
+        (UserFilters(created_from=DATE_FROM), Q(date_joined__gte=DATE_FROM)),
+        (UserFilters(created_to=DATE_TO), Q(date_joined__lte=DATE_TO)),
+        (
+            UserFilters(
+                is_active=True,
+                search='john',
+                created_from=DATE_FROM,
+                created_to=DATE_TO,
+            ),
+            Q(is_active=True)
+            & (
+                Q(username__icontains='john')
+                | Q(email__icontains='john')
+                | Q(first_name__icontains='john')
+                | Q(last_name__icontains='john')
+            )
+            & Q(date_joined__gte=DATE_FROM)
+            & Q(date_joined__lte=DATE_TO),
+        ),
+    ],
+)
+def test_build_user_query_returns_query_with_filters(
+    user_service,
+    filters,
+    expected_query,
+):
+    result = user_service._build_user_query(filters)
+
+    assert_q_equal(result, expected_query)

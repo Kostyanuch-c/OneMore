@@ -6,7 +6,7 @@ from django.db.models import Q
 from apps.users.entities import (
     UserEntity,
 )
-from apps.users.excepions.users import (
+from apps.users.exceptions.users import (
     EmailAlreadyExistsError,
     UserCreateConflictError,
     UserNameAlreadyExistsError,

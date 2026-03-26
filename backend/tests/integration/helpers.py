@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.db.models import Q
+
 from apps.users.entities import UserEntity
 
 
@@ -100,3 +102,9 @@ def serialize_users_for_snapshot(user_model):
             'password',
         )
     )
+
+
+def assert_q_equal(result: Q, expected: Q) -> None:
+    assert result.connector == expected.connector
+    assert result.negated == expected.negated
+    assert result.children == expected.children

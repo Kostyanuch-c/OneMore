@@ -2,7 +2,7 @@ import pytest
 
 from tests.integration.helpers import assert_user_entity_and_model
 
-from apps.users.excepions.users import UserNameAlreadyExistsError
+from apps.users.exceptions.users import UserNameAlreadyExistsError
 
 
 @pytest.mark.parametrize(
