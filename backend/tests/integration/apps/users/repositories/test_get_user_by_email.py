@@ -1,4 +1,4 @@
-from tests.integration.helpers import (
+from tests.integration.utils.user_helpers import (
     assert_user_entity,
     serialize_users_for_snapshot,
 )

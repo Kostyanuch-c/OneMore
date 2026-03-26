@@ -2,7 +2,7 @@ from django.db import IntegrityError
 
 import pytest
 
-from tests.integration.helpers import (
+from tests.integration.utils.user_helpers import (
     assert_user_entity_and_model,
 )
 

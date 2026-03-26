@@ -1,6 +1,6 @@
 import pytest
 
-from tests.integration.helpers import assert_user_entity
+from tests.integration.utils.user_helpers import assert_user_entity
 
 
 @pytest.mark.parametrize(

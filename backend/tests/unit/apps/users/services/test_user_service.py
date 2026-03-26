@@ -8,7 +8,7 @@ from django.db.models import Q
 
 import pytest
 
-from tests.integration.helpers import assert_q_equal
+from tests.integration.utils.user_helpers import assert_q_equal
 
 from apps.users.exceptions.users import (
     EmailAlreadyExistsError,
