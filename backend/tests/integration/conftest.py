@@ -6,6 +6,7 @@ from django.utils import timezone
 
 import pytest
 
+from apps.access.repositories import TutorStudentMembershipRepository
 from apps.users.repositories import UserRepository
 
 
@@ -25,6 +26,11 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture
 def repository():
     return UserRepository()
+
+
+@pytest.fixture
+def tutor_student_membership_repository():
+    return TutorStudentMembershipRepository()
 
 
 @pytest.fixture

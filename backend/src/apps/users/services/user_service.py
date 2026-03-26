@@ -65,12 +65,12 @@ class UserService:
         )
 
     def get_users_list(
-        self, filters: UserFilters, offset: int, limit: int
+        self, filters: UserFilters, limit: int, offset: int
     ) -> list[UserEntity]:
         return self.repository.get_users_list(
             filters=self._build_user_query(filters),
-            offset=offset,
             limit=limit,
+            offset=offset,
         )
 
     def get_user_by_email(

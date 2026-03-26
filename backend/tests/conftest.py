@@ -2,8 +2,12 @@ from django.test import Client
 
 import pytest
 
+from tests.factories.tutor_student_membership import (
+    TutorStudentMembershipFactory,
+)
 from tests.factories.user import UserFactory
 
+from apps.access.services import TutorStudentMembershipService
 from apps.users.services import UserService
 
 
@@ -35,3 +39,18 @@ def user_factory():
 @pytest.fixture
 def user_service():
     return UserService()
+
+
+@pytest.fixture
+def tutor_student_membership_factory():
+    return TutorStudentMembershipFactory
+
+
+@pytest.fixture
+def membership(tutor_student_membership_factory):
+    return tutor_student_membership_factory()
+
+
+@pytest.fixture
+def tutor_student_membership_service():
+    return TutorStudentMembershipService()

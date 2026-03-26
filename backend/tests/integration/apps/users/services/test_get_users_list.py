@@ -1,4 +1,3 @@
-
 import pytest
 
 from apps.users.entities import UserEntity
@@ -46,6 +45,7 @@ def test_get_users_list_returns_expected_users(
         user.id for user in expected_users
     ]
     assert user_model.objects.count() == len(users)
+
 
 def test_get_users_list_returns_empty_list_when_no_users_match(
     user_service, users

@@ -23,8 +23,8 @@ class SearchUsers(BaseUseCase):
         return UsersPage(
             items=self.service.get_users_list(
                 filters=self.filters,
-                offset=self.offset,
                 limit=self.limit,
+                offset=self.offset,
             ),
             total=self.service.get_users_count(filters=self.filters),
         )
