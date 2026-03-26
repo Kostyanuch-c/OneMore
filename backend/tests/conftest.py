@@ -4,6 +4,8 @@ import pytest
 
 from tests.factories.user import UserFactory
 
+from apps.users.services import UserService
+
 
 @pytest.fixture
 def api_client():
@@ -28,3 +30,8 @@ def auth_client(api_client, user):
 def user_factory():
     """Фикстура для создания пользователей через фабрику."""
     return UserFactory
+
+
+@pytest.fixture
+def user_service():
+    return UserService()

@@ -52,6 +52,42 @@ def assert_user_model(
     assert user.has_usable_password() is has_usable_password
 
 
+def assert_user_entity_and_model(
+    *,
+    user_entity: UserEntity,
+    db_user,
+    email: str,
+    username: str,
+    user_id: int | None = None,
+    is_active: bool = True,
+    is_staff: bool = False,
+    has_usable_password: bool = False,
+    first_name: str = '',
+    last_name: str = '',
+) -> None:
+    assert_user_entity(
+        user_entity,
+        user_id=user_id,
+        email=email,
+        username=username,
+        is_active=is_active,
+        is_staff=is_staff,
+        first_name=first_name,
+        last_name=last_name,
+    )
+
+    assert_user_model(
+        db_user,
+        email=email,
+        username=username,
+        is_active=is_active,
+        is_staff=is_staff,
+        has_usable_password=has_usable_password,
+        first_name=first_name,
+        last_name=last_name,
+    )
+
+
 def serialize_users_for_snapshot(user_model):
     return list(
         user_model.objects.order_by('id').values(

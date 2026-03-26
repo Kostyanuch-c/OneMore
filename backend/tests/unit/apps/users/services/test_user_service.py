@@ -1,7 +1,172 @@
-from http import HTTPStatus
+from django.db import IntegrityError
+
+import pytest
+
+from apps.users.excepions.users import (
+    EmailAlreadyExistsError,
+    UserCreateConflictError,
+    UserNameAlreadyExistsError,
+)
+from apps.users.filters import UserFilters
 
 
-def test_fake(auth_client):
-    response = auth_client.get('/api/v1/admin/users')
+def test_get_users_count_calls_build_query_and_repository(
+    mocker, user_service
+):
+    filters = UserFilters(is_active=True)
+    built_query = object()
+    mock_result = 10
+    build_query_mock = mocker.patch.object(
+        user_service,
+        '_build_user_query',
+        return_value=built_query,
+    )
+    repository_mock = mocker.patch.object(
+        user_service.repository,
+        'get_users_count',
+        return_value=mock_result,
+    )
 
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    result = user_service.get_users_count(filters)
+
+    build_query_mock.assert_called_once_with(filters)
+    repository_mock.assert_called_once_with(filters=built_query)
+    assert result == mock_result
+
+
+def test_get_users_list_calls_build_query_and_repository(mocker, user_service):
+    filters = UserFilters(is_active=True)
+    built_query = object()
+    expected_users = [object(), object()]
+    limit = 10
+    offset = 5
+
+    build_query_mock = mocker.patch.object(
+        user_service,
+        '_build_user_query',
+        return_value=built_query,
+    )
+    repository_mock = mocker.patch.object(
+        user_service.repository,
+        'get_users_list',
+        return_value=expected_users,
+    )
+
+    result = user_service.get_users_list(
+        filters=filters, limit=limit, offset=offset
+    )
+
+    build_query_mock.assert_called_once_with(filters)
+    repository_mock.assert_called_once_with(
+        filters=built_query, limit=limit, offset=offset
+    )
+    assert result == expected_users
+
+
+def test_get_user_by_email_calls_repository(mocker, user_service):
+    expected_user = object()
+    email = 'example@mail.ru'
+    include_inactive = False
+
+    mock_repository = mocker.patch.object(
+        user_service.repository,
+        'get_user_by_email',
+        return_value=expected_user,
+    )
+
+    result = user_service.get_user_by_email(
+        email=email,
+        include_inactive=include_inactive,
+    )
+
+    mock_repository.assert_called_once_with(
+        email=email,
+        include_inactive=include_inactive,
+    )
+    assert result is expected_user
+
+
+@pytest.mark.parametrize(
+    ('conflict_field', 'expected_exception'),
+    [
+        ('email', EmailAlreadyExistsError),
+        ('username', UserNameAlreadyExistsError),
+        (None, UserCreateConflictError),
+    ],
+)
+def test_create_user_raises_custom_error_on_integrity_error(
+    mocker,
+    user_service,
+    conflict_field,
+    expected_exception,
+):
+    mocker.patch.object(
+        user_service.repository,
+        'create_user',
+        side_effect=IntegrityError('some unknown integrity error'),
+    )
+    mocker.patch.object(
+        user_service,
+        '_detect_user_conflict_field',
+        return_value=conflict_field,
+    )
+
+    with pytest.raises(expected_exception):
+        user_service.create_user(email='test@test.ru', username='test')
+
+
+def test_create_user_calls_repository_with_correct_data(
+    mocker,
+    user_service,
+):
+    payload = {'email': 'test@test.ru', 'username': 'test'}
+    expected_user = object()
+
+    mock_repository = mocker.patch.object(
+        user_service.repository, 'create_user', return_value=expected_user
+    )
+
+    result = user_service.create_user(**payload)
+
+    mock_repository.assert_called_once_with(**payload)
+    assert result is expected_user
+
+
+@pytest.mark.parametrize(
+    ('field', 'expected_exception'),
+    [
+        ('username', UserNameAlreadyExistsError),
+        ('unknown_field', IntegrityError),
+    ],
+)
+def test_update_user_maps_integrity_error_based_on_user_data(
+    mocker, user_service, field, expected_exception
+):
+    user_data = {field: 'new_value'}
+
+    mocker.patch.object(
+        user_service.repository,
+        'update_user',
+        side_effect=IntegrityError('some unknown integrity error'),
+    )
+
+    with pytest.raises(expected_exception):
+        user_service.update_user(user_id=1, user_data=user_data)
+
+
+def test_update_user_calls_repository_and_returns_result(mocker, user_service):
+    expected_user = object()
+    user_id = 1
+    user_data = {'username': 'new_username'}
+
+    mock_repository = mocker.patch.object(
+        user_service.repository,
+        'update_user',
+        return_value=expected_user,
+    )
+    result = user_service.update_user(user_id=user_id, user_data=user_data)
+
+    mock_repository.assert_called_once_with(
+        user_id=user_id, user_data=user_data
+    )
+    assert result is expected_user

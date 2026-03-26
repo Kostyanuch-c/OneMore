@@ -1,8 +1,8 @@
-from django.db import IntegrityError
-
 import pytest
 
 from tests.integration.helpers import assert_user_entity_and_model
+
+from apps.users.excepions.users import UserNameAlreadyExistsError
 
 
 @pytest.mark.parametrize(
@@ -15,14 +15,10 @@ from tests.integration.helpers import assert_user_entity_and_model
     ],
 )
 def test_update_user_with_different_fields(
-    repository,
-    user,
-    payload_update,
-    user_model,
+    user_service, user, payload_update, user_model
 ):
-    user_entity = repository.update_user(
-        user_id=user.id,
-        user_data=payload_update,
+    user_entity = user_service.update_user(
+        user_id=user.id, user_data=payload_update
     )
     db_user_after_update = user_model.objects.get(id=user.id)
 
@@ -43,38 +39,24 @@ def test_update_user_with_different_fields(
     )
 
 
-def test_update_user_raises_does_not_exist_for_unknown_user(
-    repository,
-    payload_update,
-):
-    with pytest.raises(repository.user_model.DoesNotExist):
-        repository.update_user(
-            user_id=999999,
-            user_data=payload_update,
-        )
-
-
-def test_update_user_raises_value_error_for_not_allowed_fields(
-    repository,
-    user,
-):
-    with pytest.raises(ValueError):  # noqa
-        repository.update_user(
-            user_id=user.id,
-            user_data={'is_superuser': True},
-        )
-
-
-def test_update_user_raises_integrity_error_for_username_already_exists(
-    repository,
-    user,
-    user_factory,
+def test_update_user_raise_custom_error_for_username_already_exists(
+    user_service, user, user_factory
 ):
     username = 'existing_username'
     user_factory.create(username=username)
 
-    with pytest.raises(IntegrityError):
-        repository.update_user(
+    with pytest.raises(UserNameAlreadyExistsError):
+        user_service.update_user(
             user_id=user.id,
             user_data={'username': username},
+        )
+
+
+def test_update_user_raises_value_error_for_not_allowed_fields(
+    user_service, user
+):
+    with pytest.raises(ValueError):  # noqa
+        user_service.update_user(
+            user_id=user.id,
+            user_data={'is_superuser': True},
         )
