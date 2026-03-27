@@ -28,10 +28,10 @@ jobs:
         working-directory: backend
 
     env:
-      SECRET_KEY: "github-actions-secret"
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: "False"
-      POSTMARK_TOKEN: "dummy-token"
-      POSTMARK_SENDER: "noreply@example.com"
+      POSTMARK_TOKEN: ${{ secrets.POSTMARK_TOKEN }}
+      POSTMARK_SENDER: ${{ secrets.POSTMARK_SENDER }}
 
     steps:
       - name: Checkout repository
