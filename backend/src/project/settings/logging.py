@@ -53,7 +53,7 @@ def get_logging_config(
         'django': {
             'handlers': common_handlers,
             'level': 'INFO',
-            'propagate': True,
+            'propagate': False,
         },
         'django.db.backends': {
             'handlers': common_handlers,
