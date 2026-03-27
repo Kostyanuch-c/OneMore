@@ -22,9 +22,8 @@ def get_logging_config(
         log_backup_count: int = LOG_BACKUP_COUNT,
         log_max_bytes: int = LOG_MAX_BYTES,
 ) -> dict[str, Any]:
-    if log_to_file:
-        log_dir = base_dir / 'logs'
-        log_dir.mkdir(parents=True, exist_ok=True)
+
+    common_handlers = ['console']
 
     handlers: dict[str, Any] = {
         'console': {
@@ -34,11 +33,13 @@ def get_logging_config(
             'level': log_level,
         },
     }
-    common_handlers = ['console']
     if log_to_file:
+        log_dir = base_dir / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+
         handlers['file'] = {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(LOG_DIR / log_file_name),
+            'filename': str(log_dir / log_file_name),
             'maxBytes': log_max_bytes,
             'backupCount': log_backup_count,
             'encoding': LOG_ENCODING,
