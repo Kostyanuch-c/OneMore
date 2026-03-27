@@ -46,6 +46,7 @@ ANYMAIL = {
 }
 
 LOGGING = get_logging_config(
+    base_dir=BASE_DIR,
     log_level=os.getenv("LOG_LEVEL", "INFO"),
     log_to_file=os.getenv('LOG_TO_FILE', 'true').lower() == "true",
     log_file_name=os.getenv("LOG_FILE_NAME", "app.log"),
