@@ -1,53 +1,34 @@
-# Next.js & HeroUI Template
+# Frontend
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+Frontend application for the KhimRepetitor platform, built with Next.js.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## Stack
 
-## Technologies Used
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- HeroUI
+- Tailwind CSS 4
+- bun
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
+## Run Locally
 
 ```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
+bun install
+make dev
 ```
 
-### Install dependencies
+Application is available at `http://localhost:3000`.
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+## Main Commands
 
-```bash
-npm install
-```
+- `make dev` - run in development mode.
+- `make build` - build for production.
+- `make start` - start production build.
+- `make lint` - run ESLint with autofix.
 
-### Run the development server
+## Included Features
 
-```bash
-npm run dev
-```
-
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+- Home page with chemistry problem cards.
+- Basic navigation (home, all problems, problem sets).
+- Shared layout with `Navbar` and `Footer`.

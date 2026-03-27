@@ -1,0 +1,10 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  frontend:
+    uses: ./.github/workflows/reusable-frontend-ci.yml

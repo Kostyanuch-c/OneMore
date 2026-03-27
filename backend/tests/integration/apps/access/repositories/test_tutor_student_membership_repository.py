@@ -1,68 +1,73 @@
+
 from django.db.models import Q
 
-from apps.access.entities import TutorStudentMembershipEntity
+import pytest
+
+from tests.integration.utils.access_helpers import (
+    assert_membership_entity,
+    assert_membership_matches_db_model,
+    assert_membership_model,
+)
 
 
 def test_create_membership(
-    tutor_student_membership_repository, user_factory, membership_model
+    tutor_student_membership_repository,
+    user_factory,
+    membership_model,
 ):
     tutor = user_factory()
     student = user_factory()
 
     membership = tutor_student_membership_repository.create(
-        student_id=student.id, tutor_id=tutor.id
+        student_id=student.id,
+        tutor_id=tutor.id,
     )
-    db_membership = membership_model.objects.get(id=membership.id)
-    # TODO вынести в helper
-    assert isinstance(membership, TutorStudentMembershipEntity)
-    assert membership.student_id == student.id
-    assert membership.tutor_id == tutor.id
-    assert membership.is_active is True
-    assert membership.id is not None
+    db_membership = membership_model.objects.get(pk=membership.id)
 
-    assert db_membership.is_active is True
-    assert db_membership.student_id == student.id
-    assert db_membership.tutor_id == tutor.id
-    assert db_membership.created_at is not None
-    assert db_membership.updated_at is not None
-
-    assert db_membership.id == membership.id
-    assert db_membership.created_at == membership.created_at
-    assert db_membership.updated_at == membership.updated_at
+    assert_membership_entity(
+        membership,
+        student_id=student.id,
+        tutor_id=tutor.id,
+    )
+    assert_membership_model(
+        db_membership,
+        student_id=student.id,
+        tutor_id=tutor.id,
+    )
+    assert_membership_matches_db_model(membership, db_membership)
 
     assert membership_model.objects.count() == 1
 
 
-def test_has_active_membership_true(
-    tutor_student_membership_repository, membership
-):
-    assert (
-        tutor_student_membership_repository.has_active_membership(
-            Q(student_id=membership.student.id, tutor_id=membership.tutor.id)
-        )
-        is True
+def exact_membership_query(membership):
+    return Q(
+        student_id=membership.student.id,
+        tutor_id=membership.tutor.id,
     )
 
 
-def test_has_active_membership_false_when_inactive(
-    tutor_student_membership_repository, tutor_student_membership_factory
-):
-    membership = tutor_student_membership_factory(is_active=False)
-
-    assert (
-        tutor_student_membership_repository.has_active_membership(
-            Q(student_id=membership.student.id, tutor_id=membership.tutor.id)
-        )
-        is False
-    )
+def missing_student_query(_membership):
+    return Q(student_id=999999)
 
 
-def test_has_active_membership_false_when_none(
+@pytest.mark.parametrize(
+    ('is_active', 'query_factory', 'expected'),
+    [
+        (True, exact_membership_query, True),
+        (False, exact_membership_query, False),
+        (True, missing_student_query, False),
+    ],
+)
+def test_has_active_membership(
     tutor_student_membership_repository,
+    tutor_student_membership_factory,
+    is_active,
+    query_factory,
+    expected,
 ):
-    assert (
-        tutor_student_membership_repository.has_active_membership(
-            Q(student_id=999)
-        )
-        is False
-    )
+    membership = tutor_student_membership_factory(is_active=is_active)
+
+    query = query_factory(membership)
+    result = tutor_student_membership_repository.has_active_membership(query)
+
+    assert result is expected

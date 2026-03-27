@@ -1,0 +1,24 @@
+name: Deploy (Stub)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  backend:
+    uses: ./.github/workflows/reusable-backend-ci.yml
+
+  frontend:
+    uses: ./.github/workflows/reusable-frontend-ci.yml
+
+  deploy:
+    name: Deploy placeholder
+    needs:
+      - backend
+      - frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder deploy step
+        run: echo "Deploy is not configured yet. Docker/deploy setup will be added later."

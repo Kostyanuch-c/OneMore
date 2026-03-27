@@ -5,6 +5,10 @@ PORT ?= 8000
 install:
 	@uv sync
 
+.PHONY: ci-install
+ci-install:
+	@uv sync --frozen
+
 .PHONY: build
 build:
 	@uv sync --no-dev
@@ -60,10 +64,6 @@ lint-fix:
 type:
 	@MYPYPATH=src uv run mypy src/apps src/api
 
-.PHONY: check
-check: format lint-fix lint type
-
-
 .PHONY: test
 test:
 	@uv run pytest -s
@@ -79,3 +79,13 @@ test-integration:
 .PHONY: test-api
 test-api:
 	@uv run pytest -m api
+
+.PHONY: check
+check: format lint-fix lint type test
+
+.PHONY: ci-migrations-check
+ci-migrations-check:
+	@uv run python src/manage.py makemigrations --check --dry-run
+
+.PHONY: ci-check
+ci-check: ci-migrations-check check

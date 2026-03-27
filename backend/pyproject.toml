@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = ""
+description = "Backend API for the СhemRepetitor chemistry learning platform."
 readme = "README.md"
 requires-python = ">=3.14"
 authors = [{ name = "Konstantin Kiselev", email = "konstantin.kiselev.1998@mail.ru" }]
