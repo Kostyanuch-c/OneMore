@@ -1,6 +1,6 @@
 # Backend
 
-Backend service for the KhimRepetitor platform, built with Django.
+Backend service for the ChemRepetitor platform, built with Django.
 
 ## Stack
 

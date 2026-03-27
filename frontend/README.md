@@ -1,6 +1,6 @@
 # Frontend
 
-Frontend application for the KhimRepetitor platform, built with Next.js.
+Frontend application for the ChemRepetitor platform, built with Next.js.
 
 ## Stack
 

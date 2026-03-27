@@ -4,7 +4,7 @@
 [![Frontend CI](https://github.com/Kostyanuch-c/OneMore/actions/workflows/frontend.yml/badge.svg)](https://github.com/Kostyanuch-c/OneMore/actions/workflows/frontend.yml)
 [![Deploy](https://github.com/Kostyanuch-c/OneMore/actions/workflows/deploy.yml/badge.svg)](https://github.com/Kostyanuch-c/OneMore/actions/workflows/deploy.yml)
 
-Monorepo for the **KhimRepetitor** learning platform.
+Monorepo for the **ChemRepetitor** learning platform.
 
 The project has two parts:
 - `backend/` - Django + Django Ninja API.
