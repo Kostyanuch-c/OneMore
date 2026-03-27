@@ -28,7 +28,6 @@ jobs:
         working-directory: backend
 
     env:
-      GITHUB_WORKFLOW: "true"
       SECRET_KEY: "github-actions-secret"
       DEBUG: "False"
       POSTMARK_TOKEN: "dummy-token"
@@ -47,6 +46,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
+          save-cache: false
           cache-dependency-glob: backend/uv.lock
 
       - name: Install dependencies

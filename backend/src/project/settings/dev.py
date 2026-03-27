@@ -1,4 +1,5 @@
 from .base import *
+from .logging import get_logging_config
 
 DEBUG = True
 
@@ -26,6 +27,11 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+
+LOGGING = get_logging_config(
+    log_level=os.getenv('LOG_LEVEL', 'DEBUG'), # type: ignore
+    log_to_file=False,
+    include_test_loggers=True,
+)
