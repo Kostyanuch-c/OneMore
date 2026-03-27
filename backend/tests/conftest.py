@@ -11,6 +11,12 @@ from apps.access.services import TutorStudentMembershipService
 from apps.users.services import UserService
 
 
+# TODO change all magic int on nonexistent_id
+@pytest.fixture
+def nonexistent_id():
+    return 10**12
+
+
 @pytest.fixture
 def api_client():
     """Фикстура для Django Ninja клиента."""

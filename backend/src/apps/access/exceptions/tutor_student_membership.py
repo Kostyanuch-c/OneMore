@@ -7,12 +7,30 @@ from apps.common.exception import ApplicationError
 
 @dataclass
 class AccessContextError(ApplicationError):
-    message = 'Access context error'
+    message: str = 'Access context error'
 
 
-@dataclass
+@dataclass(eq=False)
 class TutorStudentIntegrityError(AccessContextError):
-    message = 'Unique together tutor-student constraint violation'
+    message: str = 'Invalid tutor-student membership data'
+    extra: dict[str, Any] = field(
+        default_factory=lambda: {'field': ['tutor_id', 'student_id']}
+    )
+    status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class TutorStudentAlreadyExistsError(AccessContextError):
+    message: str = 'Tutor-student membership already exists'
+    extra: dict[str, Any] = field(
+        default_factory=lambda: {'field': ['tutor_id', 'student_id']}
+    )
+    status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class TutorAndStudentMustBeDifferentError(AccessContextError):
+    message: str = 'Tutor and student must be different users'
     extra: dict[str, Any] = field(
         default_factory=lambda: {'field': ['tutor_id', 'student_id']}
     )
@@ -21,7 +39,7 @@ class TutorStudentIntegrityError(AccessContextError):
 
 @dataclass
 class TutorSelfInviteError(AccessContextError):
-    message = 'Tutor cannot invite himself'
+    message: str = 'Tutor cannot invite himself'
     extra: dict[str, Any] = field(
         default_factory=lambda: {
             'field': 'email',

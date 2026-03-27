@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from django.db import IntegrityError
@@ -13,6 +14,9 @@ from apps.users.exceptions.users import (
 )
 from apps.users.filters import UserFilters
 from apps.users.repositories.user_repository import UserRepository
+
+
+logger = logging.getLogger('apps.users.service')
 
 
 class UserService:
@@ -90,11 +94,17 @@ class UserService:
             field = self._detect_user_conflict_field(e)
 
             if field == 'email':
+                logger.warning('User create conflict | field=email')
                 raise EmailAlreadyExistsError from e
 
             if field == 'username':
+                logger.warning('User create conflict | field=username')
                 raise UserNameAlreadyExistsError from e
 
+            logger.exception(
+                'User create failed with integrity error | field=%s',
+                field or 'unknown',
+            )
             raise UserCreateConflictError from e
 
     def update_user(
@@ -110,5 +120,13 @@ class UserService:
             )
         except IntegrityError as e:
             if 'username' in user_data:
+                logger.warning(
+                    'User update conflict | user_id=%s field=username',
+                    user_id,
+                )
                 raise UserNameAlreadyExistsError from e
+            logger.exception(
+                'User update failed with integrity error | user_id=%s field=unknown',
+                user_id,
+            )
             raise

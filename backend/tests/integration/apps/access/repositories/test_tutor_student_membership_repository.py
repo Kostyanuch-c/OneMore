@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.db.models import Q
 
 import pytest
@@ -36,6 +37,51 @@ def test_create_membership(
     assert_membership_matches_db_model(membership, db_membership)
 
     assert membership_model.objects.count() == 1
+
+
+def test_create_membership_raises_integrity_error_on_unique_together_violation(
+    membership,
+    tutor_student_membership_repository,
+):
+    with pytest.raises(IntegrityError):
+        tutor_student_membership_repository.create(
+            student_id=membership.student.id,
+            tutor_id=membership.tutor.id,
+        )
+
+
+def test_create_membership_raises_integrity_error_on_tutor_equals_student(
+    tutor_student_membership_repository, user
+):
+    with pytest.raises(IntegrityError):
+        tutor_student_membership_repository.create(
+            student_id=user.id,
+            tutor_id=user.id,
+        )
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize(
+    ('student_exists', 'tutor_exists'),
+    [
+        (False, True),
+        (True, False),
+    ],
+)
+def test_create_membership_raises_integrity_error_when_user_not_exists(
+    tutor_student_membership_repository,
+    user,
+    student_exists,
+    tutor_exists,
+):
+    student_id = user.id if student_exists else 99999
+    tutor_id = user.id if tutor_exists else 99999
+
+    with pytest.raises(IntegrityError):
+        tutor_student_membership_repository.create(
+            student_id=student_id,
+            tutor_id=tutor_id,
+        )
 
 
 def exact_membership_query(membership):

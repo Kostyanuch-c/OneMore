@@ -9,8 +9,8 @@ class TutorStudentMembershipConverter:
     ) -> TutorStudentMembershipEntity:
         return TutorStudentMembershipEntity(
             id=model.pk,
-            student_id=model.student.id,
-            tutor_id=model.tutor.id,
+            student_id=model.student_id,
+            tutor_id=model.tutor_id,
             is_active=model.is_active,
             created_at=model.created_at,
             updated_at=model.updated_at,

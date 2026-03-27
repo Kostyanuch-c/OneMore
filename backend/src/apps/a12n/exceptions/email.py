@@ -7,7 +7,7 @@ from apps.common.exception import ApplicationError
 
 @dataclass
 class EmailAuthError(ApplicationError):
-    message = 'Email authentication error'
+    message: str = 'Email authentication error'
 
 
 @dataclass

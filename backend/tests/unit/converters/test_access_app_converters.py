@@ -29,8 +29,8 @@ def test_tutor_student_membership_converter_to_entity(user_factory):
 
     assert isinstance(entity, TutorStudentMembershipEntity)
     assert entity.id == model.pk
-    assert entity.tutor_id == model.tutor.pk
-    assert entity.student_id == model.student.pk
+    assert entity.tutor_id == model.tutor_id
+    assert entity.student_id == model.student_id
     assert entity.is_active == model.is_active
     assert entity.created_at == model.created_at
     assert entity.updated_at == model.updated_at

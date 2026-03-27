@@ -1,7 +1,9 @@
 import pytest
 
 from apps.access.entities import TutorStudentMembershipEntity
-from apps.access.exceptions import TutorStudentIntegrityError
+from apps.access.exceptions import (
+    TutorStudentAlreadyExistsError,
+)
 
 
 def test_service_create_membership(
@@ -22,7 +24,7 @@ def test_service_create_membership(
 def test_service_create_membership_raises_integrity_error_on_duplicate(
     tutor_student_membership_service, membership
 ):
-    with pytest.raises(TutorStudentIntegrityError):
+    with pytest.raises(TutorStudentAlreadyExistsError):
         tutor_student_membership_service.create(
             student_id=membership.student.id, tutor_id=membership.tutor.id
         )

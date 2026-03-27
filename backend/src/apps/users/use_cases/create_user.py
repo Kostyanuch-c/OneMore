@@ -1,3 +1,4 @@
+import logging
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -13,6 +14,9 @@ from apps.users.entities import UserEntity
 from apps.users.services import UserService
 
 
+logger = logging.getLogger('apps.users.invite')
+
+
 @dataclass
 class InviteUser(BaseUseCase):
     user_service: UserService
@@ -24,6 +28,11 @@ class InviteUser(BaseUseCase):
 
     def act(self) -> tuple[UserEntity, bool]:
         if (user := self.get_existing_user()) is not None:
+            logger.info(
+                'Invite skipped: user already exists | tutor_id=%s student_id=%s field=email',
+                self.tutor_id,
+                user.id,
+            )
             return user, False
 
         with transaction.atomic():
@@ -41,6 +50,11 @@ class InviteUser(BaseUseCase):
                 ),
                 robust=True,
             )
+            logger.info(
+                'User invited | tutor_id=%s student_id=%s field=email',
+                self.tutor_id,
+                user.id,
+            )
             return user, True
 
     def get_validators(self) -> list[Callable[[], None]]:
@@ -48,6 +62,10 @@ class InviteUser(BaseUseCase):
 
     def validate_not_inviting_self(self) -> None:
         if self.tutor_email == self.student_email:
+            logger.warning(
+                'Tutor attempted to invite self | tutor_id=%s field=email',
+                self.tutor_id,
+            )
             raise TutorSelfInviteError
 
     def get_username(self) -> str:
