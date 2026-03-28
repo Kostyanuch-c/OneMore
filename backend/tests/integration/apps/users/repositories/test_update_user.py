@@ -46,12 +46,11 @@ def test_update_user_with_different_fields(
 
 
 def test_update_user_raises_does_not_exist_for_unknown_user(
-    repository,
-    payload_update_user,
+    repository, payload_update_user, nonexistent_id
 ):
     with pytest.raises(repository.user_model.DoesNotExist):
         repository.update_user(
-            user_id=999999,
+            user_id=nonexistent_id,
             user_data=payload_update_user,
         )
 

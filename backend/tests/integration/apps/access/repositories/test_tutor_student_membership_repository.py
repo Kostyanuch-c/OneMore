@@ -22,7 +22,9 @@ def test_create_membership(
         student_id=student.id,
         tutor_id=tutor.id,
     )
-    db_membership = membership_model.objects.get(pk=membership.id)
+    db_membership = membership_model.objects.get(
+        student_id=student.id, tutor_id=tutor.id
+    )
 
     assert_membership_entity(
         membership,
@@ -73,9 +75,10 @@ def test_create_membership_raises_integrity_error_when_user_not_exists(
     user,
     student_exists,
     tutor_exists,
+    nonexistent_id,
 ):
-    student_id = user.id if student_exists else 99999
-    tutor_id = user.id if tutor_exists else 99999
+    student_id = user.id if student_exists else nonexistent_id
+    tutor_id = user.id if tutor_exists else nonexistent_id
 
     with pytest.raises(IntegrityError):
         tutor_student_membership_repository.create(
