@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.test import Client
 
 import pytest
@@ -9,6 +10,11 @@ from tests.factories.user import UserFactory
 
 from apps.access.services import TutorStudentMembershipService
 from apps.users.services import UserService
+
+
+@pytest.fixture(autouse=True)
+def clear_django_cache():
+    cache.clear()
 
 
 @pytest.fixture

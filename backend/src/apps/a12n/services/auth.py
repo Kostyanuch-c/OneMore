@@ -4,7 +4,7 @@ from typing import Any, Protocol
 from django.contrib.auth import get_user_model, login
 from django.http import HttpRequest
 
-from .code import AuthEmailService
+from .auth_email import AuthEmailService
 from apps.a12n.exceptions.email import InvalidLoginCodeError
 from apps.users.entities import UserEntity
 from apps.users.models import User

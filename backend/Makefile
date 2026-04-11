@@ -17,7 +17,6 @@ build:
 superuser:
 	@$(MANAGE) createsuperuser
 
-
 .PHONY: create_migrations
 create_migrations:
 	@$(MANAGE) makemigrations
@@ -30,14 +29,13 @@ migrate:
 shell:
 	@$(MANAGE) shell_plus --ipython
 
-
 .PHONY: dev
 dev:
 	@uv run uvicorn project.asgi:application --reload --host 0.0.0.0 --port $(PORT) --app-dir src
+
 .PHONY: start
 start:
 	@uv run gunicorn -w 2 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) src.project.asgi:application
-
 
 .PHONY: pre-commit-install
 pre-commit-install:
@@ -46,7 +44,6 @@ pre-commit-install:
 .PHONY: pre-commit-run
 pre-commit-run:
 	@uv run pre-commit run --files $(shell find src/apps src/api -type f -name "*.py")
-
 
 .PHONY: format
 format:
@@ -66,7 +63,7 @@ type:
 
 .PHONY: test
 test:
-	@uv run pytest
+	@uv run pytest $(opts) $(path)
 
 .PHONY: test-unit
 test-unit:

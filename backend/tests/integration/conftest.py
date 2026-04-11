@@ -6,6 +6,7 @@ from django.utils import timezone
 
 import pytest
 
+from apps.a12n.services.auth_email import AuthEmailService
 from apps.access.models import TutorStudentMembership
 from apps.access.repositories import TutorStudentMembershipRepository
 from apps.users.repositories import UserRepository
@@ -76,3 +77,8 @@ def membership_model():
 @pytest.fixture
 def payload_create_membership(user_factory):
     return user_factory.create(), user_factory.create()
+
+
+@pytest.fixture
+def auth_email_service():
+    return AuthEmailService()

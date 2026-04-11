@@ -2,7 +2,7 @@ from django.core.cache import cache
 
 import pytest
 
-from apps.a12n.services.code import AuthEmailService
+from apps.a12n.services.auth_email import AuthEmailService
 
 
 @pytest.fixture
