@@ -1,4 +1,3 @@
-
 import pytest
 
 from tests.integration.utils.access_helpers import (
@@ -85,5 +84,75 @@ def test_service_create_membership_raises_custom_error_when_user_not_exists(
         )
 
 
-# TODO add test for has_active_membership
-# TODO edit test and func in code to return entity
+@pytest.mark.parametrize(
+    ('is_active', 'expected'),
+    [
+        (True, True),
+        (False, False),
+    ],
+)
+def test_service_has_active_membership_good_case(
+    tutor_student_membership_service,
+    tutor_student_membership_factory,
+    is_active,
+    expected,
+):
+    membership = tutor_student_membership_factory(is_active=is_active)
+
+    result = tutor_student_membership_service.has_active_membership(
+        student_id=membership.student.id, tutor_id=membership.tutor.id
+    )
+
+    assert result is expected
+
+
+def test_service_has_active_membership_missing_tutor(
+    tutor_student_membership_service,
+    tutor_student_membership_factory,
+):
+    membership = tutor_student_membership_factory(is_active=True)
+    result = tutor_student_membership_service.has_active_membership(
+        student_id=membership.student.id
+    )
+    assert result is True
+
+
+@pytest.mark.parametrize(
+    ('has_student', 'has_tutor'),
+    [
+        (True, False),
+        (False, True),
+        (False, False),
+    ],
+)
+def test_service_has_active_membership_undefined_tutor_or_student(
+    tutor_student_membership_service,
+    tutor_student_membership_factory,
+    has_student,
+    has_tutor,
+    nonexistent_id,
+):
+
+    membership = tutor_student_membership_factory(is_active=True)
+    student_id = membership.student.id if has_student else nonexistent_id
+    tutor_id = membership.tutor.id if has_tutor else nonexistent_id
+    result = tutor_student_membership_service.has_active_membership(
+        student_id=student_id, tutor_id=tutor_id
+    )
+    assert result is False
+
+
+def test_service_has_active_membership_with_another_tutor(
+    tutor_student_membership_service,
+    tutor_student_membership_factory,
+    user_factory,
+):
+    membership = tutor_student_membership_factory(is_active=True)
+    another_tutor = user_factory()
+
+    result = tutor_student_membership_service.has_active_membership(
+        student_id=membership.student.id,
+        tutor_id=another_tutor.id,
+    )
+
+    assert result is False

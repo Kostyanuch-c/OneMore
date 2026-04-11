@@ -33,7 +33,11 @@ class AuthService:
         return get_user_model().objects.filter(email__iexact=email).first()
 
     def authorise(self, email: str) -> None:
-        logger.info('Login code requested | field=email')
+        if not self._get_user_model_by_email(email):
+            logger.warning('Login code request rejected')
+            return
+
+        logger.info('Login code requested')
         self.code_service.send_login_code(email)
 
     def confirm(

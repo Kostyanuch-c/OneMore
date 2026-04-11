@@ -1,8 +1,11 @@
 from django.db import IntegrityError
-from django.db.models import Q
 
 import pytest
 
+from tests.integration.apps.access.utils import (
+    exact_membership_query,
+    missing_student_query,
+)
 from tests.integration.utils.access_helpers import (
     assert_membership_entity,
     assert_membership_matches_db_model,
@@ -85,17 +88,6 @@ def test_create_membership_raises_integrity_error_when_user_not_exists(
             student_id=student_id,
             tutor_id=tutor_id,
         )
-
-
-def exact_membership_query(membership):
-    return Q(
-        student_id=membership.student.id,
-        tutor_id=membership.tutor.id,
-    )
-
-
-def missing_student_query(_membership):
-    return Q(student_id=999999)
 
 
 @pytest.mark.parametrize(

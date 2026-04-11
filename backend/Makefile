@@ -66,7 +66,7 @@ type:
 
 .PHONY: test
 test:
-	@uv run pytest -s
+	@uv run pytest
 
 .PHONY: test-unit
 test-unit:

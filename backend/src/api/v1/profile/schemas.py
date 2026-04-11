@@ -10,6 +10,8 @@ from django.core.validators import validate_email
 from api.exceptions import EmailMustBeStringError
 from apps.common.utils import normalize_email_strict
 from apps.users.entities import UserEntity
+from apps.users.models import User
+from apps.users.repositories.converter import UserConverter
 
 
 class EmailSchema(Schema):
@@ -52,6 +54,10 @@ class UserOutSchema(Schema):
             is_staff=entity.is_staff,
             date_joined=entity.date_joined,
         )
+
+    @staticmethod
+    def from_model(model: User) -> UserOutSchema:
+        return UserOutSchema.from_entity(UserConverter.to_entity(model))
 
 
 class UserInputSchema(EmailSchema):
