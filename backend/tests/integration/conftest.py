@@ -82,3 +82,7 @@ def payload_create_membership(user_factory):
 @pytest.fixture
 def auth_email_service():
     return AuthEmailService()
+
+@pytest.fixture
+def email() -> str:
+    return 'Test_2321_email@mail.ru'

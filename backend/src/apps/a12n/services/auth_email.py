@@ -41,7 +41,7 @@ class AuthEmailService:
             'site_name': settings.SITE_NAME,
             'site_url': settings.SITE_URL,
             'sender_name': settings.SITE_NAME,
-            'support_email': settings.DEFAULT_FROM_EMAIL,
+            'support_email': settings.SUPPORT_EMAIL,
             **context,
         }
 

@@ -1,3 +1,5 @@
+import sys
+
 from .base import *
 from .logging import get_logging_config
 
@@ -36,3 +38,19 @@ LOGGING = get_logging_config(
     log_to_file=False,
     include_test_loggers=True,
 )
+
+TESTING = "pytest" in sys.modules or "test" in sys.argv
+
+if TESTING:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+        }
+    }

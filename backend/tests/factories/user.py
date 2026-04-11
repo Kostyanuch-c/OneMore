@@ -9,8 +9,8 @@ class UserFactory(DjangoModelFactory):
         model = get_user_model()
         skip_postgeneration_save = True
 
-    username = factory.Faker('user_name')
-    email = factory.Faker('email')
+    username = factory.Sequence(lambda n: f'user{n}')
+    email = factory.Sequence(lambda n: f'user{n}@test.local')
     is_active = True
 
     @factory.post_generation
