@@ -18,7 +18,7 @@ logger = logging.getLogger('apps.users.invite')
 
 
 @dataclass
-class InviteUser(BaseUseCase):
+class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
     user_service: UserService
     tutor_user_membership_service: TutorStudentMembershipService
     code_service: AuthEmailService

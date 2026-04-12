@@ -7,9 +7,7 @@ from apps.users.entities import UserEntity
 
 
 @pytest.mark.parametrize('user', [None, object()])
-def test_auth_service_authorise_with_different_users_cases(
-    auth_service, mocker, email, user
-):
+def test_auth_service_authorise(auth_service, mocker, email, user):
     get_user_mock = mocker.patch.object(
         auth_service,
         '_get_user_model_by_email',

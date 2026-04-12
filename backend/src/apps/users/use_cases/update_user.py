@@ -7,7 +7,7 @@ from apps.users.services import UserService
 
 
 @dataclass
-class UpdateUser(BaseUseCase):
+class UpdateUser(BaseUseCase[UserEntity]):
     service: UserService
     user_id: int
     update_data: dict[str, Any]
