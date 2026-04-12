@@ -42,7 +42,6 @@ class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
             self.tutor_user_membership_service.create(
                 tutor_id=self.tutor_id, student_id=user.id
             )
-            # TODO сделать тест on commit
             transaction.on_commit(
                 partial(
                     self.code_service.send_invite_link,

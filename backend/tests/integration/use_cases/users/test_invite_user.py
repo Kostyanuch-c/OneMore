@@ -1,0 +1,3 @@
+# TODO написасть пару интеграционных тестов вот хороший пример
+# https://pytest-django.readthedocs.io/en/latest/helpers.html#django-capture-on-commit-callbacks
+def test_use_case_invite_user_success_create_and_send_message(): ...
