@@ -17,4 +17,3 @@ def clear_django_cache():
         caches['default'].clear()
         yield
         caches['default'].clear()
-
