@@ -12,7 +12,7 @@ from api.v1.profile.schemas import UserInputSchema, UserOutSchema
 from api.v1.utils import get_authenticated_user
 from apps.a12n.services import AuthEmailService
 from apps.access.services import TutorStudentMembershipService
-from apps.users.filters import UserFilters
+from apps.users.dto import UserFilters
 from apps.users.services import UserService
 from apps.users.use_cases import SearchUsers
 from apps.users.use_cases.create_user import InviteUser

@@ -10,6 +10,7 @@ from api.schemas import (
 )
 from api.v1.profile.schemas import UserOutSchema, UserUpdateSchema
 from api.v1.utils import get_authenticated_user
+from apps.users.dto import UserUpdateDTO
 from apps.users.services import UserService
 from apps.users.use_cases import UpdateUser
 
@@ -29,7 +30,7 @@ def update_user_view(
     updated_user = UpdateUser(
         service=UserService(),
         user_id=auth_user.id,
-        update_data=payload.dict(exclude_none=True),
+        user_data=UserUpdateDTO(**payload.dict()),
     )()
     return ApiResponse.success(data=UserOutSchema.from_entity(updated_user))
 

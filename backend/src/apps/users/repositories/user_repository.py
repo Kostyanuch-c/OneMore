@@ -1,8 +1,7 @@
-from typing import Any
-
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
+from apps.users.dto import UserUpdateDTO
 from apps.users.entities import (
     UserEntity,
 )
@@ -12,7 +11,6 @@ from apps.users.repositories.converter import UserConverter
 class UserRepository:
     user_model = get_user_model()
     converter = UserConverter
-    updatable_fields = {'username', 'first_name', 'last_name'}
 
     def get_users_count(self, filters: Q | None = None) -> int:
         return self.user_model.objects.filter(filters or Q()).count()
@@ -51,13 +49,11 @@ class UserRepository:
     def update_user(
         self,
         user_id: int,
-        user_data: dict[str, Any],
+        user_data: UserUpdateDTO,
     ) -> UserEntity:
         user_instance = self.user_model.objects.get(id=user_id)
 
-        for key, value in user_data.items():
-            if key not in self.updatable_fields:
-                raise ValueError(f"Field '{key}' is not allowed for update")
+        for key, value in user_data.to_update_dict().items():
             setattr(user_instance, key, value)
 
         user_instance.save()

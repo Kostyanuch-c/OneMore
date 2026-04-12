@@ -4,6 +4,8 @@ import pytest
 
 from tests.integration.utils.user_helpers import assert_user_entity_and_model
 
+from apps.users.dto import UserUpdateDTO
+
 
 @pytest.mark.parametrize(
     'payload_update_user',
@@ -22,7 +24,7 @@ def test_update_user_with_different_fields(
 ):
     user_entity = repository.update_user(
         user_id=user.id,
-        user_data=payload_update_user,
+        user_data=UserUpdateDTO(**payload_update_user),
     )
     db_user_after_update = user_model.objects.get(id=user.id)
 
@@ -46,23 +48,13 @@ def test_update_user_with_different_fields(
 
 
 def test_update_user_raises_does_not_exist_for_unknown_user(
-    repository, payload_update_user, nonexistent_id
+    repository,
+    nonexistent_id,
 ):
     with pytest.raises(repository.user_model.DoesNotExist):
         repository.update_user(
             user_id=nonexistent_id,
-            user_data=payload_update_user,
-        )
-
-
-def test_update_user_raises_value_error_for_not_allowed_fields(
-    repository,
-    user,
-):
-    with pytest.raises(ValueError):  # noqa
-        repository.update_user(
-            user_id=user.id,
-            user_data={'is_superuser': True},
+            user_data=UserUpdateDTO(),
         )
 
 
@@ -77,5 +69,5 @@ def test_update_user_raises_integrity_error_for_username_already_exists(
     with pytest.raises(IntegrityError):
         repository.update_user(
             user_id=user.id,
-            user_data={'username': username},
+            user_data=UserUpdateDTO(username=username),
         )

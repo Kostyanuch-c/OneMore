@@ -56,15 +56,6 @@ def payload_create_user():
 
 
 @pytest.fixture
-def payload_update_user():
-    return {
-        'username': f'{TEST_USER_PREFIX}_updated_username',
-        'first_name': 'Updated',
-        'last_name': 'User_updated',
-    }
-
-
-@pytest.fixture
 def tutor_student_membership_repository():
     return TutorStudentMembershipRepository()
 

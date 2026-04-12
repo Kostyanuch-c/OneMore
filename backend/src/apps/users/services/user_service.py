@@ -1,9 +1,9 @@
 import logging
-from typing import Any
 
 from django.db import IntegrityError
 from django.db.models import Q
 
+from apps.users.dto import UserFilters, UserUpdateDTO
 from apps.users.entities import (
     UserEntity,
 )
@@ -12,7 +12,6 @@ from apps.users.exceptions.users import (
     UserCreateConflictError,
     UserNameAlreadyExistsError,
 )
-from apps.users.filters import UserFilters
 from apps.users.repositories.user_repository import UserRepository
 
 
@@ -110,7 +109,7 @@ class UserService:
     def update_user(
         self,
         user_id: int,
-        user_data: dict[str, Any],
+        user_data: UserUpdateDTO,
     ) -> UserEntity:
 
         try:
@@ -119,7 +118,7 @@ class UserService:
                 user_data=user_data,
             )
         except IntegrityError as e:
-            if 'username' in user_data:
+            if user_data.username:
                 logger.warning(
                     'User update conflict | user_id=%s field=username',
                     user_id,

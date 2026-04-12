@@ -1,7 +1,7 @@
 import pytest
 
+from apps.users.dto import UserFilters
 from apps.users.entities import UserEntity
-from apps.users.filters import UserFilters
 
 
 @pytest.mark.parametrize(

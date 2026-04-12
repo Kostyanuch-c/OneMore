@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from apps.common import BaseUseCase
 from apps.common.base_entities import Page
+from apps.users.dto import UserFilters
 from apps.users.entities import UserEntity
-from apps.users.filters import UserFilters
 from apps.users.services import UserService
 
 

@@ -4,7 +4,7 @@ from django.utils import timezone
 
 import pytest
 
-from apps.users.filters import UserFilters
+from apps.users.dto import UserFilters
 
 
 @pytest.mark.parametrize(

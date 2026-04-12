@@ -10,12 +10,12 @@ import pytest
 
 from tests.integration.utils.user_helpers import assert_q_equal
 
+from apps.users.dto import UserFilters, UserUpdateDTO
 from apps.users.exceptions.users import (
     EmailAlreadyExistsError,
     UserCreateConflictError,
     UserNameAlreadyExistsError,
 )
-from apps.users.filters import UserFilters
 
 
 DATE_FROM = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
@@ -154,7 +154,8 @@ def test_create_user_calls_repository_with_correct_data(
 def test_update_user_maps_integrity_error_based_on_user_data(
     mocker, user_service, field, expected_exception
 ):
-    user_data = {field: 'new_value'}
+    username = 'new_username' if field == 'username' else None
+    user_data = UserUpdateDTO(username=username)
 
     mocker.patch.object(
         user_service.repository,
