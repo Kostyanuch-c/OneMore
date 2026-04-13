@@ -2,7 +2,6 @@ import logging
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
-from functools import partial
 
 from django.db import transaction
 
@@ -42,22 +41,33 @@ class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
             self.tutor_user_membership_service.create(
                 tutor_id=self.tutor_id, student_id=user.id
             )
-            transaction.on_commit(
-                partial(
-                    self.code_service.send_invite_link,
-                    email=self.student_email,
-                ),
-                robust=True,
-            )
+
             logger.info(
-                'User invited | tutor_id=%s student_id=%s field=email',
+                'User and membership created | tutor_id=%s student_id=%s field=email',
                 self.tutor_id,
                 user.id,
             )
+
+            transaction.on_commit(
+                func=self.send_invite,
+                robust=True,
+            )
+
+            logger.info(
+                'Invite callback registered | tutor_id=%s student_id=%s field=email',
+                self.tutor_id,
+                user.id,
+            )
+
             return user, True
 
     def get_validators(self) -> list[Callable[[], None]]:
         return [self.validate_not_inviting_self]
+
+    def send_invite(self) -> None:
+        # Оборачиваем в именованную функцию вместо partial для совместимости
+        # с captureOnCommitCallbacks(execute=True) в версиях Django с багом #36487.
+        self.code_service.send_invite_link(email=self.student_email)
 
     def validate_not_inviting_self(self) -> None:
         if self.tutor_email == self.student_email:

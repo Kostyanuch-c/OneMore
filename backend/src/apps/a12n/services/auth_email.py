@@ -1,3 +1,4 @@
+import logging
 import secrets
 from typing import Any
 from urllib.parse import urljoin
@@ -6,6 +7,9 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+
+
+logger = logging.getLogger('apps.a12n.auth_email')
 
 
 class AuthEmailService:
@@ -123,6 +127,7 @@ class AuthEmailService:
         return False
 
     def send_invite_link(self, email: str) -> None:
+        logger.info('Sending invite link ')
         cooldown_key = self._invite_email_cooldown_key(email)
         if cache.get(cooldown_key):
             return

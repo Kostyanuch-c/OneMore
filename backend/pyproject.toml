@@ -168,7 +168,6 @@ ninja = ["ninja"]
 pydantic = ["pydantic"]
 
 [tool.ruff.lint.per-file-ignores]
-"*/management/*" = ["ANN"]
 "*/migrations/*" = ["ANN"]
 
 [tool.mypy]

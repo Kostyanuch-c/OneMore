@@ -8,8 +8,10 @@ from tests.factories.tutor_student_membership import (
 )
 from tests.factories.user import UserFactory
 
+from apps.a12n.services import AuthEmailService
 from apps.access.services import TutorStudentMembershipService
 from apps.users.services import UserService
+from apps.users.use_cases.create_user import InviteUser
 
 
 @pytest.fixture(autouse=True)
@@ -63,5 +65,28 @@ def membership(tutor_student_membership_factory):
 
 
 @pytest.fixture
-def tutor_student_membership_service():
+def tutor_student_membership_service() -> TutorStudentMembershipService:
     return TutorStudentMembershipService()
+
+
+@pytest.fixture
+def auth_email_service() -> AuthEmailService:
+    return AuthEmailService()
+
+
+@pytest.fixture
+def use_case_invite_user(
+    tutor_student_membership_service,
+    user_service,
+    auth_email_service,
+    user_factory,
+) -> InviteUser:
+    tutor = user_factory.create(username='tutor', email='tutor@mail.ru')
+    return InviteUser(
+        user_service=user_service,
+        code_service=auth_email_service,
+        tutor_user_membership_service=tutor_student_membership_service,
+        student_email='new_student_123@mail.com',
+        tutor_email=tutor.email,
+        tutor_id=tutor.id,
+    )
