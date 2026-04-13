@@ -1,59 +1,38 @@
 from contextlib import nullcontext
 
+import pytest
+
+from apps.access.exceptions import TutorSelfInviteError
 from apps.users.entities import UserEntity
 from apps.users.use_cases.create_user import InviteUser
 
 
 def test_use_case_invite_user_called_services(
     mocker,
-    user_service,
-    tutor_student_membership_service,
-    auth_email_service,
-    user_factory,
+    user_service_mock,
+    membership_service_mock,
+    code_service_mock,
+    tutor,
     user_entity,
 ):
-    get_user_by_email_mock = mocker.patch.object(
-        user_service,
-        'get_user_by_email',
-        return_value=None,
-    )
-
     mocker.patch.object(
         InviteUser,
         'get_username',
         return_value=user_entity.username,
     )
 
-    membership_create_mock = mocker.patch.object(
-        tutor_student_membership_service,
-        'create',
-        return_value=object(),
-    )
-
-    create_user_mock = mocker.patch.object(
-        user_service,
-        'create_user',
-        return_value=user_entity,
-    )
-
-    send_invite_link_mock = mocker.patch.object(
-        auth_email_service,
-        'send_invite_link',
-        return_value=None,
-    )
+    user_service_mock.create_user.return_value = user_entity
 
     mocker.patch(
         'django.db.transaction.on_commit',
         side_effect=lambda func, robust: func(),  # noqa: ARG005
     )
-
     mocker.patch('django.db.transaction.atomic', return_value=nullcontext())
-    tutor = user_factory.build(username='tutor')
 
     result = InviteUser(
-        user_service=user_service,
-        code_service=auth_email_service,
-        tutor_user_membership_service=tutor_student_membership_service,
+        user_service=user_service_mock,
+        code_service=code_service_mock,
+        tutor_user_membership_service=membership_service_mock,
         student_email=user_entity.email,
         tutor_email=tutor.email,
         tutor_id=tutor.id,
@@ -65,25 +44,75 @@ def test_use_case_invite_user_called_services(
     assert isinstance(new_user, UserEntity)
     assert new_user.email == user_entity.email
 
-    get_user_by_email_mock.assert_called_once_with(
+    user_service_mock.get_user_by_email.assert_called_once_with(
         email=user_entity.email, include_inactive=True
     )
 
-    create_user_mock.assert_called_once_with(
+    user_service_mock.create_user.assert_called_once_with(
         username=user_entity.username,
         email=user_entity.email,
     )
 
-    membership_create_mock.assert_called_once_with(
+    membership_service_mock.create.assert_called_once_with(
         student_id=user_entity.id,
         tutor_id=tutor.id,
     )
 
-    send_invite_link_mock.assert_called_once_with(email=user_entity.email)
+    code_service_mock.send_invite_link.assert_called_once_with(
+        email=user_entity.email
+    )
+
+
+def test_use_case_invite_user_return_false_if_user_already_exists(
+    user_entity,
+    tutor,
+    user_service_mock,
+    code_service_mock,
+    membership_service_mock,
+):
+    user_service_mock.get_user_by_email.return_value = user_entity
+
+    result = InviteUser(
+        user_service=user_service_mock,
+        code_service=code_service_mock,
+        tutor_user_membership_service=membership_service_mock,
+        student_email=user_entity.email,
+        tutor_email=tutor.email,
+        tutor_id=tutor.id,
+    )()
+
+    user, is_created = result
+    assert user == user_entity
+    assert is_created is False
+    user_service_mock.get_user_by_email.assert_called_once_with(
+        email=user_entity.email, include_inactive=True
+    )
+
+    user_service_mock.create_user.assert_not_called()
+    membership_service_mock.create.assert_not_called()
+    code_service_mock.send_invite_link.assert_not_called()
+
+
+def test_use_case_invite_user_validate_not_inviting_self(
+    user_service_mock, code_service_mock, membership_service_mock
+):
+    similar_email = 'email@mail.com'
+    with pytest.raises(TutorSelfInviteError):
+        InviteUser(
+            user_service=user_service_mock,
+            code_service=code_service_mock,
+            tutor_user_membership_service=membership_service_mock,
+            student_email=similar_email,
+            tutor_email=similar_email,
+            tutor_id=1,
+        )()
+
+    user_service_mock.get_user_by_email.assert_not_called()
+    user_service_mock.create_user.assert_not_called()
+    membership_service_mock.create.assert_not_called()
+    code_service_mock.send_invite_link.assert_not_called()
 
 
 # TODO Дописать тесты на InviteUser
-#  get_user_by_email вернул существующего пользователя;
 #   create_user упал;
 #    membership_service.create упал;
-#       validate_not_inviting_self

@@ -3,7 +3,7 @@ from apps.users.dto import UserFilters
 from apps.users.use_cases import SearchUsers
 
 
-def test_use_case_search_user_calls_service(user_service, mocker, user_entity):
+def test_use_case_search_user_calls_service(user_service_mock, user_entity):
     user_list, total = (
         [user_entity],
         10,
@@ -15,32 +15,23 @@ def test_use_case_search_user_calls_service(user_service, mocker, user_entity):
         total=total,
     )
 
-    get_users_list_mock = mocker.patch.object(
-        user_service,
-        'get_users_list',
-        return_value=user_list,
-    )
-
-    get_users_count_mock = mocker.patch.object(
-        user_service,
-        'get_users_count',
-        return_value=total,
-    )
+    user_service_mock.get_users_list.return_value = user_list
+    user_service_mock.get_users_count.return_value = total
 
     result = SearchUsers(
-        service=user_service,
+        service=user_service_mock,
         filters=filters,
         limit=limit,
         offset=offset,
     )()
 
-    get_users_list_mock.assert_called_once_with(
+    user_service_mock.get_users_list.assert_called_once_with(
         filters=filters,
         limit=limit,
         offset=offset,
     )
 
-    get_users_count_mock.assert_called_once_with(
+    user_service_mock.get_users_count.assert_called_once_with(
         filters=filters,
     )
 

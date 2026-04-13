@@ -4,8 +4,10 @@ from django.utils import timezone
 
 import pytest
 
-from apps.a12n.services import AuthService
+from apps.a12n.services import AuthEmailService, AuthService
+from apps.access.services import TutorStudentMembershipService
 from apps.users.entities import UserEntity
+from apps.users.services import UserService
 
 
 def pytest_collection_modifyitems(config, items):
@@ -40,3 +42,29 @@ def user_entity() -> UserEntity:
         is_staff=False,
         date_joined=timezone.now(),
     )
+
+
+@pytest.fixture
+def tutor(user_factory):
+    return user_factory.build(username='tutor')
+
+
+@pytest.fixture
+def user_service_mock(mocker):
+    mock = mocker.create_autospec(UserService, instance=True)
+    mock.get_user_by_email.return_value = None
+    return mock
+
+
+@pytest.fixture
+def membership_service_mock(mocker):
+    mock = mocker.create_autospec(TutorStudentMembershipService, instance=True)
+    mock.create.return_value = object()
+    return mock
+
+
+@pytest.fixture
+def code_service_mock(mocker):
+    mock = mocker.create_autospec(AuthEmailService, instance=True)
+    mock.send_invite_link.return_value = None
+    return mock
