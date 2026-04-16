@@ -7,42 +7,38 @@ from apps.access.exceptions import TutorStudentIntegrityError
 
 
 def test_service_create_calls_repository(
-    mocker, tutor_student_membership_service
+    membership_repository_mock, tutor_student_membership_service
 ):
     student_id, tutor_id = 1, 2
     expected_membership = object()
 
-    mock_repository = mocker.patch.object(
-        tutor_student_membership_service.repository,
-        'create',
-        return_value=expected_membership,
-    )
+    membership_repository_mock.create.return_value = expected_membership
+    tutor_student_membership_service.repository = membership_repository_mock
 
     result = tutor_student_membership_service.create(
         tutor_id=tutor_id, student_id=student_id
     )
 
-    mock_repository.assert_called_once_with(
+    membership_repository_mock.create.assert_called_once_with(
         student_id=student_id, tutor_id=tutor_id
     )
     assert result is expected_membership
 
 
 def test_service_create_raises_custom_error_on_integrity_error(
-    mocker, tutor_student_membership_service
+    membership_repository_mock, tutor_student_membership_service
 ):
-    mocker.patch.object(
-        tutor_student_membership_service.repository,
-        'create',
-        side_effect=IntegrityError,
+    membership_repository_mock.create.side_effect = IntegrityError(
+        'some error'
     )
+    tutor_student_membership_service.repository = membership_repository_mock
 
     with pytest.raises(TutorStudentIntegrityError):
         tutor_student_membership_service.create(tutor_id=1, student_id=2)
 
 
 def test_service_has_active_membership_calls_repository_with_correct_query(
-    mocker, tutor_student_membership_service
+    mocker, membership_repository_mock, tutor_student_membership_service
 ):
     student_id, tutor_id = 1, 2
     built_query = Q(student_id=student_id) & Q(tutor_id=tutor_id)
@@ -52,11 +48,8 @@ def test_service_has_active_membership_calls_repository_with_correct_query(
         '_build_query',
         return_value=built_query,
     )
-    mock_repository = mocker.patch.object(
-        tutor_student_membership_service.repository,
-        'has_active_membership',
-        return_value=True,
-    )
+    membership_repository_mock.has_active_membership.return_value = True
+    tutor_student_membership_service.repository = membership_repository_mock
 
     result = tutor_student_membership_service.has_active_membership(
         student_id=student_id, tutor_id=tutor_id
@@ -65,5 +58,7 @@ def test_service_has_active_membership_calls_repository_with_correct_query(
     build_query_mock.assert_called_once_with(
         student_id=student_id, tutor_id=tutor_id
     )
-    mock_repository.assert_called_once_with(built_query)
+    membership_repository_mock.has_active_membership.assert_called_once_with(
+        built_query
+    )
     assert result is True

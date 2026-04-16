@@ -2,8 +2,12 @@ from contextlib import nullcontext
 
 import pytest
 
-from apps.access.exceptions import TutorSelfInviteError
+from apps.access.exceptions import (
+    TutorSelfInviteError,
+    TutorStudentAlreadyExistsError,
+)
 from apps.users.entities import UserEntity
+from apps.users.exceptions.users import EmailAlreadyExistsError
 from apps.users.use_cases.create_user import InviteUser
 
 
@@ -113,6 +117,44 @@ def test_use_case_invite_user_validate_not_inviting_self(
     code_service_mock.send_invite_link.assert_not_called()
 
 
-# TODO Дописать тесты на InviteUser
-#   create_user упал;
-#    membership_service.create упал;
+@pytest.mark.parametrize(
+    (
+        'raised_on_user_create',
+        'raised_on_membership_create',
+        'expected_exception',
+    ),
+    [
+        (True, False, EmailAlreadyExistsError),
+        (False, True, TutorStudentAlreadyExistsError),
+    ],
+)
+def test_use_case_invite_user_raise_custom_errors_on_services_errors(
+    code_service_mock,
+    raised_on_user_create,
+    raised_on_membership_create,
+    expected_exception,
+    user_service_mock,
+    membership_service_mock,
+    mocker,
+):
+    if raised_on_user_create:
+        user_service_mock.create_user.side_effect = EmailAlreadyExistsError()
+
+    if raised_on_membership_create:
+        membership_service_mock.create.side_effect = (
+            TutorStudentAlreadyExistsError()
+        )
+
+    mocker.patch('django.db.transaction.atomic', return_value=nullcontext())
+
+    with pytest.raises(expected_exception):
+        InviteUser(
+            user_service=user_service_mock,
+            code_service=code_service_mock,
+            tutor_user_membership_service=membership_service_mock,
+            tutor_id=1,
+            tutor_email='test@mail.ru',
+            student_email='student@mail.com',
+        )()
+
+    code_service_mock.send_invite_link.assert_not_called()

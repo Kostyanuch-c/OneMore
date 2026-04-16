@@ -23,7 +23,7 @@ DATE_TO = datetime(2024, 12, 31, tzinfo=dt_timezone.utc)
 
 
 def test_get_users_count_calls_build_query_and_repository(
-    mocker, user_service
+    mocker, user_repository_mock, user_service
 ):
     filters = UserFilters(is_active=True)
     built_query = object()
@@ -33,20 +33,21 @@ def test_get_users_count_calls_build_query_and_repository(
         '_build_user_query',
         return_value=built_query,
     )
-    repository_mock = mocker.patch.object(
-        user_service.repository,
-        'get_users_count',
-        return_value=mock_result,
-    )
+    user_repository_mock.get_users_count.return_value = mock_result
+    user_service.repository = user_repository_mock
 
     result = user_service.get_users_count(filters)
 
     build_query_mock.assert_called_once_with(filters)
-    repository_mock.assert_called_once_with(filters=built_query)
+    user_repository_mock.get_users_count.assert_called_once_with(
+        filters=built_query
+    )
     assert result == mock_result
 
 
-def test_get_users_list_calls_build_query_and_repository(mocker, user_service):
+def test_get_users_list_calls_build_query_and_repository(
+    mocker, user_repository_mock, user_service
+):
     filters = UserFilters(is_active=True)
     built_query = object()
     expected_users = [object(), object()]
@@ -58,40 +59,35 @@ def test_get_users_list_calls_build_query_and_repository(mocker, user_service):
         '_build_user_query',
         return_value=built_query,
     )
-    repository_mock = mocker.patch.object(
-        user_service.repository,
-        'get_users_list',
-        return_value=expected_users,
-    )
-
+    user_repository_mock.get_users_list.return_value = expected_users
+    user_service.repository = user_repository_mock
     result = user_service.get_users_list(
         filters=filters, limit=limit, offset=offset
     )
 
     build_query_mock.assert_called_once_with(filters)
-    repository_mock.assert_called_once_with(
+    user_repository_mock.get_users_list.assert_called_once_with(
         filters=built_query, limit=limit, offset=offset
     )
     assert result == expected_users
 
 
-def test_get_user_by_email_calls_repository(mocker, user_service):
+def test_get_user_by_email_calls_repository(
+    user_repository_mock, user_service
+):
     expected_user = object()
     email = 'example@mail.ru'
     include_inactive = False
 
-    mock_repository = mocker.patch.object(
-        user_service.repository,
-        'get_user_by_email',
-        return_value=expected_user,
-    )
+    user_repository_mock.get_user_by_email.return_value = expected_user
+    user_service.repository = user_repository_mock
 
     result = user_service.get_user_by_email(
         email=email,
         include_inactive=include_inactive,
     )
 
-    mock_repository.assert_called_once_with(
+    user_repository_mock.get_user_by_email.assert_called_once_with(
         email=email,
         include_inactive=include_inactive,
     )
@@ -109,14 +105,12 @@ def test_get_user_by_email_calls_repository(mocker, user_service):
 def test_create_user_raises_custom_error_on_integrity_error(
     mocker,
     user_service,
+    user_repository_mock,
     conflict_field,
     expected_exception,
 ):
-    mocker.patch.object(
-        user_service.repository,
-        'create_user',
-        side_effect=IntegrityError('some unknown integrity error'),
-    )
+    user_repository_mock.create_user.side_effect = IntegrityError('some error')
+    user_service.repository = user_repository_mock
     mocker.patch.object(
         user_service,
         '_detect_user_conflict_field',
@@ -128,19 +122,18 @@ def test_create_user_raises_custom_error_on_integrity_error(
 
 
 def test_create_user_calls_repository_with_correct_data(
-    mocker,
+    user_repository_mock,
     user_service,
 ):
     payload = {'email': 'test@test.ru', 'username': 'test'}
     expected_user = object()
 
-    mock_repository = mocker.patch.object(
-        user_service.repository, 'create_user', return_value=expected_user
-    )
+    user_repository_mock.create_user.return_value = expected_user
+    user_service.repository = user_repository_mock
 
     result = user_service.create_user(**payload)
 
-    mock_repository.assert_called_once_with(**payload)
+    user_repository_mock.create_user.assert_called_once_with(**payload)
     assert result is expected_user
 
 
@@ -167,19 +160,18 @@ def test_update_user_maps_integrity_error_based_on_user_data(
         user_service.update_user(user_id=1, user_data=user_data)
 
 
-def test_update_user_calls_repository_and_returns_result(mocker, user_service):
+def test_update_user_calls_repository_and_returns_result(
+    user_repository_mock, user_service
+):
     expected_user = object()
     user_id = 1
     user_data = {'username': 'new_username'}
 
-    mock_repository = mocker.patch.object(
-        user_service.repository,
-        'update_user',
-        return_value=expected_user,
-    )
+    user_repository_mock.update_user.return_value = expected_user
+    user_service.repository = user_repository_mock
     result = user_service.update_user(user_id=user_id, user_data=user_data)
 
-    mock_repository.assert_called_once_with(
+    user_repository_mock.update_user.assert_called_once_with(
         user_id=user_id, user_data=user_data
     )
     assert result is expected_user

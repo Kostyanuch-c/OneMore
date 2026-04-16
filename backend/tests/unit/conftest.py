@@ -5,8 +5,10 @@ from django.utils import timezone
 import pytest
 
 from apps.a12n.services import AuthEmailService, AuthService
+from apps.access.repositories import TutorStudentMembershipRepository
 from apps.access.services import TutorStudentMembershipService
 from apps.users.entities import UserEntity
+from apps.users.repositories import UserRepository
 from apps.users.services import UserService
 
 
@@ -47,6 +49,18 @@ def user_entity() -> UserEntity:
 @pytest.fixture
 def tutor(user_factory):
     return user_factory.build(username='tutor')
+
+
+@pytest.fixture
+def membership_repository_mock(mocker):
+    return mocker.create_autospec(
+        TutorStudentMembershipRepository, instance=True
+    )
+
+
+@pytest.fixture
+def user_repository_mock(mocker):
+    return mocker.create_autospec(UserRepository, instance=True)
 
 
 @pytest.fixture
