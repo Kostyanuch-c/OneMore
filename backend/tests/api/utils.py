@@ -16,7 +16,8 @@ API_PAGINATION_RESPONSE_KEYS = set(PaginationOut.model_fields.keys())
 
 
 def assert_api_success_response(
-    response: Any, expected_status: int = HTTPStatus.OK
+    response: Any,
+    expected_status: int = HTTPStatus.OK,
 ) -> None:
     assert response.status_code == expected_status
 
@@ -25,6 +26,24 @@ def assert_api_success_response(
     assert set(body.keys()) == API_RESPONSE_KEYS
     assert body['errors'] == []
     assert isinstance(body['meta'], dict)
+    assert isinstance(body['data'], dict)
+
+
+def assert_api_paginated_success_response(
+    response: Any,
+    expected_status: int = HTTPStatus.OK,
+) -> None:
+    assert_api_success_response(response, expected_status)
+
+    data = response.json()['data']
+
+    assert set(data.keys()) == API_LIST_PAGINATION_RESPONSE_KEYS
+
+    items, pagination = data['items'], data['pagination']
+
+    assert isinstance(items, list)
+    assert isinstance(pagination, dict)
+    assert set(pagination.keys()) == API_PAGINATION_RESPONSE_KEYS
 
 
 def assert_api_failure_response(response: Any, expected_status: int) -> None:
@@ -45,34 +64,20 @@ def assert_api_failure_response(response: Any, expected_status: int) -> None:
 
 
 def get_api_data[T: Schema](response: Any, schema: type[T]) -> T:
-    data = response.json()['data']
-
-    assert isinstance(data, dict)
-
-    return schema.model_validate(data)
+    return schema.model_validate(response.json()['data'])
 
 
 def get_api_paginated_items[T: Schema](
-    response: Any, schema: type[T]
+    response: Any,
+    schema: type[T],
 ) -> list[T]:
-    data = response.json()['data']
-
-    assert isinstance(data, dict)
-    assert set(data.keys()) == API_LIST_PAGINATION_RESPONSE_KEYS
-    items, pagination = data['items'], data['pagination']
-    assert isinstance(items, list)
-    assert isinstance(pagination, dict)
-    assert set(pagination.keys()) == API_PAGINATION_RESPONSE_KEYS
-
-    return [schema.model_validate(item) for item in items]
+    return [
+        schema.model_validate(item)
+        for item in response.json()['data']['items']
+    ]
 
 
-def get_api_errors(response: Any) -> list[dict[str, Any]]:
-    errors = response.json()['errors']
-
-    assert isinstance(errors, list)
-    error = errors[0]
-    assert isinstance(error, dict)
-    assert set(error.keys()) == API_ERROR_KEYS
-
-    return errors
+def get_api_errors(response: Any) -> list[ApiError]:
+    return [
+        ApiError.model_validate(item) for item in response.json()['errors']
+    ]
