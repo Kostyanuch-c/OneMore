@@ -24,15 +24,13 @@ def nonexistent_id():
 
 
 @pytest.fixture
-def user(db):
-    """Фикстура для создания пользователя через фабрику."""
-    return UserFactory()
+def user_factory() -> type[UserFactory]:
+    return UserFactory
 
 
 @pytest.fixture
-def user_factory():
-    """Фикстура для создания пользователей через фабрику."""
-    return UserFactory
+def user(user_factory):
+    return user_factory.create()
 
 
 @pytest.fixture
@@ -41,13 +39,13 @@ def user_service():
 
 
 @pytest.fixture
-def tutor_student_membership_factory():
+def tutor_student_membership_factory() -> type[TutorStudentMembershipFactory]:
     return TutorStudentMembershipFactory
 
 
 @pytest.fixture
 def membership(tutor_student_membership_factory):
-    return tutor_student_membership_factory()
+    return tutor_student_membership_factory.create()
 
 
 @pytest.fixture
@@ -61,13 +59,22 @@ def auth_email_service() -> AuthEmailService:
 
 
 @pytest.fixture
+def tutor(user_factory):
+    return user_factory.create(
+        username='tutor',
+        email='tutor@mail.ru',
+        is_staff=True,
+    )
+
+
+@pytest.fixture
 def use_case_invite_user(
     tutor_student_membership_service,
     user_service,
     auth_email_service,
     user_factory,
+    tutor,
 ) -> InviteUser:
-    tutor = user_factory.create(username='tutor', email='tutor@mail.ru')
     return InviteUser(
         user_service=user_service,
         code_service=auth_email_service,

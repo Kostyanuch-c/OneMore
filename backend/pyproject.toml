@@ -183,7 +183,7 @@ strict_settings = true
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "project.settings"
-pythonpath = ["src", "."]
+pythonpath = ["src", ".", "tests"]
 norecursedirs = ["env/*", "venv/*"]
 addopts = "-vv -p no:cacheprovider --strict-markers"
 testpaths = ["tests"]
@@ -196,9 +196,18 @@ markers = [
 
 [[tool.mypy.overrides]]
 module = [
-    "tests.*",
     "project.settings",
     "*.migrations.*",
     "*.migrations",
 ]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["tests.factories.*"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false

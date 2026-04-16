@@ -5,7 +5,7 @@ from apps.users.entities import UserEntity
 from apps.users.use_cases import UpdateUser
 
 
-def test_use_case_update_user_happy_path(user_factory, user_service):
+def test_use_case_update_user_happy_path(user_factory, user_service) -> None:
     user = user_factory.create()
     new_data = {
         'username': 'new_username',

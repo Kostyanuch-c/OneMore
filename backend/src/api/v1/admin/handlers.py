@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from ninja import Query, Router
+from ninja import Query, Router, Status
 from ninja.security import django_auth_is_staff
 
 from django.http import HttpRequest
@@ -27,15 +27,16 @@ router = Router(tags=['admin'], auth=django_auth_is_staff)
         HTTPStatus.CREATED: ApiResponse[UserOutSchema],
         HTTPStatus.OK: ApiResponse[UserOutSchema],
     },
+    url_name='admin_user_invite',
 )
 def invite_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
-) -> tuple[int, ApiResponse[UserOutSchema]]:
+) -> Status[ApiResponse[UserOutSchema]]:
 
     tutor = get_authenticated_user(request)
 
-    user, created = InviteUser(
+    user, is_created = InviteUser(
         user_service=UserService(),
         code_service=AuthEmailService(),
         tutor_user_membership_service=TutorStudentMembershipService(),
@@ -43,8 +44,8 @@ def invite_user_view(
         tutor_email=tutor.email,
         tutor_id=tutor.id,
     )()
-    return (
-        HTTPStatus.CREATED if created else HTTPStatus.OK,
+    return Status(
+        HTTPStatus.CREATED if is_created else HTTPStatus.OK,
         ApiResponse.success(data=UserOutSchema.from_entity(user)),
     )
 
@@ -52,8 +53,9 @@ def invite_user_view(
 @router.get(
     '/users',
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
+    url_name='admin_users_list',
 )
-def get_user_list(
+def get_users_list(
     request: HttpRequest,
     filters: Query[UserFiltersIn],
     pagination_in: Query[PaginationIn],

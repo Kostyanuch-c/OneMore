@@ -22,7 +22,8 @@ from api.v1.urls import router as v1_router
 from apps.common.exception import ApplicationError
 
 
-api = NinjaAPI()
+api = NinjaAPI(version='1.0.0', urls_namespace='api-v1')
+
 
 api.add_router('v1/', v1_router)
 

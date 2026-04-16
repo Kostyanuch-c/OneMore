@@ -25,7 +25,7 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture
-def repository():
+def repository() -> UserRepository:
     return UserRepository()
 
 
@@ -47,7 +47,7 @@ def users(user_factory):
 
 
 @pytest.fixture
-def payload_create_user():
+def payload_create_user() -> dict[str, str]:
     return {
         'email': f'{TEST_USER_PREFIX}@example.com',
         'username': f'{TEST_USER_PREFIX}_username',
@@ -55,7 +55,7 @@ def payload_create_user():
 
 
 @pytest.fixture
-def tutor_student_membership_repository():
+def tutor_student_membership_repository() -> TutorStudentMembershipRepository:
     return TutorStudentMembershipRepository()
 
 

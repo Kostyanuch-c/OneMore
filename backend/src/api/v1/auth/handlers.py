@@ -19,6 +19,7 @@ router = Router(tags=['auth'])
 @router.post(
     '/authorise',
     response=ApiResponse[AuthOutSchema],
+    url_name='auth_authorise',
 )
 def authorise_view(
     request: HttpRequest, payload: AuthInputSchema
@@ -34,6 +35,7 @@ def authorise_view(
 @router.post(
     '/confirm',
     response=ApiResponse[ConfirmEmailOutSchema],
+    url_name='auth_confirm',
 )
 def confirm_view(
     request: HttpRequest, payload: ConfirmEmailInputSchema

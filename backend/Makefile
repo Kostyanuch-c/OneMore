@@ -59,7 +59,7 @@ lint-fix:
 
 .PHONY: type
 type:
-	@MYPYPATH=src uv run mypy src/apps src/api
+	@MYPYPATH=src uv run mypy src/apps src/api tests
 
 .PHONY: test
 test:
