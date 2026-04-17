@@ -4,7 +4,7 @@ from .logging import get_logging_config
 from .base import *
 
 DEBUG = False
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", 'CI_SECRET_KEY')
 
 allowed_hosts_env = os.getenv("ALLOWED_HOSTS")
 ALLOWED_HOSTS = allowed_hosts_env.split(",") if allowed_hosts_env else []
