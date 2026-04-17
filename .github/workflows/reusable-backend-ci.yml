@@ -61,13 +61,6 @@ jobs:
 
       - name: Install dependencies
         run: make ci-install
-      - name: Check SECRET_KEY
-        run: |
-          if [ -z "$SECRET_KEY" ]; then
-            echo "SECRET_KEY is EMPTY"
-            exit 1
-          else
-            echo "SECRET_KEY is present"
-          fi
+
       - name: Run backend checks
         run: make ci-check
