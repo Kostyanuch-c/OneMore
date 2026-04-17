@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from django.db import transaction
+
 from apps.common import BaseUseCase
 from apps.users.dto import UserUpdateDTO
 from apps.users.entities import UserEntity
@@ -13,7 +15,8 @@ class UpdateUser(BaseUseCase[UserEntity]):
     user_data: UserUpdateDTO
 
     def act(self) -> UserEntity:
-        return self.service.update_user(
-            user_id=self.user_id,
-            user_data=self.user_data,
-        )
+        with transaction.atomic():
+            return self.service.update_user(
+                user_id=self.user_id,
+                user_data=self.user_data,
+            )

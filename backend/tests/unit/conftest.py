@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from pathlib import Path
 
 from django.utils import timezone
@@ -82,3 +83,10 @@ def code_service_mock(mocker):
     mock = mocker.create_autospec(AuthEmailService, instance=True)
     mock.send_invite_link.return_value = None
     return mock
+
+
+@pytest.fixture
+def transaction_mock(mocker):
+    return mocker.patch(
+        'django.db.transaction.atomic', return_value=nullcontext()
+    )

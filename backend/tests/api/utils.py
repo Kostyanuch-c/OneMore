@@ -63,6 +63,14 @@ def assert_api_failure_response(response: Any, expected_status: int) -> None:
         assert error['extra'] is None or isinstance(error['extra'], dict)
 
 
+def assert_api_unauthorized_response(response: Any) -> None:
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json().keys() == {
+        'detail',
+    }
+    assert response.json()['detail'] == 'Unauthorized'
+
+
 def get_api_data[T: Schema](response: Any, schema: type[T]) -> T:
     return schema.model_validate(response.json()['data'])
 
@@ -81,3 +89,35 @@ def get_api_errors(response: Any) -> list[ApiError]:
     return [
         ApiError.model_validate(item) for item in response.json()['errors']
     ]
+
+
+def assert_user_state_in_db(
+    *,
+    user_from_db,
+    source_user,
+    payload: dict[str, Any] | None = None,
+) -> None:
+    payload = payload or {}
+
+    mutable_fields = (
+        'username',
+        'first_name',
+        'last_name',
+    )
+    immutable_fields = (
+        'id',
+        'email',
+        'is_active',
+        'is_staff',
+    )
+
+    for field in mutable_fields:
+        expected_value = (
+            payload[field] if field in payload else getattr(source_user, field)
+        )
+        assert getattr(user_from_db, field) == expected_value, field
+
+    for field in immutable_fields:
+        assert getattr(user_from_db, field) == getattr(source_user, field), (
+            field
+        )

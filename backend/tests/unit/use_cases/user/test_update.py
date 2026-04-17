@@ -5,6 +5,7 @@ from apps.users.exceptions.users import UserNameAlreadyExistsError
 from apps.users.use_cases import UpdateUser
 
 
+@pytest.mark.usefixtures('transaction_mock')
 def test_use_case_update_user_calls_service(user_service_mock, user_entity):
     user_data = UserUpdateDTO(username='new_username')
     expected = user_entity
@@ -24,6 +25,7 @@ def test_use_case_update_user_calls_service(user_service_mock, user_entity):
     assert result == expected
 
 
+@pytest.mark.usefixtures('transaction_mock')
 def test_use_case_update_user_propagates_error(user_service_mock):
     user_data = UserUpdateDTO(username='new_username')
     user_id = 1

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import ConfigDict, field_validator
+from pydantic import field_validator
 
 from ninja import Schema
 
@@ -30,7 +30,7 @@ class EmailSchema(Schema):
         return normalized_email
 
 
-class UserOutSchema(Schema):
+class UserOutSchema(Schema, extra='forbid'):
     id: int
     first_name: str | None = None
     last_name: str | None = None
@@ -60,14 +60,11 @@ class UserOutSchema(Schema):
         return UserOutSchema.from_entity(UserConverter.to_entity(model))
 
 
-class UserInputSchema(EmailSchema):
+class UserInputSchema(EmailSchema, extra='forbid'):
     email: str
-    model_config = ConfigDict(extra='forbid')
 
 
-class UserUpdateSchema(Schema):
+class UserUpdateSchema(Schema, extra='forbid'):
     username: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-
-    model_config = ConfigDict(extra='forbid')

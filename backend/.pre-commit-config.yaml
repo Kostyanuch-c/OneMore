@@ -6,9 +6,11 @@ repos:
         name: ruff-check
         args: [ --fix ]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+  - repo: local
     hooks:
       - id: mypy
         name: mypy
-        exclude: 'migrations/|settings.*\.py$|^tests/'
+        entry: uv run mypy --config-file backend/pyproject.toml backend/src/apps backend/src/api backend/tests
+        language: system
+        pass_filenames: false
+        types: [ python ]
