@@ -91,6 +91,13 @@ def get_api_errors(response: Any) -> list[ApiError]:
     ]
 
 
+def assert_errors_structure(errors: list[ApiError]) -> None:
+    for error in errors:
+        assert set(error.dict().keys()) == {'message', 'extra'}
+        assert isinstance(error.message, str)
+        assert error.extra is None or isinstance(error.extra, dict)
+
+
 def assert_user_state_in_db(
     *,
     user_from_db,

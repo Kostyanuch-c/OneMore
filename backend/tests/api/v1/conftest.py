@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from urllib.parse import urlencode
 
 from django.urls import reverse
 
@@ -42,5 +43,11 @@ def admin_user_invite_url() -> str:
 
 
 @pytest.fixture
-def admin_users_list_url() -> str:
-    return reverse('api-v1:admin_users_list')
+def admin_users_list_url() -> Callable[..., str]:
+    def _build_url(**query_params) -> str:
+        base_url = reverse('api-v1:admin_users_list')
+        if query_params:
+            return f'{base_url}?{urlencode(query_params)}'
+        return base_url
+
+    return _build_url

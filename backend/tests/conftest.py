@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.core.cache import cache
+from django.utils import timezone
 
 import pytest
 
@@ -31,6 +34,18 @@ def user_factory() -> type[UserFactory]:
 @pytest.fixture
 def user(user_factory):
     return user_factory.create()
+
+
+@pytest.fixture
+def users(user_factory):
+    now = timezone.now()
+    return [
+        user_factory.create(
+            is_active=i < 5,  # noqa
+            date_joined=now - timedelta(minutes=i),
+        )
+        for i in range(15)
+    ]
 
 
 @pytest.fixture

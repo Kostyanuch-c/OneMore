@@ -8,6 +8,7 @@ from tests.api.utils import (
     assert_api_failure_response,
     assert_api_success_response,
     assert_api_unauthorized_response,
+    assert_errors_structure,
     assert_user_state_in_db,
     get_api_data,
     get_api_errors,
@@ -149,10 +150,8 @@ def test_patch_profile_me_update_username_already_exists(
     assert_api_failure_response(response, HTTPStatus.CONFLICT)
 
     errors = get_api_errors(response)
-    assert len(errors) == 1
-    extra = errors[0].extra
-    assert isinstance(extra, dict)
-    assert extra['field'] == 'username'
+    assert_errors_structure(errors)
+    assert errors[0].extra['field'] == 'username'  # type: ignore[index]
 
     assert_user_state_in_db(
         user_from_db=django_user_model.objects.get(id=student.id),
