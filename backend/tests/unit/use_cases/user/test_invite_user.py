@@ -1,4 +1,3 @@
-from contextlib import nullcontext
 
 import pytest
 
@@ -11,6 +10,7 @@ from apps.users.exceptions.users import EmailAlreadyExistsError
 from apps.users.use_cases.create_user import InviteUser
 
 
+@pytest.mark.usefixtures('transaction_mock')
 def test_use_case_invite_user_called_services(
     mocker,
     user_service_mock,
@@ -31,7 +31,6 @@ def test_use_case_invite_user_called_services(
         'django.db.transaction.on_commit',
         side_effect=lambda func, robust: func(),  # noqa: ARG005
     )
-    mocker.patch('django.db.transaction.atomic', return_value=nullcontext())
 
     result = InviteUser(
         user_service=user_service_mock,
@@ -117,6 +116,7 @@ def test_use_case_invite_user_validate_not_inviting_self(
     code_service_mock.send_invite_link.assert_not_called()
 
 
+@pytest.mark.usefixtures('transaction_mock')
 @pytest.mark.parametrize(
     (
         'raised_on_user_create',
@@ -144,8 +144,6 @@ def test_use_case_invite_user_raise_custom_errors_on_services_errors(
         membership_service_mock.create.side_effect = (
             TutorStudentAlreadyExistsError()
         )
-
-    mocker.patch('django.db.transaction.atomic', return_value=nullcontext())
 
     with pytest.raises(expected_exception):
         InviteUser(
