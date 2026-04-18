@@ -15,3 +15,9 @@ class InvalidLoginCodeError(EmailAuthError):
     message: str = 'Invalid or expired code'
     extra: dict[str, Any] = field(default_factory=dict)
     status_code: int = HTTPStatus.BAD_REQUEST
+
+
+@dataclass
+class InvalidInviteTokenError(EmailAuthError):
+    message: str = 'Invalid or expired invite token'
+    status_code: int = HTTPStatus.BAD_REQUEST

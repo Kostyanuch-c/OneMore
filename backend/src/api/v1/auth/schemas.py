@@ -16,3 +16,7 @@ class ConfirmEmailInputSchema(EmailSchema):
 
 class ConfirmEmailOutSchema(Schema):
     user: UserOutSchema
+
+
+class InviteTokenConfirmIn(Schema):
+    token: str

@@ -10,7 +10,7 @@ from apps.users.entities import UserEntity
 def test_auth_service_authorise(auth_service, mocker, email, user):
     get_user_mock = mocker.patch.object(
         auth_service,
-        '_get_user_model_by_email',
+        '_find_user_by_email',
         return_value=user,
     )
     send_code_mock = mocker.patch.object(
@@ -58,7 +58,7 @@ def test_auth_service_confirm(
 
     get_user_mock = mocker.patch.object(
         auth_service,
-        '_get_user_model_by_email',
+        '_find_user_by_email',
         return_value=user,
     )
     verify_code_mock = mocker.patch.object(

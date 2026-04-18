@@ -1,6 +1,5 @@
 import logging
 import secrets
-from typing import Any
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -160,7 +159,7 @@ class AuthEmailService:
             },
         )
 
-    def verify_invite_token(self, token: str) -> Any | None:
+    def verify_invite_token(self, token: str) -> str | None:
         cache_key = self._invite_token_key(token)
         payload = cache.get(cache_key)
 
@@ -168,4 +167,4 @@ class AuthEmailService:
             return None
 
         cache.delete(cache_key)
-        return payload.get('email')
+        return payload.get('email')  # type: ignore[no-any-return]
