@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 
 import pytest
 
-from apps.access.models import TutorStudentMembership
 from apps.access.repositories import TutorStudentMembershipRepository
 from apps.users.repositories import UserRepository
 
@@ -43,11 +42,6 @@ def payload_create_user() -> dict[str, str]:
 @pytest.fixture
 def tutor_student_membership_repository() -> TutorStudentMembershipRepository:
     return TutorStudentMembershipRepository()
-
-
-@pytest.fixture
-def membership_model():
-    return TutorStudentMembership
 
 
 @pytest.fixture

@@ -63,9 +63,7 @@ class AuthService:
         if user is None or not self.code_service.verify_login_code(
             email, code
         ):
-            logger.warning(
-                'Login confirmation failed',
-            )
+            logger.warning('Login confirmation failed')
             raise InvalidLoginCodeError
 
         self.login_strategy.login(request, user)

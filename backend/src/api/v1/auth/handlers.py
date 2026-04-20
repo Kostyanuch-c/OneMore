@@ -6,11 +6,10 @@ from api.schemas import ApiResponse
 from api.v1.auth.schemas import (
     AuthInputSchema,
     AuthOutSchema,
+    AuthUserOutSchema,
     ConfirmEmailInputSchema,
-    ConfirmEmailOutSchema,
     InviteTokenConfirmIn,
 )
-from api.v1.profile.schemas import UserOutSchema
 from apps.a12n.services import AuthService
 
 
@@ -35,27 +34,26 @@ def authorise_view(
 
 @router.post(
     '/confirm',
-    response=ApiResponse[ConfirmEmailOutSchema],
+    response=ApiResponse[AuthUserOutSchema],
     url_name='auth_confirm',
 )
 def confirm_view(
     request: HttpRequest, payload: ConfirmEmailInputSchema
-) -> ApiResponse[ConfirmEmailOutSchema]:
+) -> ApiResponse[AuthUserOutSchema]:
     user = AuthService().confirm(
         email=payload.email, code=payload.code, request=request
     )
-    user_data = UserOutSchema.from_entity(user)
-    return ApiResponse.success(data=ConfirmEmailOutSchema(user=user_data))
+    return ApiResponse.success(data=AuthUserOutSchema.from_entity(user))
 
 
 @router.post(
-    '/auth/invite-confirm',
-    response=ApiResponse[UserOutSchema],
+    '/invite-confirm',
+    response=ApiResponse[AuthUserOutSchema],
     url_name='auth_invite_confirm',
 )
 def invite_confirm_view(
     request: HttpRequest,
     payload: InviteTokenConfirmIn,
-) -> ApiResponse[UserOutSchema]:
+) -> ApiResponse[AuthUserOutSchema]:
     user = AuthService().invite_confirm(request=request, token=payload.token)
-    return ApiResponse.success(data=UserOutSchema.from_entity(user))
+    return ApiResponse.success(data=AuthUserOutSchema.from_entity(user))

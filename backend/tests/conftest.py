@@ -11,6 +11,7 @@ from tests.factories.tutor_student_membership import (
 from tests.factories.user import UserFactory
 
 from apps.a12n.services import AuthEmailService
+from apps.access.models import TutorStudentMembership
 from apps.access.services import TutorStudentMembershipService
 from apps.users.services import UserService
 from apps.users.use_cases.create_user import InviteUser
@@ -71,6 +72,11 @@ def tutor_student_membership_service() -> TutorStudentMembershipService:
 @pytest.fixture
 def auth_email_service() -> AuthEmailService:
     return AuthEmailService()
+
+
+@pytest.fixture
+def membership_model():
+    return TutorStudentMembership
 
 
 @pytest.fixture

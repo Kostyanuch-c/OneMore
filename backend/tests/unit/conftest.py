@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from dataclasses import asdict
 from pathlib import Path
 
 from django.utils import timezone
@@ -89,4 +90,40 @@ def code_service_mock(mocker):
 def transaction_mock(mocker):
     return mocker.patch(
         'django.db.transaction.atomic', return_value=nullcontext()
+    )
+
+
+@pytest.fixture
+def login_session_mock(mocker, auth_service):
+    return mocker.patch.object(
+        auth_service.login_strategy,
+        'login',
+        return_value=None,
+    )
+
+
+@pytest.fixture
+def user_entity_and_user(
+    user_entity: UserEntity, user_factory
+) -> tuple[UserEntity, dict[str, str]]:
+    build_user_params = asdict(user_entity)
+    build_user_params.pop('full_name', None)
+    return user_entity, user_factory.build(**build_user_params)
+
+
+@pytest.fixture
+def get_user_model_by_email_mock(mocker, auth_service):
+    return mocker.patch.object(
+        auth_service,
+        '_get_user_model_by_email',
+        return_value=None,
+    )
+
+
+@pytest.fixture
+def find_user_mock(mocker, auth_service):
+    return mocker.patch.object(
+        auth_service,
+        '_find_user_by_email',
+        return_value=None,
     )

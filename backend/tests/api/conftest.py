@@ -52,3 +52,8 @@ def random_user(user_factory):
 def random_auth_client(client, random_user):
     client.force_login(random_user)
     return client
+
+
+@pytest.fixture
+def email_for_create_user() -> str:
+    return 'new_user_email@gmail.com'
