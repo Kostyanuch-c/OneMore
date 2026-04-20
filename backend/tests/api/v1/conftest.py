@@ -120,7 +120,7 @@ def invite_user_and_get_token(
         assert len(callbacks) == 1
         assert len(mailoutbox) == 1
 
-        token = extract_invite_token(str(mailoutbox[0].body))
+        token = extract_invite_token(mailoutbox[0].body)
         assert token is not None
         return token
 

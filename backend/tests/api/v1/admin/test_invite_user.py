@@ -124,7 +124,7 @@ def test_admin_user_invite_unauthorized(
         data=json.dumps({'email': email_for_create_user}),
         content_type='application/json',
     )
-
+    # TODO: update response status code to 403
     assert_api_unauthorized_response(response=response)
 
     assert django_user_model.objects.count() == users_before

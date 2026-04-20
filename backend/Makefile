@@ -59,7 +59,7 @@ lint-fix:
 
 .PHONY: type
 type:
-	uv run mypy --config-file pyproject.toml src/apps src/api tests
+	@uv run mypy --config-file pyproject.toml src/apps src/api tests
 
 .PHONY: test
 test:

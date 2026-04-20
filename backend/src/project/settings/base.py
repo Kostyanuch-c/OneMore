@@ -159,7 +159,7 @@ EMAIL_CODE_MAX_VERIFY_ATTEMPTS = 5
 
 INVITE_TOKEN_TTL_SECONDS = 600
 INVITE_RESEND_COOLDOWN_SECONDS = 300
-INVITE_CONFIRM_PATH = os.getenv("INVITE_CONFIRM_PATH", default="/invite-confirm")
+INVITE_CONFIRM_PATH = os.getenv("INVITE_CONFIRM_PATH", default="/auth/invite-confirm")
 
 SITE_NAME = "StudyNotPain"
 SITE_URL = "https://studynotpain.com"
