@@ -29,6 +29,7 @@ class TutorStudentMembership(BaseTimedModel):
     )
 
     class Meta:
+        db_table = 'tutor_student_memberships'
         verbose_name = 'Связь репетитора и ученика'
         verbose_name_plural = 'Связи репетитора и ученика'
         ordering = ['-created_at']

@@ -142,12 +142,12 @@ class Problem(BaseTimedModel):
     is_published = models.BooleanField(
         verbose_name='Опубликовано',
         default=True,
-        help_text='Снимите галочку, чтобы скрыть публикацию.',
+        help_text='Снимите галочку, чтобы скрыть задачу.',
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text='Если установить дату и время '
-                  'в будущем — можно делать отложенные публикации.',
+        'в будущем — можно делать отложенные публикации.',
         default=timezone.now,
         null=False,
         blank=False,
