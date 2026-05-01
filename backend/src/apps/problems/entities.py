@@ -24,17 +24,3 @@ class TopicEntity(BaseEntity):
 @dataclass(frozen=True)
 class TagEntity(BaseEntity):
     name: str
-
-
-@dataclass(frozen=True)
-class DifficultyEntity:
-    value: str
-    label: str
-
-
-@dataclass(frozen=True)
-class ProblemFiltersEntity:
-    sections: list[SectionEntity]
-    topics: list[TopicEntity]
-    tags: list[TagEntity]
-    difficulties: list[DifficultyEntity]

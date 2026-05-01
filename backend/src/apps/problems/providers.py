@@ -1,9 +1,9 @@
-from apps.problems.entities import DifficultyEntity
+from apps.problems.dto import DifficultyDTO
 from apps.problems.enums import Difficulty
 
 
-def get_difficulties() -> list[DifficultyEntity]:
+def get_difficulties() -> list[DifficultyDTO]:
     return [
-        DifficultyEntity(value=value, label=label)
+        DifficultyDTO(value=value, label=label)
         for value, label in Difficulty.choices
     ]

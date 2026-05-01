@@ -7,6 +7,14 @@ class SubjectRepository:
     subject_model = Subject
     converter = SubjectConverter
 
+    def find_subject_by_slug(self, slug: str) -> SubjectEntity | None:
+        subject = self.subject_model.objects.filter(slug=slug).first()
+
+        if subject is None:
+            return None
+
+        return self.converter.to_entity(subject)
+
     def get_list_subjects(self) -> list[SubjectEntity]:
         return [
             self.converter.to_entity(subject)

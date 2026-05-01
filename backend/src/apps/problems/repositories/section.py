@@ -7,12 +7,10 @@ class SectionRepository:
     model = Section
     converter = SectionConverter
 
-    def get_list_by_subject_slug(
-        self, subject_slug: str
-    ) -> list[SectionEntity]:
+    def get_list_by_subject_id(self, subject_id: int) -> list[SectionEntity]:
         return [
             self.converter.to_entity(section)
             for section in self.model.objects.filter(
-                subject__slug=subject_slug,
+                subject_id=subject_id,
             ).order_by('name')
         ]
