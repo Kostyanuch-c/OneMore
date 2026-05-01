@@ -6,7 +6,7 @@ from apps.access.exceptions import (
 )
 from apps.users.entities import UserEntity
 from apps.users.exceptions.users import EmailAlreadyExistsError
-from apps.users.use_cases.create_user import InviteUser
+from apps.users.use_cases import InviteUser
 
 
 @pytest.mark.usefixtures('transaction_mock')

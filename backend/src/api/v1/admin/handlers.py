@@ -14,8 +14,7 @@ from apps.a12n.services import AuthEmailService
 from apps.access.services import TutorStudentMembershipService
 from apps.users.dto import UserFilters
 from apps.users.services import UserService
-from apps.users.use_cases import SearchUsers
-from apps.users.use_cases.create_user import InviteUser
+from apps.users.use_cases import InviteUser, SearchUsers
 
 
 router = Router(tags=['admin'], auth=django_auth_is_staff)
@@ -33,7 +32,6 @@ def invite_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
 ) -> Status[ApiResponse[UserOutSchema]]:
-
     tutor = get_authenticated_user(request)
 
     user, is_created = InviteUser(

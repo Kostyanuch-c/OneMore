@@ -4,6 +4,7 @@ from django.db.models.functions import Lower, Trim
 from django.utils import timezone
 
 from apps.common.models import BaseTimedModel
+from apps.problems.enums import Difficulty
 
 
 class Subject(BaseTimedModel):
@@ -113,11 +114,6 @@ class Tag(BaseTimedModel):
 
 
 class Problem(BaseTimedModel):
-    class Difficulty(models.TextChoices):
-        EASY = 'easy', 'Лёгкая'
-        MEDIUM = 'medium', 'Средняя'
-        HARD = 'hard', 'Сложная'
-
     title = models.CharField(
         verbose_name='Название задачи',
         max_length=150,

@@ -60,8 +60,7 @@ class UserOutSchema(Schema, extra='forbid'):
         return UserOutSchema.from_entity(UserConverter.to_entity(model))
 
 
-class UserInputSchema(EmailSchema, extra='forbid'):
-    email: str
+class UserInputSchema(EmailSchema, extra='forbid'): ...
 
 
 class UserUpdateSchema(Schema, extra='forbid'):
