@@ -61,7 +61,7 @@ class Section(BaseTimedModel):
         ]
 
     def __str__(self) -> str:
-        return f'{self.subject} - {self.name}'
+        return self.name
 
 
 class Topic(BaseTimedModel):
@@ -92,7 +92,7 @@ class Topic(BaseTimedModel):
         ]
 
     def __str__(self) -> str:
-        return f'{self.section} - {self.name}'
+        return self.name
 
 
 class Tag(BaseTimedModel):

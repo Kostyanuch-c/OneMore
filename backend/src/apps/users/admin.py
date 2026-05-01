@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):  # type: ignore[type-arg]
+class UserAdmin(BaseUserAdmin):
     model = User
 
     list_display = (

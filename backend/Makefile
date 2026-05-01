@@ -29,6 +29,10 @@ migrate:
 shell:
 	@$(MANAGE) shell_plus --ipython
 
+.PHONY: dev-admin
+dev-admin:
+	@$(MANAGE) runserver
+
 .PHONY: dev
 dev:
 	@uv run uvicorn project.asgi:application --reload --host 0.0.0.0 --port $(PORT) --app-dir src

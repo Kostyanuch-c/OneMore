@@ -7,7 +7,7 @@ from django.http import HttpRequest
 
 from api.filters import PaginationIn, PaginationOut
 from api.schemas import ApiResponse, ListPaginationResponse
-from api.v1.profile.filters import UserFiltersIn
+from api.v1.admin.filters import UserFiltersIn
 from api.v1.profile.schemas import UserInputSchema, UserOutSchema
 from api.v1.utils import get_authenticated_user
 from apps.a12n.services import AuthEmailService
