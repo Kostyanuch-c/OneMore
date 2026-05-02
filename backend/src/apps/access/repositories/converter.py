@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
 from apps.access.entities import TutorStudentMembershipEntity
-from apps.access.models import TutorStudentMembership
+
+
+if TYPE_CHECKING:
+    from apps.access.models import TutorStudentMembership
 
 
 class TutorStudentMembershipConverter:

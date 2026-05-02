@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from apps.problems.entities import (
     ProblemEntity,
     SectionEntity,
@@ -7,15 +9,18 @@ from apps.problems.entities import (
     TopicEntity,
 )
 from apps.problems.enums import DifficultyData
-from apps.problems.models import (
-    Problem,
-    Section,
-    Solution,
-    Subject,
-    Tag,
-    Topic,
-)
 from apps.users.repositories.converter import UserConverter
+
+
+if TYPE_CHECKING:
+    from apps.problems.models import (
+        Problem,
+        Section,
+        Solution,
+        Subject,
+        Tag,
+        Topic,
+    )
 
 
 class SubjectConverter:

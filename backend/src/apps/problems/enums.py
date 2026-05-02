@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from django.db.models import TextChoices
+from django.db import models
 
 
-class Difficulty(TextChoices):
+class Difficulty(models.TextChoices):
     EASY = 'easy', 'Лёгкая'
     MEDIUM = 'medium', 'Средняя'
     HARD = 'hard', 'Сложная'

@@ -1,7 +1,10 @@
+from typing import TYPE_CHECKING
+
 from apps.users.entities import UserEntity
-from apps.users.models import (
-    User,
-)
+
+
+if TYPE_CHECKING:
+    from apps.users.models import User
 
 
 class UserConverter:

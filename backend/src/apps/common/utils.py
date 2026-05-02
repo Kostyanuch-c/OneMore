@@ -1,4 +1,8 @@
-from django.db import IntegrityError
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from django.db import IntegrityError
 
 
 def constraint_name(e: IntegrityError) -> str | None:

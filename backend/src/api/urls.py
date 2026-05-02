@@ -24,7 +24,6 @@ from apps.common.exception import ApplicationError
 
 api = NinjaAPI(version='1.0.0', urls_namespace='api-v1')
 
-
 api.add_router('v1/', v1_router)
 
 urlpatterns = [
