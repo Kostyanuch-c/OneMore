@@ -35,6 +35,7 @@ class SolutionEntity(BaseEntity):
     name: str
     content: str
     author_id: int | None
+    is_main: bool
 
 
 @dataclass(frozen=True)

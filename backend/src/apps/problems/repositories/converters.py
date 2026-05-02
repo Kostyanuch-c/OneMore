@@ -76,6 +76,7 @@ class SolutionConverter:
             author_id=model.author_id,
             created_at=model.created_at,
             updated_at=model.updated_at,
+            is_main=model.is_main,
         )
 
 
