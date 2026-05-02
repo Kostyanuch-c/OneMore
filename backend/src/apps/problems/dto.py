@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from apps.problems.entities import SectionEntity, TagEntity, TopicEntity
-
-
-@dataclass(frozen=True)
-class DifficultyDTO:
-    value: str
-    label: str
+from apps.problems.entities import (
+    ProblemEntity,
+    SectionEntity,
+    SolutionEntity,
+    SubjectEntity,
+    TagEntity,
+    TopicEntity,
+)
+from apps.problems.enums import DifficultyData
 
 
 @dataclass(frozen=True)
@@ -15,7 +17,17 @@ class ProblemFiltersResult:
     sections: list[SectionEntity]
     topics: list[TopicEntity]
     tags: list[TagEntity]
-    difficulties: list[DifficultyDTO]
+    difficulties: list[DifficultyData]
+
+
+@dataclass(frozen=True)
+class ProblemDetailResult:
+    problem: ProblemEntity
+    subject: SubjectEntity
+    section: SectionEntity
+    topic: TopicEntity
+    tags: list[TagEntity]
+    solutions: list[SolutionEntity]
 
 
 @dataclass(frozen=True)

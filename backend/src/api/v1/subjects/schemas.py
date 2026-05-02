@@ -1,12 +1,13 @@
 from ninja import Schema
 
-from apps.problems.dto import DifficultyDTO, ProblemFiltersResult
+from apps.problems.dto import ProblemFiltersResult
 from apps.problems.entities import (
     SectionEntity,
     SubjectEntity,
     TagEntity,
     TopicEntity,
 )
+from apps.problems.enums import DifficultyData
 
 
 class SubjectOutSchema(Schema, extra='forbid'):
@@ -68,7 +69,7 @@ class DifficultyOutSchema(Schema, extra='forbid'):
     label: str
 
     @staticmethod
-    def from_option(option: DifficultyDTO) -> DifficultyOutSchema:
+    def from_option(option: DifficultyData) -> DifficultyOutSchema:
         return DifficultyOutSchema(
             value=option.value,
             label=option.label,

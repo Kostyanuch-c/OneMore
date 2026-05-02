@@ -197,6 +197,10 @@ class Solution(BaseTimedModel):
         null=False,
         blank=False,
     )
+    is_main = models.BooleanField(
+        verbose_name='Основное решение',
+        default=False,
+    )
     content = models.TextField(verbose_name='Решение')
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -212,6 +216,13 @@ class Solution(BaseTimedModel):
         verbose_name_plural = 'Решения'
         ordering = ('created_at',)
         default_related_name = 'solutions'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['problem'],
+                condition=models.Q(is_main=True),
+                name='unique_main_solution_per_problem',
+            ),
+        ]
 
     def __str__(self) -> str:
         return f'{self.name} — {self.problem}'
