@@ -65,9 +65,25 @@ class TagConverter:
         )
 
 
+class SolutionConverter:
+    @staticmethod
+    def to_entity(model: Solution) -> SolutionEntity:
+        return SolutionEntity(
+            id=model.pk,
+            problem_id=model.problem_id,
+            name=model.name,
+            content=model.content,
+            author_id=model.author_id,
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )
+
+
 class ProblemConverter:
     @staticmethod
-    def to_entity(model: Problem) -> ProblemEntity:
+    def to_entity(
+        model: Problem, *, with_solutions: bool = False
+    ) -> ProblemEntity:
         return ProblemEntity(
             id=model.pk,
             title=model.title,
@@ -82,23 +98,15 @@ class ProblemConverter:
             author=UserConverter.to_entity(model.author)
             if model.author
             else None,
+            solutions=[
+                SolutionConverter.to_entity(solution)
+                for solution in model.solutions.all()
+            ]
+            if with_solutions
+            else None,
             is_published=model.is_published,
             created_at=model.created_at,
             updated_at=model.updated_at,
             pub_date=model.pub_date,
             section=SectionConverter.to_entity(model.topic.section),
-        )
-
-
-class SolutionConverter:
-    @staticmethod
-    def to_entity(model: Solution) -> SolutionEntity:
-        return SolutionEntity(
-            id=model.pk,
-            problem_id=model.problem_id,
-            name=model.name,
-            content=model.content,
-            author_id=model.author_id,
-            created_at=model.created_at,
-            updated_at=model.updated_at,
         )

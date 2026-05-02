@@ -2,7 +2,14 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
-from apps.problems.models import Section, Subject, Tag, Topic
+from apps.problems.models import (
+    Problem,
+    Section,
+    Solution,
+    Subject,
+    Tag,
+    Topic,
+)
 
 
 admin.site.empty_value_display = '-пусто-'
@@ -131,4 +138,85 @@ class TagAdmin(admin.ModelAdmin):
     readonly_fields = (
         'created_at',
         'updated_at',
+    )
+
+
+class SolutionInline(admin.TabularInline):
+    model = Solution
+    extra = 0
+    fields = (
+        'name',
+        'is_main',
+        'author',
+        'content',
+    )
+
+
+@admin.register(Problem)
+class ProblemAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'title',
+        'difficulty',
+        'topic',
+        'is_published',
+        'pub_date',
+        'author',
+        'created_at',
+        'updated_at',
+    )
+    list_filter = (
+        'difficulty',
+        'is_published',
+        'topic__section__subject',
+        'topic__section',
+        'topic',
+        'tags',
+    )
+    search_fields = (
+        'title',
+        'question',
+        'source',
+        'topic__name',
+        'topic__section__name',
+    )
+    autocomplete_fields = (
+        'topic',
+        'tags',
+        'author',
+    )
+    filter_horizontal = ('tags',)
+    date_hierarchy = 'pub_date'
+    ordering = ('-pub_date',)
+    inlines = (SolutionInline,)
+
+
+@admin.register(Solution)
+class SolutionAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'problem',
+        'is_main',
+        'author',
+        'created_at',
+        'updated_at',
+    )
+    list_filter = (
+        'is_main',
+        'problem__topic__section__subject',
+        'problem__topic',
+    )
+    search_fields = (
+        'name',
+        'content',
+        'problem__title',
+    )
+    autocomplete_fields = (
+        'problem',
+        'author',
+    )
+    ordering = (
+        '-is_main',
+        'created_at',
     )

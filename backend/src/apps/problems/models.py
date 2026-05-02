@@ -214,7 +214,7 @@ class Solution(BaseTimedModel):
         db_table = 'solutions'
         verbose_name = 'решение'
         verbose_name_plural = 'Решения'
-        ordering = ('created_at',)
+        ordering = ('-is_main', 'created_at')
         default_related_name = 'solutions'
         constraints = [
             models.UniqueConstraint(
