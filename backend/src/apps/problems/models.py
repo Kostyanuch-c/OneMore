@@ -143,7 +143,7 @@ class Problem(BaseTimedModel):
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text='Если установить дату и время '
-        'в будущем — можно делать отложенные публикации.',
+        'в будущем — можно делать отложенные публикации задач.',
         default=timezone.now,
         null=False,
         blank=False,
@@ -200,6 +200,19 @@ class Solution(BaseTimedModel):
     is_main = models.BooleanField(
         verbose_name='Основное решение',
         default=False,
+    )
+    is_published = models.BooleanField(
+        verbose_name='Опубликовано',
+        default=True,
+        help_text='Снимите галочку, чтобы скрыть решение.',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата и время публикации',
+        help_text='Если установить дату и время '
+        'в будущем — можно делать отложенные публикации решений.',
+        default=timezone.now,
+        null=False,
+        blank=False,
     )
     content = models.TextField(verbose_name='Решение')
     author = models.ForeignKey(

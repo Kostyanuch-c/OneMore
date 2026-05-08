@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ninja import Schema
 
-from api.v1.profile.schemas import UserOutSchema
+from api.v1.profile.schemas import UserShortOutSchema
 from api.v1.subjects.schemas import (
     DifficultyOutSchema,
     SectionOutSchema,
@@ -18,8 +18,7 @@ class SolutionOutSchema(Schema, extra='forbid'):
     name: str
     content: str
     is_main: bool
-    author_id: int | None
-    problem_id: int
+    author: UserShortOutSchema | None
 
     @staticmethod
     def from_entity(entity: SolutionEntity) -> SolutionOutSchema:
@@ -28,8 +27,9 @@ class SolutionOutSchema(Schema, extra='forbid'):
             name=entity.name,
             content=entity.content,
             is_main=entity.is_main,
-            author_id=entity.author_id,
-            problem_id=entity.problem_id,
+            author=UserShortOutSchema.from_entity(entity.author)
+            if entity.author
+            else None,
         )
 
 
@@ -42,8 +42,8 @@ class ProblemOutSchema(Schema, extra='forbid'):
     section: SectionOutSchema
     topic: TopicOutSchema
     tags: list[TagOutSchema]
-    solutions: list[SolutionOutSchema] | None = None
-    author: UserOutSchema | None = None
+    solutions: list[SolutionOutSchema]
+    author: UserShortOutSchema | None = None
     is_published: bool
     pub_date: datetime
 
@@ -58,14 +58,11 @@ class ProblemOutSchema(Schema, extra='forbid'):
             section=SectionOutSchema.from_entity(entity.section),
             topic=TopicOutSchema.from_entity(entity.topic),
             tags=[TagOutSchema.from_entity(tag) for tag in entity.tags],
-            # TODO сделать так чтобы solutions всегда возращал список а если их нет то просто пустой список
-            solutions=[
+            solutions=[  # Empty list if no solutions
                 SolutionOutSchema.from_entity(solution)
                 for solution in entity.solutions
-            ]
-            if entity.solutions
-            else None,
-            author=UserOutSchema.from_entity(entity.author)
+            ],
+            author=UserShortOutSchema.from_entity(entity.author)
             if entity.author
             else None,
             is_published=entity.is_published,

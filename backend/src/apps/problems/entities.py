@@ -34,7 +34,7 @@ class SolutionEntity(BaseEntity):
     problem_id: int
     name: str
     content: str
-    author_id: int | None
+    author: UserEntity | None
     is_main: bool
 
 
@@ -50,4 +50,4 @@ class ProblemEntity(BaseEntity):
     section: SectionEntity
     topic: TopicEntity
     tags: list[TagEntity]
-    solutions: list[SolutionEntity] | None = None
+    solutions: list[SolutionEntity]

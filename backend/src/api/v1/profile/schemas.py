@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import field_validator
 
@@ -10,8 +10,11 @@ from django.core.validators import validate_email
 from api.exceptions import EmailMustBeStringError
 from apps.common.utils import normalize_email_strict
 from apps.users.entities import UserEntity
-from apps.users.models import User
 from apps.users.repositories.converter import UserConverter
+
+
+if TYPE_CHECKING:
+    from apps.users.models import User
 
 
 class EmailSchema(Schema):
@@ -58,6 +61,28 @@ class UserOutSchema(Schema, extra='forbid'):
     @staticmethod
     def from_model(model: User) -> UserOutSchema:
         return UserOutSchema.from_entity(UserConverter.to_entity(model))
+
+
+class UserShortOutSchema(Schema, extra='forbid'):
+    id: int
+    username: str
+    first_name: str | None = None
+    last_name: str | None = None
+    full_name: str | None = None
+
+    @staticmethod
+    def from_entity(entity: UserEntity) -> UserShortOutSchema:
+        return UserShortOutSchema(
+            id=entity.id,
+            username=entity.username,
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            full_name=entity.full_name,
+        )
+
+    @staticmethod
+    def from_model(model: User) -> UserShortOutSchema:
+        return UserShortOutSchema.from_entity(UserConverter.to_entity(model))
 
 
 class UserInputSchema(EmailSchema, extra='forbid'): ...

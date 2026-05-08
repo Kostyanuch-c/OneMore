@@ -78,7 +78,9 @@ class SolutionConverter:
             problem_id=model.problem_id,
             name=model.name,
             content=model.content,
-            author_id=model.author_id,
+            author=UserConverter.to_entity(model.author)
+            if model.author
+            else None,
             created_at=model.created_at,
             updated_at=model.updated_at,
             is_main=model.is_main,
@@ -109,7 +111,7 @@ class ProblemConverter:
                 for solution in model.solutions.all()
             ]
             if with_solutions
-            else None,
+            else [],
             is_published=model.is_published,
             created_at=model.created_at,
             updated_at=model.updated_at,
