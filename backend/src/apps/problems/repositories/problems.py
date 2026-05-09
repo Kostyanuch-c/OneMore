@@ -10,7 +10,7 @@ class ProblemsRepository:
     solution_model = Solution
     converter = ProblemConverter
 
-    def get_problem_by_id(self, problem_id: int) -> ProblemEntity:
+    def get_problem_detail(self, problem_id: int) -> ProblemEntity:
         return self.converter.to_entity(
             self.model.objects.select_related(
                 'author',
@@ -25,5 +25,6 @@ class ProblemsRepository:
                     ),
                 ),
             )
-            .get(pk=problem_id)
+            .get(pk=problem_id),
+            with_solutions=True,
         )

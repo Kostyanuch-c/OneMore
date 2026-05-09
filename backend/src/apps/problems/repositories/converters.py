@@ -84,6 +84,8 @@ class SolutionConverter:
             created_at=model.created_at,
             updated_at=model.updated_at,
             is_main=model.is_main,
+            is_published=model.is_published,
+            pub_date=model.pub_date,
         )
 
 

@@ -36,6 +36,8 @@ class SolutionEntity(BaseEntity):
     content: str
     author: UserEntity | None
     is_main: bool
+    is_published: bool
+    pub_date: datetime
 
 
 @dataclass(frozen=True)

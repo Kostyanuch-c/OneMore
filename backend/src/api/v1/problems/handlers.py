@@ -4,10 +4,41 @@ from django.http import HttpRequest
 
 from api.schemas import ApiResponse
 from api.v1.problems.schemas import ProblemOutSchema
+from api.v1.subjects.schemas import ProblemFiltersOutSchema
+from apps.problems.repositories import (
+    SectionRepository,
+    SubjectRepository,
+    TagRepository,
+    TopicRepository,
+)
 from apps.problems.repositories.problems import ProblemsRepository
+from apps.problems.use_case.problem_filters import GetProblemFilters
 
 
 router = Router(tags=['problems'])
+subject_problems_router = Router(tags=['problems'])
+
+
+@subject_problems_router.get(
+    '/filters/',
+    response=ApiResponse[ProblemFiltersOutSchema],
+    url_name='subject_problems_filters',
+)
+def get_problems_filters(
+    request: HttpRequest,
+    subject_slug: str,
+) -> ApiResponse[ProblemFiltersOutSchema]:
+    problems_filters = GetProblemFilters(
+        subject_repository=SubjectRepository(),
+        section_repository=SectionRepository(),
+        topic_repository=TopicRepository(),
+        tag_repository=TagRepository(),
+        subject_slug=subject_slug,
+    )()
+
+    return ApiResponse(
+        data=ProblemFiltersOutSchema.from_result(problems_filters)
+    )
 
 
 @router.get(
@@ -17,8 +48,11 @@ router = Router(tags=['problems'])
 )
 def get_problem(
     request: HttpRequest,
+    subject_slug: str,
     problem_id: int,
 ) -> ApiResponse[ProblemOutSchema]:
-    problem = ProblemsRepository().get_problem_by_id(problem_id=problem_id)
+    problem = ProblemsRepository().get_problem_detail(
+        problem_id=problem_id,
+    )
 
     return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))

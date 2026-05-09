@@ -2,10 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from apps.problems.entities import (
-    ProblemEntity,
     SectionEntity,
-    SolutionEntity,
-    SubjectEntity,
     TagEntity,
     TopicEntity,
 )
@@ -18,16 +15,6 @@ class ProblemFiltersResult:
     topics: list[TopicEntity]
     tags: list[TagEntity]
     difficulties: list[DifficultyData]
-
-
-@dataclass(frozen=True)
-class ProblemDetailResult:
-    problem: ProblemEntity
-    subject: SubjectEntity
-    section: SectionEntity
-    topic: TopicEntity
-    tags: list[TagEntity]
-    solutions: list[SolutionEntity]
 
 
 @dataclass(frozen=True)

@@ -12,13 +12,14 @@ from api.v1.subjects.schemas import (
 from apps.problems.entities import ProblemEntity, SolutionEntity
 
 
-# TODO сделать для решения полного автора и подумать про problem id заглушка
 class SolutionOutSchema(Schema, extra='forbid'):
     id: int
     name: str
     content: str
     is_main: bool
     author: UserShortOutSchema | None
+    is_published: bool
+    pub_date: datetime
 
     @staticmethod
     def from_entity(entity: SolutionEntity) -> SolutionOutSchema:
@@ -30,6 +31,8 @@ class SolutionOutSchema(Schema, extra='forbid'):
             author=UserShortOutSchema.from_entity(entity.author)
             if entity.author
             else None,
+            is_published=entity.is_published,
+            pub_date=entity.pub_date,
         )
 
 
