@@ -8,3 +8,5 @@ on:
 jobs:
   backend:
     uses: ./.github/workflows/reusable-backend-ci.yml
+    secrets:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
