@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from apps.problems.entities import (
     SectionEntity,
@@ -22,12 +21,11 @@ class ProblemCreateDTO:
     title: str
     question: str
     difficulty: str
-    source: str | None
+    source: str
     topic_id: int
-    tag_ids: list[int] | None
+    tag_ids: list[int]
     author_id: int
-    is_published: bool | None
-    pub_date: datetime | None
+    is_published: bool
 
 
 @dataclass(frozen=True)

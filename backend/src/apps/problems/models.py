@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Lower, Trim
-from django.utils import timezone
 
 from apps.common.models import BaseTimedModel
 from apps.problems.enums import Difficulty
@@ -140,14 +139,6 @@ class Problem(BaseTimedModel):
         default=True,
         help_text='Снимите галочку, чтобы скрыть задачу.',
     )
-    pub_date = models.DateTimeField(
-        verbose_name='Дата и время публикации',
-        help_text='Если установить дату и время '
-        'в будущем — можно делать отложенные публикации задач.',
-        default=timezone.now,
-        null=False,
-        blank=False,
-    )
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
@@ -170,13 +161,13 @@ class Problem(BaseTimedModel):
 
     class Meta:
         db_table = 'problems'
-        ordering = ('-pub_date',)
+        ordering = ('-created_at',)
         default_related_name = 'problems'
         verbose_name = 'задача'
         verbose_name_plural = 'задачи'
 
         indexes = [
-            models.Index(fields=['is_published', 'topic', '-pub_date']),
+            models.Index(fields=['is_published', 'topic', '-created_at'])
         ]
 
     def __str__(self) -> str:
@@ -205,14 +196,6 @@ class Solution(BaseTimedModel):
         verbose_name='Опубликовано',
         default=True,
         help_text='Снимите галочку, чтобы скрыть решение.',
-    )
-    pub_date = models.DateTimeField(
-        verbose_name='Дата и время публикации',
-        help_text='Если установить дату и время '
-        'в будущем — можно делать отложенные публикации решений.',
-        default=timezone.now,
-        null=False,
-        blank=False,
     )
     content = models.TextField(verbose_name='Решение')
     author = models.ForeignKey(

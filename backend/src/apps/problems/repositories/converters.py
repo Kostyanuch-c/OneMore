@@ -85,7 +85,6 @@ class SolutionConverter:
             updated_at=model.updated_at,
             is_main=model.is_main,
             is_published=model.is_published,
-            pub_date=model.pub_date,
         )
 
 
@@ -117,6 +116,5 @@ class ProblemConverter:
             is_published=model.is_published,
             created_at=model.created_at,
             updated_at=model.updated_at,
-            pub_date=model.pub_date,
             section=SectionConverter.to_entity(model.topic.section),
         )

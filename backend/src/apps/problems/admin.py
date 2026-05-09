@@ -160,7 +160,6 @@ class ProblemAdmin(admin.ModelAdmin):
         'difficulty',
         'topic',
         'is_published',
-        'pub_date',
         'author',
         'created_at',
         'updated_at',
@@ -186,8 +185,7 @@ class ProblemAdmin(admin.ModelAdmin):
         'author',
     )
     filter_horizontal = ('tags',)
-    date_hierarchy = 'pub_date'
-    ordering = ('-pub_date',)
+    ordering = ('-created_at',)
     inlines = (SolutionInline,)
 
 

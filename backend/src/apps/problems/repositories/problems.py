@@ -1,6 +1,7 @@
 from django.db.models import Prefetch, Q, QuerySet
 
-from apps.problems.entities import ProblemEntity
+from apps.problems.dto import ProblemCreateDTO
+from apps.problems.entities import ProblemCreatedEntity, ProblemEntity
 from apps.problems.models import Problem, Solution
 from apps.problems.repositories.converters import ProblemConverter
 
@@ -45,4 +46,24 @@ class ProblemsRepository:
         return self.converter.to_entity(
             problem,
             with_solutions=True,
+        )
+
+    def create_problem(self, dto: ProblemCreateDTO) -> ProblemCreatedEntity:
+        # transaction we not use because we opened the transaction in the use case
+        problem = self.model.objects.create(
+            title=dto.title,
+            question=dto.question,
+            difficulty=dto.difficulty,
+            source=dto.source,
+            topic_id=dto.topic_id,
+            author_id=dto.author_id,
+            is_published=dto.is_published,
+        )
+
+        if dto.tag_ids:
+            problem.tags.set(dto.tag_ids)
+
+        return ProblemCreatedEntity(
+            id=problem.pk,
+            title=problem.title,
         )

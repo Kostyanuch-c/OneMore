@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from ninja import Schema
 
 from api.v1.profile.schemas import UserShortOutSchema
@@ -9,7 +7,30 @@ from api.v1.subjects.schemas import (
     TagOutSchema,
     TopicOutSchema,
 )
+from apps.problems.dto import ProblemCreateDTO
 from apps.problems.entities import ProblemEntity, SolutionEntity
+
+
+class ProblemCreateInSchema(Schema):
+    title: str
+    question: str
+    difficulty: str
+    source: str
+    topic_id: int
+    tag_ids: list[int]
+    is_published: bool
+
+    def to_dto(self, *, author_id: int) -> ProblemCreateDTO:
+        return ProblemCreateDTO(
+            title=self.title,
+            question=self.question,
+            difficulty=self.difficulty,
+            source=self.source,
+            topic_id=self.topic_id,
+            tag_ids=self.tag_ids,
+            author_id=author_id,
+            is_published=self.is_published,
+        )
 
 
 class SolutionOutSchema(Schema, extra='forbid'):
@@ -19,7 +40,6 @@ class SolutionOutSchema(Schema, extra='forbid'):
     is_main: bool
     author: UserShortOutSchema | None
     is_published: bool
-    pub_date: datetime
 
     @staticmethod
     def from_entity(entity: SolutionEntity) -> SolutionOutSchema:
@@ -32,7 +52,6 @@ class SolutionOutSchema(Schema, extra='forbid'):
             if entity.author
             else None,
             is_published=entity.is_published,
-            pub_date=entity.pub_date,
         )
 
 
@@ -48,7 +67,6 @@ class ProblemOutSchema(Schema, extra='forbid'):
     solutions: list[SolutionOutSchema]
     author: UserShortOutSchema | None = None
     is_published: bool
-    pub_date: datetime
 
     @staticmethod
     def from_entity(entity: ProblemEntity) -> ProblemOutSchema:
@@ -69,5 +87,4 @@ class ProblemOutSchema(Schema, extra='forbid'):
             if entity.author
             else None,
             is_published=entity.is_published,
-            pub_date=entity.pub_date,
         )

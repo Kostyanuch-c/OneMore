@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from apps.common import BaseEntity
 from apps.problems.enums import DifficultyData
@@ -37,7 +36,6 @@ class SolutionEntity(BaseEntity):
     author: UserEntity | None
     is_main: bool
     is_published: bool
-    pub_date: datetime
 
 
 @dataclass(frozen=True)
@@ -46,10 +44,15 @@ class ProblemEntity(BaseEntity):
     question: str
     difficulty: DifficultyData
     source: str
-    pub_date: datetime
     is_published: bool
     author: UserEntity | None
     section: SectionEntity
     topic: TopicEntity
     tags: list[TagEntity]
     solutions: list[SolutionEntity]
+
+
+@dataclass(frozen=True)
+class ProblemCreatedEntity:
+    id: int
+    title: str
