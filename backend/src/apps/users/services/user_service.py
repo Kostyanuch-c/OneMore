@@ -79,6 +79,8 @@ class UserService:
     def get_user_by_email(
         self, *, email: str, include_inactive: bool = False
     ) -> UserEntity | None:
+        # On current stage we don't need to check if a user exists,
+        # because we used this method only for invite and check this moment in the use case'
         return self.repository.get_user_by_email(
             email=email, include_inactive=include_inactive
         )

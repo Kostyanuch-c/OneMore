@@ -11,7 +11,7 @@ from apps.problems.repositories import (
     TagRepository,
     TopicRepository,
 )
-from apps.problems.repositories.problems import ProblemsRepository
+from apps.problems.services.problem import ProblemService
 from apps.problems.use_case.problem_filters import GetProblemFilters
 
 
@@ -46,13 +46,12 @@ def get_problems_filters(
     response=ApiResponse[ProblemOutSchema],
     url_name='problem_detail',
 )
-def get_problem(
+def get_problem_detail(
     request: HttpRequest,
-    subject_slug: str,
     problem_id: int,
 ) -> ApiResponse[ProblemOutSchema]:
-    problem = ProblemsRepository().get_problem_detail(
-        problem_id=problem_id,
+    problem = ProblemService().get_problem_detail(
+        problem_id=problem_id, user=request.user
     )
 
     return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))

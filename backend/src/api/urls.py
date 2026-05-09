@@ -98,10 +98,7 @@ def exception_handler(
         request,
         ApiResponse.failure(
             message='Internal server error',
-            extra={
-                'error': str(exc.__class__.__name__),
-                'details': str(exc),
-            },
+            extra={},
         ),
         status=HTTPStatus.INTERNAL_SERVER_ERROR,
     )
