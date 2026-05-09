@@ -8,3 +8,4 @@ on:
 jobs:
   backend:
     uses: ./.github/workflows/reusable-backend-ci.yml
+    secrets: inherit

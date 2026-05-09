@@ -2,6 +2,9 @@ name: Reusable Backend CI
 
 on:
   workflow_call:
+    secrets:
+      SECRET_KEY:
+        required: true
 
 jobs:
   backend-checks:
@@ -39,13 +42,26 @@ jobs:
 
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: "False"
-      POSTMARK_TOKEN: ${{ secrets.POSTMARK_TOKEN }}
-      POSTMARK_SENDER: ${{ secrets.POSTMARK_SENDER }}
+      DEBUG: "True"
+      DJANGO_ENV: "dev"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Debug env variables
+        run: |
+          echo "DEBUG=$DEBUG"
+          echo "ENVIRONMENT=$ENVIRONMENT"
+
+          if [ -z "$SECRET_KEY" ]; then
+            echo "SECRET_KEY is empty"
+            exit 1
+          else
+            echo "SECRET_KEY is present"
+            echo "SECRET_KEY length: ${#SECRET_KEY}"
+            echo "SECRET_KEY masked value: $SECRET_KEY"
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v6
