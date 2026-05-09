@@ -2,9 +2,6 @@ name: Reusable Backend CI
 
 on:
   workflow_call:
-    secrets:
-      SECRET_KEY:
-        required: true
 
 jobs:
   backend-checks:

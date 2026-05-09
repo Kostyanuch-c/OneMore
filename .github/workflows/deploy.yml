@@ -12,7 +12,7 @@ on:
 jobs:
   backend:
     uses: ./.github/workflows/reusable-backend-ci.yml
-    secrets: inherit
+
 
   frontend:
     uses: ./.github/workflows/reusable-frontend-ci.yml
