@@ -2,6 +2,9 @@ name: Reusable Backend CI
 
 on:
   workflow_call:
+    secrets:
+      SECRET_KEY:
+        required: true
 
 jobs:
   backend-checks:
@@ -39,9 +42,8 @@ jobs:
 
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: "False"
-      POSTMARK_TOKEN: ${{ secrets.POSTMARK_TOKEN }}
-      POSTMARK_SENDER: ${{ secrets.POSTMARK_SENDER }}
+      DEBUG: "True"
+      DJANGO_ENV: "dev"
 
     steps:
       - name: Checkout repository
