@@ -61,7 +61,7 @@ class ProblemsRepository:
         )
 
         if dto.tag_ids:
-            problem.tags.set(dto.tag_ids)
+            problem.tags.add(*dto.tag_ids)
 
         return ProblemCreatedEntity(
             id=problem.pk,

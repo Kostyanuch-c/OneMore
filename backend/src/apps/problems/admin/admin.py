@@ -2,6 +2,12 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
+from apps.problems.admin.forms import (
+    SectionAdminForm,
+    SubjectAdminForm,
+    TagAdminForm,
+    TopicAdminForm,
+)
 from apps.problems.models import (
     Problem,
     Section,
@@ -17,6 +23,7 @@ admin.site.empty_value_display = '-пусто-'
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
+    form = SubjectAdminForm
     list_display = (
         'id',
         'name',
@@ -44,6 +51,7 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
+    form = SectionAdminForm
     list_display = (
         'id',
         'name',
@@ -74,6 +82,7 @@ class SectionAdmin(admin.ModelAdmin):
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
+    form = TopicAdminForm
     list_display = (
         'id',
         'name',
@@ -123,6 +132,7 @@ class TopicAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
+    form = TagAdminForm
     list_display = (
         'id',
         'name',
@@ -187,6 +197,9 @@ class ProblemAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
     ordering = ('-created_at',)
     inlines = (SolutionInline,)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Problem]:
+        return super().get_queryset(request).select_related('author', 'topic')
 
 
 @admin.register(Solution)

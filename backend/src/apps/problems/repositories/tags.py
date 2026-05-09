@@ -17,3 +17,10 @@ class TagRepository:
             .distinct()
             .order_by('name')
         ]
+
+    def get_existing_tag_ids(self, tag_ids: list[int]) -> set[int]:
+        return set(
+            self.model.objects.filter(id__in=tag_ids).values_list(
+                'id', flat=True
+            )
+        )

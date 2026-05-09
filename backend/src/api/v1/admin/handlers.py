@@ -53,7 +53,7 @@ def invite_user_view(
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
     url_name='admin_users_list',
 )
-def get_users_list(
+def get_users_list_view(
     request: HttpRequest,
     filters: Query[UserFiltersIn],
     pagination_in: Query[PaginationIn],

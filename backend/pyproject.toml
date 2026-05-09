@@ -216,7 +216,8 @@ check_untyped_defs = false
 
 [[tool.mypy.overrides]]
 module = [
-    "apps.problems.admin",
+    "apps.problems.admin.admin",
+    "apps.problems.admin.forms",
     "apps.users.admin",
 ]
 disable_error_code = ["type-arg"]

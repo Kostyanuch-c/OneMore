@@ -29,6 +29,14 @@ class ProblemCreateDTO:
 
 
 @dataclass(frozen=True)
+class ProblemCreateResult:
+    id: int
+    title: str
+    subject_slug: str
+    detail_url: str
+
+
+@dataclass(frozen=True)
 class ProblemUpdateDTO:
     title: str | None = None
     question: str | None = None

@@ -221,4 +221,4 @@ class Solution(BaseTimedModel):
         ]
 
     def __str__(self) -> str:
-        return f'{self.name} — {self.problem}'
+        return self.name

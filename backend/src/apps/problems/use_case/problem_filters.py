@@ -6,7 +6,7 @@ from django.utils.functional import cached_property
 from apps.common import BaseUseCase
 from apps.problems.dto import ProblemFiltersResult
 from apps.problems.entities import SubjectEntity
-from apps.problems.exception import SubjectNotFoundError
+from apps.problems.exceptions import SubjectNotFoundError
 from apps.problems.providers import get_difficulties
 from apps.problems.repositories import (
     SectionRepository,

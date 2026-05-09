@@ -61,21 +61,10 @@ class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
 
             return user, True
 
-    def get_validators(self) -> list[Callable[[], None]]:
-        return [self.validate_not_inviting_self]
-
     def send_invite(self) -> None:
         # Оборачиваем в именованную функцию вместо partial для совместимости
         # с captureOnCommitCallbacks(execute=True) в версиях Django с багом #36487.
         self.code_service.send_invite_link(email=self.student_email)
-
-    def validate_not_inviting_self(self) -> None:
-        if self.tutor_email == self.student_email:
-            logger.warning(
-                'Tutor attempted to invite self | tutor_id=%s field=email',
-                self.tutor_id,
-            )
-            raise TutorSelfInviteError
 
     def get_username(self) -> str:
         return f'{self.student_email.split("@", 1)[0][:50]}_{uuid.uuid4().hex[:12]}'
@@ -84,3 +73,14 @@ class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
         return self.user_service.get_user_by_email(
             email=self.student_email, include_inactive=True
         )
+
+    def get_validators(self) -> list[Callable[[], None]]:
+        return [self.validate_not_inviting_self]
+
+    def validate_not_inviting_self(self) -> None:
+        if self.tutor_email == self.student_email:
+            logger.warning(
+                'Tutor attempted to invite self | tutor_id=%s field=email',
+                self.tutor_id,
+            )
+            raise TutorSelfInviteError

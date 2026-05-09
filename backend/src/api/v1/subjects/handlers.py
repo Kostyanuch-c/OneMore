@@ -17,7 +17,9 @@ router = Router(tags=['subjects'])
     response=ApiResponse[list[SubjectOutSchema]],
     url_name='subjects_list',
 )
-def get_subjects(request: HttpRequest) -> ApiResponse[list[SubjectOutSchema]]:
+def get_subjects_view(
+    request: HttpRequest,
+) -> ApiResponse[list[SubjectOutSchema]]:
     subjects = SubjectRepository().get_list_subjects()
 
     return ApiResponse(

@@ -16,3 +16,13 @@ class TopicRepository:
                 section_id__in=section_ids,
             ).order_by('name')
         ]
+
+    def exists_topic_for_subject(
+        self,
+        subject_slug: str,
+        topic_id: int,
+    ) -> bool:
+        return self.model.objects.filter(
+            pk=topic_id,
+            section__subject__slug=subject_slug,
+        ).exists()

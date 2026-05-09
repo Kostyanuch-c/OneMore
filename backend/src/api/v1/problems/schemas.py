@@ -7,14 +7,15 @@ from api.v1.subjects.schemas import (
     TagOutSchema,
     TopicOutSchema,
 )
-from apps.problems.dto import ProblemCreateDTO
+from apps.problems.dto import ProblemCreateDTO, ProblemCreateResult
 from apps.problems.entities import ProblemEntity, SolutionEntity
+from apps.problems.enums import Difficulty
 
 
-class ProblemCreateInSchema(Schema):
+class ProblemCreateInSchema(Schema, extra='forbid'):
     title: str
     question: str
-    difficulty: str
+    difficulty: Difficulty
     source: str
     topic_id: int
     tag_ids: list[int]
@@ -52,6 +53,24 @@ class SolutionOutSchema(Schema, extra='forbid'):
             if entity.author
             else None,
             is_published=entity.is_published,
+        )
+
+
+class ProblemMutationOutSchema(Schema):
+    id: int
+    title: str
+    subject_slug: str
+    detail_url: str
+
+    @staticmethod
+    def from_result(
+        result: ProblemCreateResult,
+    ) -> ProblemMutationOutSchema:
+        return ProblemMutationOutSchema(
+            id=result.id,
+            title=result.title,
+            subject_slug=result.subject_slug,
+            detail_url=result.detail_url,
         )
 
 
