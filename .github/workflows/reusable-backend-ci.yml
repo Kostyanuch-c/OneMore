@@ -49,20 +49,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Debug env variables
-        run: |
-          echo "DEBUG=$DEBUG"
-          echo "DJANGO_ENV=DJANGO_ENV"
-
-          if [ -z "$SECRET_KEY" ]; then
-            echo "SECRET_KEY is empty"
-            exit 1
-          else
-            echo "SECRET_KEY is present"
-            echo "SECRET_KEY length: ${#SECRET_KEY}"
-            echo "SECRET_KEY masked value: $SECRET_KEY"
-          fi
-
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
