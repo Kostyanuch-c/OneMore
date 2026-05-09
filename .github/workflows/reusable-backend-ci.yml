@@ -52,7 +52,7 @@ jobs:
       - name: Debug env variables
         run: |
           echo "DEBUG=$DEBUG"
-          echo "ENVIRONMENT=$ENVIRONMENT"
+          echo "DJANGO_ENV=DJANGO_ENV"
 
           if [ -z "$SECRET_KEY" ]; then
             echo "SECRET_KEY is empty"
