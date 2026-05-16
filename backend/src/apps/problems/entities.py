@@ -53,6 +53,6 @@ class ProblemEntity(BaseEntity):
 
 
 @dataclass(frozen=True)
-class ProblemCreatedEntity:
+class ProblemMutationEntity:
     id: int
     title: str

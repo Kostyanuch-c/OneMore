@@ -17,8 +17,7 @@ class BaseUseCase[T](metaclass=ABCMeta):
         return []
 
     def validate(self) -> None:
-        validators = self.get_validators()
-        for validator in validators:
+        for validator in self.get_validators():
             validator()
 
     @abstractmethod

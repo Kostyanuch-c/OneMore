@@ -1,7 +1,7 @@
-from django.db.models import Prefetch, Q, QuerySet
+from django.db.models import Q
 
-from apps.problems.dto import ProblemCreateDTO
-from apps.problems.entities import ProblemCreatedEntity, ProblemEntity
+from apps.problems.dto import ProblemCreateDTO, ProblemUpdateDTO
+from apps.problems.entities import ProblemEntity, ProblemMutationEntity
 from apps.problems.models import Problem, Solution
 from apps.problems.repositories.converters import ProblemConverter
 
@@ -11,29 +11,16 @@ class ProblemsRepository:
     solution_model = Solution
     converter = ProblemConverter
 
-    def get_problem_detail_queryset(self) -> QuerySet[Problem]:
-        return self.model.objects.select_related(
-            'author',
-            'topic__section',
-            'topic__section__subject',
-        ).prefetch_related(
-            'tags',
-            Prefetch(
-                'solutions',
-                queryset=(
-                    self.solution_model.objects.select_related(
-                        'author'
-                    ).order_by('-is_main', 'created_at')
-                ),
-            ),
-        )
-
     def get_problem_detail_by_id(
         self,
+        *,
         problem_id: int,
         filters: Q | None = None,
+        with_solutions: bool = True,
     ) -> ProblemEntity | None:
-        queryset = self.get_problem_detail_queryset().filter(pk=problem_id)
+        queryset = self.model.objects.for_detail(
+            with_solutions=with_solutions,
+        ).filter(pk=problem_id)
 
         if filters is not None:
             queryset = queryset.filter(filters)
@@ -45,10 +32,10 @@ class ProblemsRepository:
 
         return self.converter.to_entity(
             problem,
-            with_solutions=True,
+            with_solutions=with_solutions,
         )
 
-    def create_problem(self, dto: ProblemCreateDTO) -> ProblemCreatedEntity:
+    def create_problem(self, dto: ProblemCreateDTO) -> ProblemMutationEntity:
         # transaction we not use because we opened the transaction in the use case
         problem = self.model.objects.create(
             title=dto.title,
@@ -63,7 +50,34 @@ class ProblemsRepository:
         if dto.tag_ids:
             problem.tags.add(*dto.tag_ids)
 
-        return ProblemCreatedEntity(
+        return ProblemMutationEntity(
+            id=problem.pk,
+            title=problem.title,
+        )
+
+    def update_problem(
+        self,
+        problem_id: int,
+        dto: ProblemUpdateDTO,
+    ) -> ProblemMutationEntity | None:
+        problem = self.model.objects.filter(pk=problem_id).first()
+
+        if problem is None:
+            return None
+
+        update_data = dto.data.copy()
+        tag_ids = update_data.pop('tag_ids', None)
+
+        for field, value in update_data.items():
+            setattr(problem, field, value)
+
+        if update_data:
+            problem.save(update_fields=list(update_data.keys()))
+
+        if 'tag_ids' in update_data:
+            problem.tags.set(tag_ids)
+
+        return ProblemMutationEntity(
             id=problem.pk,
             title=problem.title,
         )

@@ -7,7 +7,11 @@ from api.v1.subjects.schemas import (
     TagOutSchema,
     TopicOutSchema,
 )
-from apps.problems.dto import ProblemCreateDTO, ProblemCreateResult
+from apps.problems.dto import (
+    ProblemCreateDTO,
+    ProblemCreateResult,
+    ProblemUpdateDTO,
+)
 from apps.problems.entities import ProblemEntity, SolutionEntity
 from apps.problems.enums import Difficulty
 
@@ -32,6 +36,24 @@ class ProblemCreateInSchema(Schema, extra='forbid'):
             author_id=author_id,
             is_published=self.is_published,
         )
+
+
+class ProblemUpdateInSchema(Schema, extra='forbid'):
+    title: str | None = None
+    question: str | None = None
+    difficulty: Difficulty | None = None
+    source: str | None = None
+    topic_id: int | None = None
+    tag_ids: list[int] | None = None
+    is_published: bool | None = None
+
+    def to_dto(self) -> ProblemUpdateDTO:
+        data = self.model_dump(exclude_unset=True)
+
+        if data.get('difficulty') is not None:
+            data['difficulty'] = data['difficulty'].value
+
+        return ProblemUpdateDTO(data=data)
 
 
 class SolutionOutSchema(Schema, extra='forbid'):

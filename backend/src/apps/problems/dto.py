@@ -38,13 +38,7 @@ class ProblemCreateResult:
 
 @dataclass(frozen=True)
 class ProblemUpdateDTO:
-    title: str | None = None
-    question: str | None = None
-    difficulty: str | None = None
-    source: str | None = None
-    topic_id: int | None = None
-    tag_ids: list[int] | None = None
-    is_published: bool | None = None
+    data: dict[str, object]
 
 
 @dataclass(frozen=True)

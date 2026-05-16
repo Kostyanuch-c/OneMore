@@ -4,6 +4,7 @@ from django.db.models.functions import Lower, Trim
 
 from apps.common.models import BaseTimedModel
 from apps.problems.enums import Difficulty
+from apps.problems.queryset import ProblemQuerySet
 
 
 class Subject(BaseTimedModel):
@@ -158,6 +159,8 @@ class Problem(BaseTimedModel):
         null=True,
         blank=False,
     )
+
+    objects = ProblemQuerySet.as_manager()
 
     class Meta:
         db_table = 'problems'
