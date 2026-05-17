@@ -82,3 +82,7 @@ class ProblemsRepository:
             problem.tags.set(tag_ids)
 
         return True
+
+    def delete_problem(self, problem_id: int) -> bool:
+        deleted_count, _ = self.model.objects.filter(pk=problem_id).delete()
+        return deleted_count > 0

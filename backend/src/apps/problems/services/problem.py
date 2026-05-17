@@ -49,3 +49,7 @@ class ProblemService:
             raise ProblemNotFoundError
 
         return problem_id
+
+    def delete_problem(self, problem_id: int) -> None:
+        if not self.repository.delete_problem(problem_id=problem_id):
+            raise ProblemNotFoundError

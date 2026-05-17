@@ -31,6 +31,37 @@ router = Router(tags=['problems'])
 subject_problems_router = Router(tags=['problems'])
 
 
+@router.get(
+    '/{problem_id}/',
+    response=ApiResponse[ProblemOutSchema],
+    url_name='problem_detail',
+)
+def get_problem_detail_view(
+    request: HttpRequest,
+    problem_id: int,
+) -> ApiResponse[ProblemOutSchema]:
+    problem = ProblemService().get_problem_detail(
+        problem_id=problem_id, user=request.user
+    )
+
+    return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))
+
+
+@router.delete(
+    '/{problem_id}/',
+    response={HTTPStatus.NO_CONTENT: None},
+    url_name='problems_delete',
+    auth=django_auth_is_staff,
+)
+def delete_problem_view(
+    request: HttpRequest,
+    problem_id: int,
+) -> Status[None]:
+    ProblemService().delete_problem(problem_id=problem_id)
+
+    return Status(HTTPStatus.NO_CONTENT, None)
+
+
 @subject_problems_router.get(
     '{subject_slug}/problems/filters',
     response=ApiResponse[ProblemFiltersOutSchema],
@@ -51,22 +82,6 @@ def get_problems_filters_view(
     return ApiResponse(
         data=ProblemFiltersOutSchema.from_result(problems_filters)
     )
-
-
-@router.get(
-    '/{problem_id}/',
-    response=ApiResponse[ProblemOutSchema],
-    url_name='problem_detail',
-)
-def get_problem_detail_view(
-    request: HttpRequest,
-    problem_id: int,
-) -> ApiResponse[ProblemOutSchema]:
-    problem = ProblemService().get_problem_detail(
-        problem_id=problem_id, user=request.user
-    )
-
-    return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))
 
 
 @subject_problems_router.post(
