@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 
 from django.db.models import Q
 
-from apps.problems.dto import ProblemCreateDTO
-from apps.problems.entities import ProblemEntity, ProblemMutationEntity
+from apps.problems.dto import ProblemCreateDTO, ProblemUpdateDTO
+from apps.problems.entities import ProblemEntity
 from apps.problems.exceptions import ProblemNotFoundError
 from apps.problems.repositories import ProblemsRepository
 
@@ -37,5 +37,15 @@ class ProblemService:
             raise ProblemNotFoundError
         return problem
 
-    def create_problem(self, dto: ProblemCreateDTO) -> ProblemMutationEntity:
+    def create_problem(self, dto: ProblemCreateDTO) -> int:
         return self.repository.create_problem(dto=dto)
+
+    def update_problem(self, problem_id: int, dto: ProblemUpdateDTO) -> int:
+        if not self.repository.exists_problem(
+            problem_id=problem_id
+        ) or not self.repository.update_problem(
+            problem_id=problem_id, dto=dto
+        ):
+            raise ProblemNotFoundError
+
+        return problem_id

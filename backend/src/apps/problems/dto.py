@@ -29,9 +29,8 @@ class ProblemCreateDTO:
 
 
 @dataclass(frozen=True)
-class ProblemCreateResult:
+class ProblemMutationResult:
     id: int
-    title: str
     subject_slug: str
     detail_url: str
 

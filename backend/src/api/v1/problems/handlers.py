@@ -10,6 +10,7 @@ from api.v1.problems.schemas import (
     ProblemCreateInSchema,
     ProblemMutationOutSchema,
     ProblemOutSchema,
+    ProblemUpdateInSchema,
 )
 from api.v1.subjects.schemas import ProblemFiltersOutSchema
 from api.v1.utils import get_authenticated_user
@@ -23,6 +24,7 @@ from apps.problems.services import TagService, TopicService
 from apps.problems.services.problem import ProblemService
 from apps.problems.use_case.create_problem import CreateProblemUseCase
 from apps.problems.use_case.problem_filters import GetProblemFilters
+from apps.problems.use_case.update_problem import UpdateProblemUseCase
 
 
 router = Router(tags=['problems'])
@@ -30,7 +32,7 @@ subject_problems_router = Router(tags=['problems'])
 
 
 @subject_problems_router.get(
-    '/filters/',
+    '{subject_slug}/problems/filters',
     response=ApiResponse[ProblemFiltersOutSchema],
     url_name='subject_problems_filters',
 )
@@ -68,7 +70,7 @@ def get_problem_detail_view(
 
 
 @subject_problems_router.post(
-    '/',
+    '{subject_slug}/problems/',
     response={
         HTTPStatus.CREATED: ApiResponse[ProblemMutationOutSchema],
     },
@@ -82,7 +84,7 @@ def create_problem_view(
 ) -> Status[ApiResponse[ProblemMutationOutSchema]]:
     user = get_authenticated_user(request)
 
-    created_problem = CreateProblemUseCase(
+    redirect_data = CreateProblemUseCase(
         problem_service=ProblemService(),
         topic_service=TopicService(),
         tag_service=TagService(),
@@ -93,6 +95,32 @@ def create_problem_view(
     return Status(
         HTTPStatus.CREATED,
         ApiResponse.success(
-            data=ProblemMutationOutSchema.from_result(result=created_problem)
+            data=ProblemMutationOutSchema.from_result(result=redirect_data)
         ),
+    )
+
+
+@subject_problems_router.patch(
+    '{subject_slug}/problems/{problem_id}/',
+    response=ApiResponse[ProblemMutationOutSchema],
+    url_name='subject_problems_update',
+    auth=django_auth_is_staff,
+)
+def update_problem_view(
+    request: HttpRequest,
+    payload: ProblemUpdateInSchema,
+    subject_slug: str,
+    problem_id: int,
+) -> ApiResponse[ProblemMutationOutSchema]:
+    redirect_data = UpdateProblemUseCase(
+        problem_service=ProblemService(),
+        topic_service=TopicService(),
+        tag_service=TagService(),
+        subject_slug=subject_slug,
+        problem_id=problem_id,
+        update_data=payload.to_dto(),
+    )()
+
+    return ApiResponse.success(
+        data=ProblemMutationOutSchema.from_result(result=redirect_data)
     )

@@ -35,7 +35,7 @@ class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
         if with_solutions:
             queryset = queryset._with_solutions_detail()
 
-        return queryset
+        return queryset.order_by('-created_at')
 
     def for_list(self) -> ProblemQuerySet:
         return self._with_base_detail().order_by('-created_at')

@@ -18,8 +18,5 @@ router.add_router('auth/', auth_router)
 router.add_router('admin/', admin_router)
 router.add_router('subjects/', subject_router)
 router.add_router('problems/', problem_router)
-router.add_router(
-    'subjects/{subject_slug}/problems/',
-    subject_problems_router,
-)
+router.add_router('subjects/', subject_problems_router)
 # router.add_router(/problems/{problem_id}/solutions', solutions_router) # noqa

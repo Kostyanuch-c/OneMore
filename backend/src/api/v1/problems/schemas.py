@@ -9,7 +9,7 @@ from api.v1.subjects.schemas import (
 )
 from apps.problems.dto import (
     ProblemCreateDTO,
-    ProblemCreateResult,
+    ProblemMutationResult,
     ProblemUpdateDTO,
 )
 from apps.problems.entities import ProblemEntity, SolutionEntity
@@ -80,17 +80,15 @@ class SolutionOutSchema(Schema, extra='forbid'):
 
 class ProblemMutationOutSchema(Schema):
     id: int
-    title: str
     subject_slug: str
     detail_url: str
 
     @staticmethod
     def from_result(
-        result: ProblemCreateResult,
+        result: ProblemMutationResult,
     ) -> ProblemMutationOutSchema:
         return ProblemMutationOutSchema(
             id=result.id,
-            title=result.title,
             subject_slug=result.subject_slug,
             detail_url=result.detail_url,
         )

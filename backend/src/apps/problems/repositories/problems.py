@@ -1,7 +1,8 @@
 from django.db.models import Q
+from django.utils import timezone
 
 from apps.problems.dto import ProblemCreateDTO, ProblemUpdateDTO
-from apps.problems.entities import ProblemEntity, ProblemMutationEntity
+from apps.problems.entities import ProblemEntity
 from apps.problems.models import Problem, Solution
 from apps.problems.repositories.converters import ProblemConverter
 
@@ -10,6 +11,9 @@ class ProblemsRepository:
     model = Problem
     solution_model = Solution
     converter = ProblemConverter
+
+    def exists_problem(self, problem_id: int) -> bool:
+        return self.model.objects.filter(pk=problem_id).exists()
 
     def get_problem_detail_by_id(
         self,
@@ -35,7 +39,7 @@ class ProblemsRepository:
             with_solutions=with_solutions,
         )
 
-    def create_problem(self, dto: ProblemCreateDTO) -> ProblemMutationEntity:
+    def create_problem(self, dto: ProblemCreateDTO) -> int:
         # transaction we not use because we opened the transaction in the use case
         problem = self.model.objects.create(
             title=dto.title,
@@ -50,34 +54,31 @@ class ProblemsRepository:
         if dto.tag_ids:
             problem.tags.add(*dto.tag_ids)
 
-        return ProblemMutationEntity(
-            id=problem.pk,
-            title=problem.title,
-        )
+        return problem.pk
 
     def update_problem(
         self,
         problem_id: int,
         dto: ProblemUpdateDTO,
-    ) -> ProblemMutationEntity | None:
-        problem = self.model.objects.filter(pk=problem_id).first()
-
-        if problem is None:
-            return None
-
+    ) -> bool:
         update_data = dto.data.copy()
         tag_ids = update_data.pop('tag_ids', None)
 
-        for field, value in update_data.items():
-            setattr(problem, field, value)
+        update_data['updated_at'] = timezone.now()
 
-        if update_data:
-            problem.save(update_fields=list(update_data.keys()))
+        updated_count = self.model.objects.filter(pk=problem_id).update(
+            **update_data
+        )
 
-        if 'tag_ids' in update_data:
+        if updated_count == 0:
+            return False
+
+        if tag_ids is not None:
+            problem = self.model.objects.filter(pk=problem_id).first()
+
+            if problem is None:
+                return False
+
             problem.tags.set(tag_ids)
 
-        return ProblemMutationEntity(
-            id=problem.pk,
-            title=problem.title,
-        )
+        return True
