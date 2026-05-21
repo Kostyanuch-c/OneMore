@@ -50,9 +50,3 @@ class ProblemEntity(BaseEntity):
     topic: TopicEntity
     tags: list[TagEntity]
     solutions: list[SolutionEntity]
-
-
-@dataclass(frozen=True)
-class ProblemMutationEntity:
-    id: int
-    title: str

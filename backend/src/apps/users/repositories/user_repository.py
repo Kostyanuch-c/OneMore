@@ -33,9 +33,8 @@ class UserRepository:
             query &= Q(is_active=True)
 
         user = self.user_model.objects.filter(query).first()
-        if user:
-            return self.converter.to_entity(user)
-        return None
+
+        return self.converter.to_entity(user) if user is not None else None
 
     def create_user(self, username: str, email: str) -> UserEntity:
         user = self.user_model(

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from apps.problems.entities import (
     SectionEntity,
@@ -6,6 +7,23 @@ from apps.problems.entities import (
     TopicEntity,
 )
 from apps.problems.enums import DifficultyData
+
+
+@dataclass(frozen=True)
+class ProblemFilters:
+    subject_slug: str
+
+    search: str | None = None
+
+    section_ids: tuple[int, ...] = ()
+    topic_ids: tuple[int, ...] = ()
+    tag_ids: tuple[int, ...] = ()
+
+    difficulty: str | None = None
+    is_published: bool | None = None
+
+    created_from: datetime | None = None
+    created_to: datetime | None = None
 
 
 @dataclass(frozen=True)

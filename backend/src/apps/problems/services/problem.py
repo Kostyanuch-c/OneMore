@@ -2,10 +2,15 @@ from typing import TYPE_CHECKING
 
 from django.db.models import Q
 
-from apps.problems.dto import ProblemCreateDTO, ProblemUpdateDTO
+from apps.problems.dto import (
+    ProblemCreateDTO,
+    ProblemFilters,
+    ProblemUpdateDTO,
+)
 from apps.problems.entities import ProblemEntity
 from apps.problems.exceptions import ProblemNotFoundError
 from apps.problems.repositories import ProblemsRepository
+from apps.problems.services import ProblemQueryBuilder
 
 
 if TYPE_CHECKING:
@@ -14,6 +19,7 @@ if TYPE_CHECKING:
 
 class ProblemService:
     repository = ProblemsRepository()
+    query_builder = ProblemQueryBuilder()
 
     def _get_problem_visibility_filters(
         self, user: AbstractUser | AnonymousUser
@@ -36,6 +42,24 @@ class ProblemService:
         if not problem:
             raise ProblemNotFoundError
         return problem
+
+    def get_problems_list(
+        self,
+        filters: ProblemFilters,
+        limit: int,
+        offset: int,
+        user: AbstractUser | AnonymousUser,
+    ) -> list[ProblemEntity]:
+        query = self.query_builder.build(
+            filters=filters,
+            base_query=self._get_problem_visibility_filters(user),
+        )
+
+        return self.repository.get_problems_list(
+            filters=query,
+            limit=limit,
+            offset=offset,
+        )
 
     def create_problem(self, dto: ProblemCreateDTO) -> int:
         return self.repository.create_problem(dto=dto)

@@ -31,13 +31,27 @@ class ProblemsRepository:
 
         problem = queryset.first()
 
-        if problem is None:
-            return None
-
-        return self.converter.to_entity(
-            problem,
-            with_solutions=with_solutions,
+        return (
+            self.converter.to_entity(
+                problem,
+                with_solutions=with_solutions,
+            )
+            if problem is not None
+            else None
         )
+
+    def get_problems_list(
+        self,
+        filters: Q,
+        limit: int,
+        offset: int,
+    ) -> list[ProblemEntity]:
+        queryset = self.model.objects.for_list().filter(filters).distinct()
+
+        return [
+            self.converter.to_entity(problem)
+            for problem in queryset[offset : offset + limit]
+        ]
 
     def create_problem(self, dto: ProblemCreateDTO) -> int:
         # transaction we not use because we opened the transaction in the use case
@@ -61,6 +75,7 @@ class ProblemsRepository:
         problem_id: int,
         dto: ProblemUpdateDTO,
     ) -> bool:
+        # transaction we not use because we opened the transaction in the use case
         update_data = dto.data.copy()
         tag_ids = update_data.pop('tag_ids', None)
 

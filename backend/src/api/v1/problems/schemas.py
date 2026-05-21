@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from ninja import Schema
 
 from api.v1.profile.schemas import UserShortOutSchema
@@ -106,6 +108,8 @@ class ProblemOutSchema(Schema, extra='forbid'):
     solutions: list[SolutionOutSchema]
     author: UserShortOutSchema | None = None
     is_published: bool
+    created_at: datetime
+    updated_at: datetime
 
     @staticmethod
     def from_entity(entity: ProblemEntity) -> ProblemOutSchema:
@@ -126,4 +130,6 @@ class ProblemOutSchema(Schema, extra='forbid'):
             if entity.author
             else None,
             is_published=entity.is_published,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
         )
