@@ -20,7 +20,6 @@ class ProblemFilters:
     tag_ids: tuple[int, ...] = ()
 
     difficulty: str | None = None
-    is_published: bool | None = None
 
     created_from: datetime | None = None
     created_to: datetime | None = None

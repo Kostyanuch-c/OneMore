@@ -17,7 +17,7 @@ router = Router(tags=['auth'])
 
 
 @router.post(
-    '/authorise',
+    '/authorise/',
     response=ApiResponse[AuthOutSchema],
     url_name='auth_authorise',
 )
@@ -33,7 +33,7 @@ def authorise_view(
 
 
 @router.post(
-    '/confirm',
+    '/confirm/',
     response=ApiResponse[AuthUserOutSchema],
     url_name='auth_confirm',
 )
@@ -47,7 +47,7 @@ def confirm_view(
 
 
 @router.post(
-    '/invite-confirm',
+    '/invite-confirm/',
     response=ApiResponse[AuthUserOutSchema],
     url_name='auth_invite_confirm',
 )

@@ -19,7 +19,7 @@ router = Router(tags=['profile'], auth=SessionAuth())
 
 
 @router.patch(
-    '/me',
+    '/me/',
     response=ApiResponse[UserOutSchema],
     url_name='profile_me_update',
 )
@@ -37,7 +37,7 @@ def update_user_view(
 
 
 @router.get(
-    '/me',
+    '/me/',
     response=ApiResponse[UserOutSchema],
     url_name='profile_me_get',
 )

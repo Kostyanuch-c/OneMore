@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.db.models import Q
 
+from apps.common.base_entities import Page
 from apps.problems.dto import (
     ProblemCreateDTO,
     ProblemFilters,
@@ -32,6 +33,16 @@ class ProblemService:
 
         return Q(is_published=True)
 
+    def _build_problem_list_query(
+        self,
+        filters: ProblemFilters,
+        user: AbstractUser | AnonymousUser,
+    ) -> Q:
+        return self.query_builder.build(
+            filters=filters,
+            base_query=self._get_problem_visibility_filters(user),
+        )
+
     def get_problem_detail(
         self, problem_id: int, user: AbstractUser | AnonymousUser
     ) -> ProblemEntity:
@@ -43,22 +54,22 @@ class ProblemService:
             raise ProblemNotFoundError
         return problem
 
-    def get_problems_list(
+    def get_problems_page(
         self,
         filters: ProblemFilters,
         limit: int,
         offset: int,
         user: AbstractUser | AnonymousUser,
-    ) -> list[ProblemEntity]:
-        query = self.query_builder.build(
-            filters=filters,
-            base_query=self._get_problem_visibility_filters(user),
-        )
+    ) -> Page[ProblemEntity]:
+        query = self._build_problem_list_query(filters=filters, user=user)
 
-        return self.repository.get_problems_list(
-            filters=query,
-            limit=limit,
-            offset=offset,
+        return Page(
+            items=self.repository.get_problems_list(
+                filters=query,
+                limit=limit,
+                offset=offset,
+            ),
+            total=self.repository.get_problems_count(filters=query),
         )
 
     def create_problem(self, dto: ProblemCreateDTO) -> int:

@@ -21,7 +21,7 @@ router = Router(tags=['admin'], auth=django_auth_is_staff)
 
 
 @router.post(
-    '/user',
+    '/user/',
     response={
         HTTPStatus.CREATED: ApiResponse[UserOutSchema],
         HTTPStatus.OK: ApiResponse[UserOutSchema],
@@ -49,7 +49,7 @@ def invite_user_view(
 
 
 @router.get(
-    '/users',
+    '/users/',
     response=ApiResponse[ListPaginationResponse[UserOutSchema]],
     url_name='admin_users_list',
 )
@@ -60,7 +60,7 @@ def get_users_list_view(
 ) -> ApiResponse[ListPaginationResponse[UserOutSchema]]:
     users_page = SearchUsers(
         service=UserService(),
-        filters=UserFilters(**filters.dict()),
+        filters=UserFilters(**filters.model_dump()),
         offset=pagination_in.offset,
         limit=pagination_in.limit,
     )()

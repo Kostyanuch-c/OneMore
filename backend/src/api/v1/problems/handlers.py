@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
-from ninja import Router, Status
+from ninja import Query, Router, Status
 from ninja.security import django_auth_is_staff
 
 from django.http import HttpRequest
 
-from api.schemas import ApiResponse
+from api.filters import PaginationIn, PaginationOut
+from api.schemas import ApiResponse, ListPaginationResponse
+from api.v1.problems.filters import ProblemsFilterInSchema
 from api.v1.problems.schemas import (
     ProblemCreateInSchema,
     ProblemMutationOutSchema,
@@ -14,17 +16,19 @@ from api.v1.problems.schemas import (
 )
 from api.v1.subjects.schemas import ProblemFiltersOutSchema
 from api.v1.utils import get_authenticated_user
+from apps.problems.dto import ProblemFilters
 from apps.problems.repositories import (
     SectionRepository,
     SubjectRepository,
     TagRepository,
     TopicRepository,
 )
-from apps.problems.services import TagService, TopicService
-from apps.problems.services.problem import ProblemService
-from apps.problems.use_case.create_problem import CreateProblemUseCase
-from apps.problems.use_case.problem_filters import GetProblemFilters
-from apps.problems.use_case.update_problem import UpdateProblemUseCase
+from apps.problems.services import ProblemService, TagService, TopicService
+from apps.problems.use_case import (
+    CreateProblemUseCase,
+    GetProblemFilters,
+    UpdateProblemUseCase,
+)
 
 
 router = Router(tags=['problems'])
@@ -63,7 +67,41 @@ def delete_problem_view(
 
 
 @subject_problems_router.get(
-    '{subject_slug}/problems/filters',
+    '{subject_slug}/problems/list/',
+    response=ApiResponse[ListPaginationResponse[ProblemOutSchema]],
+    url_name='subject_problems_list',
+)
+def get_problems_list_view(
+    request: HttpRequest,
+    subject_slug: str,
+    filters: Query[ProblemsFilterInSchema],
+    pagination_in: Query[PaginationIn],
+) -> ApiResponse[ListPaginationResponse[ProblemOutSchema]]:
+    problems_page = ProblemService().get_problems_page(
+        filters=ProblemFilters(
+            subject_slug=subject_slug, **filters.model_dump()
+        ),
+        offset=pagination_in.offset,
+        limit=pagination_in.limit,
+        user=request.user,
+    )
+
+    pagination_out = PaginationOut(
+        limit=pagination_in.limit,
+        offset=pagination_in.offset,
+        total=problems_page.total,
+    )
+    items = [
+        ProblemOutSchema.from_entity(problem)
+        for problem in problems_page.items
+    ]
+    return ApiResponse.success(
+        data=ListPaginationResponse(items=items, pagination=pagination_out)
+    )
+
+
+@subject_problems_router.get(
+    '{subject_slug}/problems/filters/',
     response=ApiResponse[ProblemFiltersOutSchema],
     url_name='subject_problems_filters',
 )

@@ -15,6 +15,9 @@ class ProblemsRepository:
     def exists_problem(self, problem_id: int) -> bool:
         return self.model.objects.filter(pk=problem_id).exists()
 
+    def get_problems_count(self, filters: Q | None = None) -> int:
+        return self.model.objects.filter(filters or Q()).distinct().count()
+
     def get_problem_detail_by_id(
         self,
         *,
