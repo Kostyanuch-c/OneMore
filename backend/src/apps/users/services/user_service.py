@@ -3,6 +3,7 @@ import logging
 from django.db import IntegrityError
 from django.db.models import Q
 
+from apps.common.base_entities import Page
 from apps.users.dto import UserFilters, UserUpdateDTO
 from apps.users.entities import (
     UserEntity,
@@ -13,6 +14,7 @@ from apps.users.exceptions.users import (
     UserNameAlreadyExistsError,
 )
 from apps.users.repositories.user_repository import UserRepository
+from apps.users.services.query_builder import UserQueryBuilder
 
 
 logger = logging.getLogger('apps.users.service')
@@ -20,6 +22,7 @@ logger = logging.getLogger('apps.users.service')
 
 class UserService:
     repository = UserRepository()
+    query_builder = UserQueryBuilder()
 
     @staticmethod
     def _detect_user_conflict_field(exc: IntegrityError) -> str | None:
@@ -42,38 +45,27 @@ class UserService:
 
         return None
 
-    def _build_user_query(self, filters: UserFilters) -> Q:
-        query = Q()
+    def _build_user_list_query(
+        self,
+        filters: UserFilters,
+    ) -> Q:
+        return self.query_builder.build(filters=filters)
 
-        if filters.is_active is not None:
-            query &= Q(is_active=filters.is_active)
+    def get_users_page(
+        self,
+        filters: UserFilters,
+        limit: int,
+        offset: int,
+    ) -> Page[UserEntity]:
+        query = self._build_user_list_query(filters=filters)
 
-        if filters.search:
-            query &= (
-                Q(username__icontains=filters.search)
-                | Q(email__icontains=filters.search)
-                | Q(first_name__icontains=filters.search)
-                | Q(last_name__icontains=filters.search)
-            )
-        if filters.created_from:
-            query &= Q(date_joined__gte=filters.created_from)
-
-        if filters.created_to:
-            query &= Q(date_joined__lte=filters.created_to)
-        return query
-
-    def get_users_count(self, filters: UserFilters) -> int:
-        return self.repository.get_users_count(
-            filters=self._build_user_query(filters)
-        )
-
-    def get_users_list(
-        self, filters: UserFilters, limit: int, offset: int
-    ) -> list[UserEntity]:
-        return self.repository.get_users_list(
-            filters=self._build_user_query(filters),
-            limit=limit,
-            offset=offset,
+        return Page(
+            items=self.repository.get_users_list(
+                filters=query,
+                limit=limit,
+                offset=offset,
+            ),
+            total=self.repository.get_users_count(filters=query),
         )
 
     def get_user_by_email(

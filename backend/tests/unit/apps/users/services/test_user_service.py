@@ -4,11 +4,8 @@ from datetime import (
 )
 
 from django.db import IntegrityError
-from django.db.models import Q
 
 import pytest
-
-from tests.integration.utils.user_helpers import assert_q_equal
 
 from apps.users.dto import UserFilters, UserUpdateDTO
 from apps.users.exceptions.users import (
@@ -22,54 +19,47 @@ DATE_FROM = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
 DATE_TO = datetime(2024, 12, 31, tzinfo=dt_timezone.utc)
 
 
-def test_get_users_count_calls_build_query_and_repository(
-    mocker, user_repository_mock, user_service
-):
-    filters = UserFilters(is_active=True)
-    built_query = object()
-    mock_result = 10
-    build_query_mock = mocker.patch.object(
-        user_service,
-        '_build_user_query',
-        return_value=built_query,
-    )
-    user_repository_mock.get_users_count.return_value = mock_result
-    user_service.repository = user_repository_mock
-
-    result = user_service.get_users_count(filters)
-
-    build_query_mock.assert_called_once_with(filters)
-    user_repository_mock.get_users_count.assert_called_once_with(
-        filters=built_query
-    )
-    assert result == mock_result
-
-
-def test_get_users_list_calls_build_query_and_repository(
-    mocker, user_repository_mock, user_service
+def test_get_users_page_builds_query_and_calls_repository(
+    mocker,
+    user_repository_mock,
+    user_service,
 ):
     filters = UserFilters(is_active=True)
     built_query = object()
     expected_users = [object(), object()]
+    expected_total = 10
     limit = 10
     offset = 5
 
     build_query_mock = mocker.patch.object(
         user_service,
-        '_build_user_query',
+        '_build_user_list_query',
         return_value=built_query,
     )
+
     user_repository_mock.get_users_list.return_value = expected_users
+    user_repository_mock.get_users_count.return_value = expected_total
     user_service.repository = user_repository_mock
-    result = user_service.get_users_list(
-        filters=filters, limit=limit, offset=offset
+
+    result = user_service.get_users_page(
+        filters=filters,
+        limit=limit,
+        offset=offset,
     )
 
-    build_query_mock.assert_called_once_with(filters)
+    build_query_mock.assert_called_once_with(filters=filters)
+
     user_repository_mock.get_users_list.assert_called_once_with(
-        filters=built_query, limit=limit, offset=offset
+        filters=built_query,
+        limit=limit,
+        offset=offset,
     )
-    assert result == expected_users
+    user_repository_mock.get_users_count.assert_called_once_with(
+        filters=built_query,
+    )
+
+    assert result.items == expected_users
+    assert result.total == expected_total
 
 
 def test_get_user_by_email_calls_repository(
@@ -247,48 +237,3 @@ def test_detect_user_conflict_field_falls_back_to_message_when_diag_not_matched(
     exc.__cause__ = cause_mock
 
     assert user_service._detect_user_conflict_field(exc) == 'email'
-
-
-@pytest.mark.parametrize(
-    ('filters', 'expected_query'),
-    [
-        (UserFilters(), Q()),
-        (UserFilters(is_active=False), Q(is_active=False)),
-        (
-            UserFilters(search='john'),
-            (
-                Q(username__icontains='john')
-                | Q(email__icontains='john')
-                | Q(first_name__icontains='john')
-                | Q(last_name__icontains='john')
-            ),
-        ),
-        (UserFilters(created_from=DATE_FROM), Q(date_joined__gte=DATE_FROM)),
-        (UserFilters(created_to=DATE_TO), Q(date_joined__lte=DATE_TO)),
-        (
-            UserFilters(
-                is_active=True,
-                search='john',
-                created_from=DATE_FROM,
-                created_to=DATE_TO,
-            ),
-            Q(is_active=True)
-            & (
-                Q(username__icontains='john')
-                | Q(email__icontains='john')
-                | Q(first_name__icontains='john')
-                | Q(last_name__icontains='john')
-            )
-            & Q(date_joined__gte=DATE_FROM)
-            & Q(date_joined__lte=DATE_TO),
-        ),
-    ],
-)
-def test_build_user_query_returns_query_with_filters(
-    user_service,
-    filters,
-    expected_query,
-):
-    result = user_service._build_user_query(filters)
-
-    assert_q_equal(result, expected_query)

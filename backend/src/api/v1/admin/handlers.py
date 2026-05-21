@@ -14,7 +14,7 @@ from apps.a12n.services import AuthEmailService
 from apps.access.services import TutorStudentMembershipService
 from apps.users.dto import UserFilters
 from apps.users.services import UserService
-from apps.users.use_cases import InviteUser, SearchUsers
+from apps.users.use_cases import InviteUser
 
 
 router = Router(tags=['admin'], auth=django_auth_is_staff)
@@ -58,12 +58,11 @@ def get_users_list_view(
     filters: Query[UserFiltersIn],
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[UserOutSchema]]:
-    users_page = SearchUsers(
-        service=UserService(),
+    users_page = UserService().get_users_page(
         filters=UserFilters(**filters.model_dump()),
         offset=pagination_in.offset,
         limit=pagination_in.limit,
-    )()
+    )
 
     pagination_out = PaginationOut(
         limit=pagination_in.limit,

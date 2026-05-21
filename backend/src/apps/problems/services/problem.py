@@ -11,7 +11,7 @@ from apps.problems.dto import (
 from apps.problems.entities import ProblemEntity
 from apps.problems.exceptions import ProblemNotFoundError
 from apps.problems.repositories import ProblemsRepository
-from apps.problems.services import ProblemQueryBuilder
+from apps.problems.services.query_builder import ProblemQueryBuilder
 
 
 if TYPE_CHECKING:

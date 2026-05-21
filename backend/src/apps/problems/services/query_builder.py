@@ -1,4 +1,4 @@
-from apps.common.base_filter_service import BaseQueryBuilder
+from apps.common.base_query_builder import BaseQueryBuilder
 from apps.problems.dto import ProblemFilters
 
 
