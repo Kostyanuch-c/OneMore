@@ -20,13 +20,13 @@ def test_auth_service_authorise(auth_service, mocker, email, user):
         return_value=None,
     )
 
-    result = auth_service.authorise(email)
+    result = auth_service.authorise(email=email)
 
     assert result is None
-    get_user_mock.assert_called_once_with(email)
+    get_user_mock.assert_called_once_with(email=email)
 
     if user is not None:
-        send_code_mock.assert_called_once_with(email)
+        send_code_mock.assert_called_once_with(email=email)
     else:
         send_code_mock.assert_not_called()
 
@@ -75,24 +75,28 @@ def test_auth_service_confirm(
 
     if should_raise:
         with pytest.raises(InvalidLoginCodeError):
-            auth_service.confirm(request, email, code)
+            auth_service.confirm(request=request, email=email, code=code)
     else:
-        result = auth_service.confirm(request, email, code)
+        result = auth_service.confirm(
+            request=request,
+            email=email,
+            code=code,
+        )
 
         assert isinstance(result, UserEntity)
         assert result == user_entity
 
-    get_user_mock.assert_called_once_with(email)
+    get_user_mock.assert_called_once_with(email=email)
 
     if user is None:
         verify_code_mock.assert_not_called()
         login_mock.assert_not_called()
     elif not is_verify:
-        verify_code_mock.assert_called_once_with(email, code)
+        verify_code_mock.assert_called_once_with(email=email, code=code)
         login_mock.assert_not_called()
     else:
-        verify_code_mock.assert_called_once_with(email, code)
-        login_mock.assert_called_once_with(request, user)
+        verify_code_mock.assert_called_once_with(email=email, code=code)
+        login_mock.assert_called_once_with(request=request, user=user)
 
 
 def test_auth_service_invite_confirm_success(
@@ -117,8 +121,8 @@ def test_auth_service_invite_confirm_success(
     assert isinstance(result, UserEntity)
     assert result == user_entity
 
-    login_session_mock.assert_called_once_with(request, user)
-    code_service_mock.verify_invite_token.assert_called_once_with(token)
+    login_session_mock.assert_called_once_with(request=request, user=user)
+    code_service_mock.verify_invite_token.assert_called_once_with(token=token)
     get_user_model_by_email_mock.assert_called_once_with(email=email)
 
 
@@ -144,7 +148,7 @@ def test_auth_service_invite_confirm_user_not_found(
     with pytest.raises(RuntimeError):
         auth_service.invite_confirm(request=request, token=token)
 
-    code_service_mock.verify_invite_token.assert_called_once_with(token)
+    code_service_mock.verify_invite_token.assert_called_once_with(token=token)
     get_user_mock.assert_called_once_with(email=email)
     login_session_mock.assert_not_called()
 
@@ -165,6 +169,6 @@ def test_auth_service_invite_confirm_invalid_token(
     with pytest.raises(InvalidInviteTokenError):
         auth_service.invite_confirm(request=request, token=token)
 
-    code_service_mock.verify_invite_token.assert_called_once_with(token)
+    code_service_mock.verify_invite_token.assert_called_once_with(token=token)
     get_user_model_by_email_mock.assert_not_called()
     login_session_mock.assert_not_called()

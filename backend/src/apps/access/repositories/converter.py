@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 class TutorStudentMembershipConverter:
     @staticmethod
     def to_entity(
+        *,
         model: TutorStudentMembership,
     ) -> TutorStudentMembershipEntity:
         return TutorStudentMembershipEntity(

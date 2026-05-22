@@ -18,23 +18,24 @@ class AuthEmailService:
     def _generate_token(self) -> str:
         return secrets.token_urlsafe(32)
 
-    def _login_code_key(self, email: str) -> str:
+    def _login_code_key(self, *, email: str) -> str:
         return f'auth:login_code:{email}'
 
-    def _login_code_cooldown_key(self, email: str) -> str:
+    def _login_code_cooldown_key(self, *, email: str) -> str:
         return f'auth:login_code_cooldown:{email}'
 
-    def _login_code_attempts_key(self, email: str) -> str:
+    def _login_code_attempts_key(self, *, email: str) -> str:
         return f'auth:login_code_attempts:{email}'
 
-    def _invite_token_key(self, token: str) -> str:
+    def _invite_token_key(self, *, token: str) -> str:
         return f'auth:invite_token:{token}'
 
-    def _invite_email_cooldown_key(self, email: str) -> str:
+    def _invite_email_cooldown_key(self, *, email: str) -> str:
         return f'auth:invite_cooldown:{email}'
 
     def _send_email(
         self,
+        *,
         email: str,
         subject: str,
         template_name: str,
@@ -64,15 +65,15 @@ class AuthEmailService:
         msg.attach_alternative(html_body, 'text/html')
         msg.send(fail_silently=False)
 
-    def send_login_code(self, email: str) -> None:
-        cooldown_key = self._login_code_cooldown_key(email)
+    def send_login_code(self, *, email: str) -> None:
+        cooldown_key = self._login_code_cooldown_key(email=email)
         if cache.get(cooldown_key):
             return
 
         code = self._generate_code()
 
         cache.set(
-            self._login_code_key(email),
+            self._login_code_key(email=email),
             code,
             timeout=settings.EMAIL_CODE_TTL_SECONDS,
         )
@@ -92,9 +93,9 @@ class AuthEmailService:
             },
         )
 
-    def verify_login_code(self, email: str, code: str) -> bool:
-        attempts_key = self._login_code_attempts_key(email)
-        code_key = self._login_code_key(email)
+    def verify_login_code(self, *, email: str, code: str) -> bool:
+        attempts_key = self._login_code_attempts_key(email=email)
+        code_key = self._login_code_key(email=email)
 
         attempts = cache.get(attempts_key, 0)
         cached_code = cache.get(code_key)
@@ -125,16 +126,16 @@ class AuthEmailService:
         )
         return False
 
-    def send_invite_link(self, email: str) -> None:
+    def send_invite_link(self, *, email: str) -> None:
         logger.info('Sending invite link ')
-        cooldown_key = self._invite_email_cooldown_key(email)
+        cooldown_key = self._invite_email_cooldown_key(email=email)
         if cache.get(cooldown_key):
             return
 
         token = self._generate_token()
 
         cache.set(
-            self._invite_token_key(token),
+            self._invite_token_key(token=token),
             {'email': email},
             timeout=settings.INVITE_TOKEN_TTL_SECONDS,
         )
@@ -159,8 +160,8 @@ class AuthEmailService:
             },
         )
 
-    def verify_invite_token(self, token: str) -> str | None:
-        cache_key = self._invite_token_key(token)
+    def verify_invite_token(self, *, token: str) -> str | None:
+        cache_key = self._invite_token_key(token=token)
         payload = cache.get(cache_key)
 
         if not payload:

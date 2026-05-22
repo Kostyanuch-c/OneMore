@@ -108,6 +108,8 @@ def test_has_active_membership(
     membership = tutor_student_membership_factory(is_active=is_active)
 
     query = query_factory(membership)
-    result = tutor_student_membership_repository.has_active_membership(query)
+    result = tutor_student_membership_repository.has_active_membership(
+        query=query
+    )
 
     assert result is expected

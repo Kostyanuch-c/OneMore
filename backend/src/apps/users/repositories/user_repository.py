@@ -12,14 +12,14 @@ class UserRepository:
     user_model = get_user_model()
     converter = UserConverter
 
-    def get_users_count(self, filters: Q | None = None) -> int:
+    def get_users_count(self, *, filters: Q | None = None) -> int:
         return self.user_model.objects.filter(filters or Q()).count()
 
     def get_users_list(
-        self, filters: Q, limit: int, offset: int
+        self, *, filters: Q, limit: int, offset: int
     ) -> list[UserEntity]:
         return [
-            self.converter.to_entity(user)
+            self.converter.to_entity(model=user)
             for user in self.user_model.objects.filter(filters).order_by(
                 '-date_joined'
             )[offset : offset + limit]
@@ -34,21 +34,21 @@ class UserRepository:
 
         user = self.user_model.objects.filter(query).first()
 
-        return self.converter.to_entity(user) if user is not None else None
+        return (
+            self.converter.to_entity(model=user) if user is not None else None
+        )
 
-    def create_user(self, username: str, email: str) -> UserEntity:
+    def create_user(self, *, username: str, email: str) -> UserEntity:
         user = self.user_model(
             username=username,
             email=email,
         )
         user.set_unusable_password()
         user.save()
-        return self.converter.to_entity(user)
+        return self.converter.to_entity(model=user)
 
     def update_user(
-        self,
-        user_id: int,
-        user_data: UserUpdateDTO,
+        self, *, user_id: int, user_data: UserUpdateDTO
     ) -> UserEntity:
         user_instance = self.user_model.objects.get(id=user_id)
 
@@ -56,4 +56,4 @@ class UserRepository:
             setattr(user_instance, key, value)
 
         user_instance.save()
-        return self.converter.to_entity(user_instance)
+        return self.converter.to_entity(model=user_instance)

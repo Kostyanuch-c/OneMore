@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 class UserConverter:
     @staticmethod
-    def to_entity(model: User) -> UserEntity:
+    def to_entity(*, model: User) -> UserEntity:
         return UserEntity(
             id=model.pk,
             username=model.username,

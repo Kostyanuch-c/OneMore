@@ -5,7 +5,7 @@ from apps.problems.repositories import TagRepository
 class TagService:
     repository = TagRepository()
 
-    def ensure_tags_exist(self, tag_ids: list[int]) -> None:
+    def ensure_tags_exist(self, *, tag_ids: list[int]) -> None:
         if not tag_ids:
             return
 

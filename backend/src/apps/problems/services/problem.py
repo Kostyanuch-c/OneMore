@@ -23,10 +23,7 @@ class ProblemService:
     repository = ProblemsRepository()
     query_builder = ProblemQueryBuilder()
 
-    def get_public_problem_detail(
-        self,
-        problem_id: int,
-    ) -> ProblemEntity:
+    def get_public_problem_detail(self, *, problem_id: int) -> ProblemEntity:
         problem = self.repository.get_problem_detail_by_id(
             problem_id=problem_id,
             filters=Q(status=PublicationStatus.PUBLISHED),
@@ -40,10 +37,7 @@ class ProblemService:
         return problem
 
     def get_public_problems_page(
-        self,
-        filters: ProblemFilters,
-        limit: int,
-        offset: int,
+        self, *, filters: ProblemFilters, limit: int, offset: int
     ) -> Page[ProblemEntity]:
         query = self.query_builder.build(
             filters=filters,
@@ -60,9 +54,7 @@ class ProblemService:
         )
 
     def get_my_problem_detail(
-        self,
-        problem_id: int,
-        user: User,
+        self, *, problem_id: int, user: User
     ) -> ProblemEntity:
         problem = self.repository.get_problem_detail_by_id(
             problem_id=problem_id,
@@ -77,11 +69,7 @@ class ProblemService:
         return problem
 
     def get_my_problems_page(
-        self,
-        filters: ProblemFilters,
-        limit: int,
-        offset: int,
-        user: User,
+        self, *, filters: ProblemFilters, limit: int, offset: int, user: User
     ) -> Page[ProblemEntity]:
         query = self.query_builder.build(
             filters=filters,
@@ -97,11 +85,11 @@ class ProblemService:
             total=self.repository.get_problems_count(filters=query),
         )
 
-    def create_problem(self, dto: ProblemCreateDTO) -> int:
+    def create_problem(self, *, dto: ProblemCreateDTO) -> int:
         return self.repository.create_problem(dto=dto)
 
     def update_problem(
-        self, problem_id: int, dto: ProblemUpdateDTO, user: User
+        self, *, problem_id: int, dto: ProblemUpdateDTO, user: User
     ) -> int:
         if not self.repository.exists_problem(
             problem_id=problem_id,
@@ -113,11 +101,7 @@ class ProblemService:
 
         return problem_id
 
-    def delete_my_problem(
-        self,
-        problem_id: int,
-        user: User,
-    ) -> None:
+    def delete_my_problem(self, *, problem_id: int, user: User) -> None:
         if not self.repository.delete_problem(
             problem_id=problem_id,
             filters=Q(author_id=user.pk),
@@ -125,10 +109,7 @@ class ProblemService:
             raise ProblemNotFoundError
 
     def lock_problem_available_for_solution_create(
-        self,
-        *,
-        problem_id: int,
-        user: User,
+        self, *, problem_id: int, user: User
     ) -> None:
         if not self.repository.exists_problem_for_update(
             problem_id=problem_id,

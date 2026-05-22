@@ -59,6 +59,6 @@ def test_service_has_active_membership_calls_repository_with_correct_query(
         student_id=student_id, tutor_id=tutor_id
     )
     membership_repository_mock.has_active_membership.assert_called_once_with(
-        built_query
+        query=built_query
     )
     assert result is True

@@ -17,12 +17,7 @@ class SolutionRepository:
             is_main=True,
         ).update(is_main=False)
 
-    def create_solution(
-        self,
-        *,
-        dto: SolutionCreateDTO,
-        is_main: bool,
-    ) -> int:
+    def create_solution(self, *, dto: SolutionCreateDTO, is_main: bool) -> int:
         solution = self.model.objects.create(
             problem_id=dto.problem_id,
             author_id=dto.author_id,

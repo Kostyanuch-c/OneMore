@@ -24,7 +24,7 @@ router = Router(tags=['auth'])
 def authorise_view(
     request: HttpRequest, payload: AuthInputSchema
 ) -> ApiResponse[AuthOutSchema]:
-    AuthService().authorise(payload.email)
+    AuthService().authorise(email=payload.email)
     return ApiResponse.success(
         data=AuthOutSchema(
             message='If this email is registered, a confirmation code has been sent'

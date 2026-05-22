@@ -192,7 +192,7 @@ def test_detect_user_conflict_field_by_diag(
     exc = IntegrityError('some message')
     exc.__cause__ = cause_mock
 
-    assert user_service._detect_user_conflict_field(exc) == expected_field
+    assert user_service._detect_user_conflict_field(exc=exc) == expected_field
 
 
 @pytest.mark.parametrize(
@@ -218,7 +218,7 @@ def test_detect_user_conflict_field_by_message(
 ):
     exc = IntegrityError(message)
 
-    assert user_service._detect_user_conflict_field(exc) == expected_field
+    assert user_service._detect_user_conflict_field(exc=exc) == expected_field
 
 
 def test_detect_user_conflict_field_falls_back_to_message_when_diag_not_matched(
@@ -236,4 +236,4 @@ def test_detect_user_conflict_field_falls_back_to_message_when_diag_not_matched(
     )
     exc.__cause__ = cause_mock
 
-    assert user_service._detect_user_conflict_field(exc) == 'email'
+    assert user_service._detect_user_conflict_field(exc=exc) == 'email'

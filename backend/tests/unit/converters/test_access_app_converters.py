@@ -25,7 +25,7 @@ def test_tutor_student_membership_converter_to_entity(user_factory):
         updated_at=now,
     )
 
-    entity = TutorStudentMembershipConverter.to_entity(model)
+    entity = TutorStudentMembershipConverter.to_entity(model=model)
 
     assert isinstance(entity, TutorStudentMembershipEntity)
     assert entity.id == model.pk

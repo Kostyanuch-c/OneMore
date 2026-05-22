@@ -15,7 +15,7 @@ def test_user_converter_to_entity(user_factory):
         is_staff=False,
     )
 
-    entity = UserConverter.to_entity(model)
+    entity = UserConverter.to_entity(model=model)
 
     assert isinstance(entity, UserEntity)
     assert entity.id == model.pk

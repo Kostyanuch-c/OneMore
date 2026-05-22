@@ -12,9 +12,7 @@ class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
         )
 
     def _with_solutions_detail(
-        self,
-        *,
-        solution_filters: Q | None = None,
+        self, *, solution_filters: Q | None = None
     ) -> ProblemQuerySet:
         from apps.problems.models import Solution  # noqa PLC0415
 

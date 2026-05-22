@@ -13,16 +13,14 @@ class ProblemsRepository:
     converter = ProblemConverter
 
     def exists_problem(
-        self,
-        problem_id: int,
-        filters: Q | None = None,
+        self, *, problem_id: int, filters: Q | None = None
     ) -> bool:
         return self.model.objects.filter(
             filters or Q(),
             pk=problem_id,
         ).exists()
 
-    def get_problems_count(self, filters: Q | None = None) -> int:
+    def get_problems_count(self, *, filters: Q | None = None) -> int:
         return self.model.objects.filter(filters or Q()).distinct().count()
 
     def get_problem_detail_by_id(
@@ -45,7 +43,7 @@ class ProblemsRepository:
 
         return (
             self.converter.to_entity(
-                problem,
+                model=problem,
                 with_solutions=with_solutions,
             )
             if problem is not None
@@ -53,19 +51,16 @@ class ProblemsRepository:
         )
 
     def get_problems_list(
-        self,
-        filters: Q,
-        limit: int,
-        offset: int,
+        self, *, filters: Q, limit: int, offset: int
     ) -> list[ProblemEntity]:
         queryset = self.model.objects.for_list().filter(filters).distinct()
 
         return [
-            self.converter.to_entity(problem)
+            self.converter.to_entity(model=problem)
             for problem in queryset[offset : offset + limit]
         ]
 
-    def create_problem(self, dto: ProblemCreateDTO) -> int:
+    def create_problem(self, *, dto: ProblemCreateDTO) -> int:
         # transaction we not use because we opened the transaction in the use case
         problem = self.model.objects.create(
             title=dto.title,
@@ -83,9 +78,7 @@ class ProblemsRepository:
         return problem.pk
 
     def update_problem(
-        self,
-        problem_id: int,
-        dto: ProblemUpdateDTO,
+        self, *, problem_id: int, dto: ProblemUpdateDTO
     ) -> bool:
         # transaction we not use because we opened the transaction in the use case
         update_data = dto.data.copy()
@@ -111,9 +104,7 @@ class ProblemsRepository:
         return True
 
     def delete_problem(
-        self,
-        problem_id: int,
-        filters: Q | None = None,
+        self, *, problem_id: int, filters: Q | None = None
     ) -> bool:
         deleted_count, _ = self.model.objects.filter(
             filters or Q(), pk=problem_id
@@ -121,10 +112,7 @@ class ProblemsRepository:
         return deleted_count > 0
 
     def exists_problem_for_update(
-        self,
-        *,
-        problem_id: int,
-        filters: Q | None = None,
+        self, *, problem_id: int, filters: Q | None = None
     ) -> bool:
         return (
             self.model.objects.select_for_update()

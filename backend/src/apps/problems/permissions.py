@@ -19,9 +19,7 @@ class SolutionPermissionsData(TypedDict):
 
 
 def build_problem_permissions(
-    *,
-    problem: ProblemEntity,
-    user: User | AnonymousUser,
+    *, problem: ProblemEntity, user: User | AnonymousUser
 ) -> ProblemPermissionsData:
     if not user.is_authenticated:
         return {
@@ -39,9 +37,7 @@ def build_problem_permissions(
 
 
 def build_solution_permissions(
-    *,
-    solution: SolutionEntity,
-    user: User | AnonymousUser,
+    *, solution: SolutionEntity, user: User | AnonymousUser
 ) -> SolutionPermissionsData:
     if not user.is_authenticated:
         return {

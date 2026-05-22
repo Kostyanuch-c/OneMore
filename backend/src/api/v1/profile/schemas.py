@@ -60,7 +60,7 @@ class UserOutSchema(Schema, extra='forbid'):
 
     @staticmethod
     def from_model(model: User) -> UserOutSchema:
-        return UserOutSchema.from_entity(UserConverter.to_entity(model))
+        return UserOutSchema.from_entity(UserConverter.to_entity(model=model))
 
 
 class UserShortOutSchema(Schema, extra='forbid'):
@@ -82,7 +82,9 @@ class UserShortOutSchema(Schema, extra='forbid'):
 
     @staticmethod
     def from_model(model: User) -> UserShortOutSchema:
-        return UserShortOutSchema.from_entity(UserConverter.to_entity(model))
+        return UserShortOutSchema.from_entity(
+            UserConverter.to_entity(model=model)
+        )
 
 
 class UserInputSchema(EmailSchema, extra='forbid'): ...

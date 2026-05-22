@@ -5,7 +5,7 @@ from apps.problems.repositories import SolutionRepository
 class SolutionService:
     repository = SolutionRepository()
 
-    def create_solution(self, dto: SolutionCreateDTO) -> int:
+    def create_solution(self, *, dto: SolutionCreateDTO) -> int:
         is_main = not self.repository.exists_main_solution(
             problem_id=dto.problem_id,
         )

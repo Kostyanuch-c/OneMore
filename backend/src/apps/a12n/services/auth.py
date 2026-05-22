@@ -21,11 +21,11 @@ logger = logging.getLogger('apps.a12n.auth')
 
 
 class LoginStrategy(Protocol):
-    def login(self, request: Any, user: Any) -> Any: ...
+    def login(self, *, request: Any, user: Any) -> Any: ...
 
 
 class SessionLoginStrategy(LoginStrategy):
-    def login(self, request: HttpRequest, user: User) -> None:
+    def login(self, *, request: HttpRequest, user: User) -> None:
         login(request, user)
 
 
@@ -34,10 +34,10 @@ class AuthService:
     code_service = AuthEmailService()
     login_strategy: LoginStrategy = SessionLoginStrategy()
 
-    def _find_user_by_email(self, email: str) -> User | None:
+    def _find_user_by_email(self, *, email: str) -> User | None:
         return get_user_model().objects.filter(email__iexact=email).first()
 
-    def _get_user_model_by_email(self, email: str) -> User:
+    def _get_user_model_by_email(self, *, email: str) -> User:
         user = self._find_user_by_email(email=email)
         if user is None:
             logger.error(
@@ -46,39 +46,42 @@ class AuthService:
             raise RuntimeError('Invite token resolved to missing user')
         return user
 
-    def authorise(self, email: str) -> None:
-        if not self._find_user_by_email(email):
+    def authorise(self, *, email: str) -> None:
+        if not self._find_user_by_email(email=email):
             logger.warning('Login code request rejected')
             return
 
         logger.info('Login code requested')
-        self.code_service.send_login_code(email)
+        self.code_service.send_login_code(email=email)
 
     def confirm(
         self,
+        *,
         request: HttpRequest,
         email: str,
         code: str,
     ) -> UserEntity:
-        user = self._find_user_by_email(email)
+        user = self._find_user_by_email(email=email)
 
         if user is None or not self.code_service.verify_login_code(
-            email, code
+            email=email, code=code
         ):
             logger.warning('Login confirmation failed')
             raise InvalidLoginCodeError
 
-        self.login_strategy.login(request, user)
+        self.login_strategy.login(request=request, user=user)
         logger.info('User logged in successfully | user_id=%s', user.id)
-        return UserConverter.to_entity(user)
+        return UserConverter.to_entity(model=user)
 
-    def invite_confirm(self, request: HttpRequest, token: str) -> UserEntity:
-        email = self.code_service.verify_invite_token(token)
+    def invite_confirm(
+        self, *, request: HttpRequest, token: str
+    ) -> UserEntity:
+        email = self.code_service.verify_invite_token(token=token)
         if email is None:
             logger.warning('Invalid invite token')
             raise InvalidInviteTokenError
 
         user = self._get_user_model_by_email(email=email)
 
-        self.login_strategy.login(request, user)
-        return UserConverter.to_entity(user)
+        self.login_strategy.login(request=request, user=user)
+        return UserConverter.to_entity(model=user)

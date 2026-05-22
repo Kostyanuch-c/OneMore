@@ -39,14 +39,14 @@ class TutorStudentMembershipService:
         return query
 
     def has_active_membership(
-        self, student_id: int, tutor_id: int | None = None
+        self, *, student_id: int, tutor_id: int | None = None
     ) -> bool:
         return self.repository.has_active_membership(
-            self._build_query(student_id=student_id, tutor_id=tutor_id)
+            query=self._build_query(student_id=student_id, tutor_id=tutor_id)
         )
 
     def create(
-        self, tutor_id: int, student_id: int
+        self, *, tutor_id: int, student_id: int
     ) -> TutorStudentMembershipEntity:
         try:
             return self.repository.create(

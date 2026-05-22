@@ -48,7 +48,9 @@ class GetProblemFilters(BaseUseCase[ProblemFiltersResult]):
 
     @cached_property
     def subject(self) -> SubjectEntity | None:
-        return self.subject_repository.find_subject_by_slug(self.subject_slug)
+        return self.subject_repository.find_subject_by_slug(
+            slug=self.subject_slug
+        )
 
     def get_validators(self) -> list[Callable[[], None]]:
         return [self.validate_subject_exists]

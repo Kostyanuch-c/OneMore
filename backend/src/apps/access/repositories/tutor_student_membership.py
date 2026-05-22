@@ -9,7 +9,7 @@ class TutorStudentMembershipRepository:
     converter = TutorStudentMembershipConverter
     model = TutorStudentMembership
 
-    def has_active_membership(self, query: Q | None = None) -> bool:
+    def has_active_membership(self, *, query: Q | None = None) -> bool:
         condition = Q(is_active=True)
         if query is not None:
             condition &= query
@@ -17,11 +17,12 @@ class TutorStudentMembershipRepository:
 
     def create(
         self,
+        *,
         student_id: int,
         tutor_id: int,
     ) -> TutorStudentMembershipEntity:
         return self.converter.to_entity(
-            self.model.objects.create(
+            model=self.model.objects.create(
                 student_id=student_id,
                 tutor_id=tutor_id,
             )

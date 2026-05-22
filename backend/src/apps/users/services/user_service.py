@@ -25,7 +25,7 @@ class UserService:
     query_builder = UserQueryBuilder()
 
     @staticmethod
-    def _detect_user_conflict_field(exc: IntegrityError) -> str | None:
+    def _detect_user_conflict_field(*, exc: IntegrityError) -> str | None:
         cause = exc.__cause__
 
         diag = getattr(cause, 'diag', None)
@@ -45,17 +45,11 @@ class UserService:
 
         return None
 
-    def _build_user_list_query(
-        self,
-        filters: UserFilters,
-    ) -> Q:
+    def _build_user_list_query(self, *, filters: UserFilters) -> Q:
         return self.query_builder.build(filters=filters)
 
     def get_users_page(
-        self,
-        filters: UserFilters,
-        limit: int,
-        offset: int,
+        self, *, filters: UserFilters, limit: int, offset: int
     ) -> Page[UserEntity]:
         query = self._build_user_list_query(filters=filters)
 
@@ -77,14 +71,14 @@ class UserService:
             email=email, include_inactive=include_inactive
         )
 
-    def create_user(self, username: str, email: str) -> UserEntity:
+    def create_user(self, *, username: str, email: str) -> UserEntity:
         try:
             return self.repository.create_user(
                 username=username,
                 email=email,
             )
         except IntegrityError as e:
-            field = self._detect_user_conflict_field(e)
+            field = self._detect_user_conflict_field(exc=e)
 
             if field == 'email':
                 logger.warning('User create conflict | field=email')
@@ -101,9 +95,7 @@ class UserService:
             raise UserCreateConflictError from e
 
     def update_user(
-        self,
-        user_id: int,
-        user_data: UserUpdateDTO,
+        self, *, user_id: int, user_data: UserUpdateDTO
     ) -> UserEntity:
 
         try:
