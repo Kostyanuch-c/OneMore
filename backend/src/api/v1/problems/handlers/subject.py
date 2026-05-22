@@ -46,7 +46,7 @@ def get_public_problems_list_view(
         total=problems_page.total,
     )
     items = [
-        ProblemOutSchema.from_entity(problem)
+        ProblemOutSchema.from_entity(entity=problem, user=request.user)
         for problem in problems_page.items
     ]
     return ApiResponse.success(

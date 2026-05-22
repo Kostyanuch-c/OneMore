@@ -119,3 +119,15 @@ class ProblemsRepository:
             filters or Q(), pk=problem_id
         ).delete()
         return deleted_count > 0
+
+    def exists_problem_for_update(
+        self,
+        *,
+        problem_id: int,
+        filters: Q | None = None,
+    ) -> bool:
+        return (
+            self.model.objects.select_for_update()
+            .filter(filters or Q(), pk=problem_id)
+            .exists()
+        )

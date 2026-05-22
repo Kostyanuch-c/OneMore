@@ -70,3 +70,10 @@ class SolutionCreateDTO:
 class SolutionUpdateDTO:
     name: str | None = None
     content: str | None = None
+
+
+@dataclass(frozen=True)
+class SolutionMutationResult:
+    solution_id: int
+    problem_id: int
+    detail_url: str

@@ -123,3 +123,16 @@ class ProblemService:
             filters=Q(author_id=user.pk),
         ):
             raise ProblemNotFoundError
+
+    def lock_problem_available_for_solution_create(
+        self,
+        *,
+        problem_id: int,
+        user: User,
+    ) -> None:
+        if not self.repository.exists_problem_for_update(
+            problem_id=problem_id,
+            filters=Q(status=PublicationStatus.PUBLISHED)
+            | Q(author_id=user.pk),
+        ):
+            raise ProblemNotFoundError

@@ -23,4 +23,6 @@ def get_public_problem_detail_view(
         problem_id=problem_id,
     )
 
-    return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))
+    return ApiResponse.success(
+        data=ProblemOutSchema.from_entity(entity=problem, user=request.user)
+    )

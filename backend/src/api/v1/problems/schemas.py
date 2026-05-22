@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from ninja import Schema
 
@@ -17,6 +18,16 @@ from apps.problems.dto import (
 )
 from apps.problems.entities import ProblemEntity, SolutionEntity
 from apps.problems.enums import Difficulty, PublicationStatus
+from apps.problems.permissions import (
+    build_problem_permissions,
+    build_solution_permissions,
+)
+
+
+if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
+
+    from apps.users.models import User
 
 
 class ProblemCreateInSchema(Schema, extra='forbid'):
@@ -66,9 +77,12 @@ class SolutionOutSchema(Schema, extra='forbid'):
     is_main: bool
     author: UserShortOutSchema | None
     is_published: bool
+    permissions: SolutionPermissionsOutSchema
 
     @staticmethod
-    def from_entity(entity: SolutionEntity) -> SolutionOutSchema:
+    def from_entity(
+        entity: SolutionEntity, user: User | AnonymousUser
+    ) -> SolutionOutSchema:
         return SolutionOutSchema(
             id=entity.id,
             name=entity.name,
@@ -78,6 +92,9 @@ class SolutionOutSchema(Schema, extra='forbid'):
             if entity.author
             else None,
             is_published=entity.is_published,
+            permissions=SolutionPermissionsOutSchema(
+                **build_solution_permissions(solution=entity, user=user)
+            ),
         )
 
 
@@ -112,11 +129,14 @@ class ProblemOutSchema(Schema, extra='forbid'):
     solutions: list[SolutionOutSchema]
     author: UserShortOutSchema | None = None
     status: StatusOutSchema
+    permissions: ProblemPermissionsOutSchema
     created_at: datetime
     updated_at: datetime
 
     @staticmethod
-    def from_entity(entity: ProblemEntity) -> ProblemOutSchema:
+    def from_entity(
+        entity: ProblemEntity, user: User | AnonymousUser
+    ) -> ProblemOutSchema:
         return ProblemOutSchema(
             id=entity.id,
             title=entity.title,
@@ -127,7 +147,7 @@ class ProblemOutSchema(Schema, extra='forbid'):
             topic=TopicOutSchema.from_entity(entity.topic),
             tags=[TagOutSchema.from_entity(tag) for tag in entity.tags],
             solutions=[  # Empty list if no solutions
-                SolutionOutSchema.from_entity(solution)
+                SolutionOutSchema.from_entity(entity=solution, user=user)
                 for solution in entity.solutions
             ],
             author=UserShortOutSchema.from_entity(entity.author)
@@ -136,4 +156,16 @@ class ProblemOutSchema(Schema, extra='forbid'):
             status=StatusOutSchema.from_option(entity.status),
             created_at=entity.created_at,
             updated_at=entity.updated_at,
+            permissions=ProblemPermissionsOutSchema(
+                **build_problem_permissions(problem=entity, user=user)
+            ),
         )
+
+
+class ProblemPermissionsOutSchema(Schema, extra='forbid'):
+    can_edit: bool
+    can_create_solution: bool
+
+
+class SolutionPermissionsOutSchema(Schema, extra='forbid'):
+    can_edit: bool

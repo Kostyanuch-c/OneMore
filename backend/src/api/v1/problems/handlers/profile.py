@@ -49,7 +49,7 @@ def get_my_problems_list_view(
     )
 
     items = [
-        ProblemOutSchema.from_entity(problem)
+        ProblemOutSchema.from_entity(entity=problem, user=tutor)
         for problem in problems_page.items
     ]
 
@@ -74,7 +74,9 @@ def get_my_problem_detail_view(
         user=tutor,
     )
 
-    return ApiResponse.success(data=ProblemOutSchema.from_entity(problem))
+    return ApiResponse.success(
+        data=ProblemOutSchema.from_entity(entity=problem, user=tutor)
+    )
 
 
 @router.patch(
