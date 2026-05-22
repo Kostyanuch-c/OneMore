@@ -8,7 +8,7 @@ from apps.problems.entities import (
     TagEntity,
     TopicEntity,
 )
-from apps.problems.enums import DifficultyData
+from apps.problems.enums import DifficultyData, PublicationStatusData
 from apps.users.repositories.converter import UserConverter
 
 
@@ -113,7 +113,10 @@ class ProblemConverter:
             ]
             if with_solutions
             else [],
-            is_published=model.is_published,
+            status=PublicationStatusData(
+                value=model.status,
+                label=model.get_status_display(),
+            ),
             created_at=model.created_at,
             updated_at=model.updated_at,
             section=SectionConverter.to_entity(model.topic.section),

@@ -169,14 +169,14 @@ class ProblemAdmin(admin.ModelAdmin):
         'title',
         'difficulty',
         'topic',
-        'is_published',
+        'status',
         'author',
         'created_at',
         'updated_at',
     )
     list_filter = (
         'difficulty',
-        'is_published',
+        'status',
         'topic__section__subject',
         'topic__section',
         'topic',
@@ -212,6 +212,7 @@ class SolutionAdmin(admin.ModelAdmin):
         'author',
         'created_at',
         'updated_at',
+        'is_published',
     )
     list_filter = (
         'is_main',

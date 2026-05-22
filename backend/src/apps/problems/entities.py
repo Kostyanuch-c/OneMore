@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from apps.common import BaseEntity
-from apps.problems.enums import DifficultyData
+from apps.problems.enums import DifficultyData, PublicationStatusData
 from apps.users.entities import UserEntity
 
 
@@ -44,7 +44,7 @@ class ProblemEntity(BaseEntity):
     question: str
     difficulty: DifficultyData
     source: str
-    is_published: bool
+    status: PublicationStatusData
     author: UserEntity | None
     section: SectionEntity
     topic: TopicEntity

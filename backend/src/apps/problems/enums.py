@@ -9,7 +9,18 @@ class Difficulty(models.TextChoices):
     HARD = 'hard', 'Сложная'
 
 
+class PublicationStatus(models.TextChoices):
+    DRAFT = 'draft', 'Черновик'
+    PUBLISHED = 'published', 'Опубликовано'
+
+
 @dataclass(frozen=True)
 class DifficultyData:
+    value: str
+    label: str
+
+
+@dataclass(frozen=True)
+class PublicationStatusData:
     value: str
     label: str

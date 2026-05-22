@@ -1,8 +1,8 @@
 from api.v1.mixins import CreatedAtRangeFilterMixin
-from apps.problems.enums import Difficulty
+from apps.problems.enums import Difficulty, PublicationStatus
 
 
-class ProblemsFilterInSchema(CreatedAtRangeFilterMixin, extra='forbid'):
+class BaseProblemsFilterInSchema(CreatedAtRangeFilterMixin):
     search: str | None = None
 
     section_ids: tuple[int, ...] = ()
@@ -10,3 +10,10 @@ class ProblemsFilterInSchema(CreatedAtRangeFilterMixin, extra='forbid'):
     tag_ids: tuple[int, ...] = ()
 
     difficulty: Difficulty | None = None
+
+
+class PublicProblemsFilterInSchema(BaseProblemsFilterInSchema): ...
+
+
+class MyProblemsFilterInSchema(BaseProblemsFilterInSchema):
+    status: PublicationStatus | None = None

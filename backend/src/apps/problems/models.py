@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.functions import Lower, Trim
 
 from apps.common.models import BaseTimedModel
-from apps.problems.enums import Difficulty
+from apps.problems.enums import Difficulty, PublicationStatus
 from apps.problems.queryset import ProblemQuerySet
 
 
@@ -135,10 +135,11 @@ class Problem(BaseTimedModel):
         default='',
         help_text='Например: ЕГЭ-2024, Сборник Рудзитиса, Олимпиада МГУ и т.п.',
     )
-    is_published = models.BooleanField(
-        verbose_name='Опубликовано',
-        default=True,
-        help_text='Снимите галочку, чтобы скрыть задачу.',
+    status = models.CharField(
+        verbose_name='Статус',
+        choices=PublicationStatus.choices,
+        max_length=max(len(status) for status in PublicationStatus.values),
+        default=PublicationStatus.PUBLISHED,
     )
     tags = models.ManyToManyField(
         Tag,
@@ -169,9 +170,7 @@ class Problem(BaseTimedModel):
         verbose_name = 'задача'
         verbose_name_plural = 'задачи'
 
-        indexes = [
-            models.Index(fields=['is_published', 'topic', '-created_at'])
-        ]
+        indexes = [models.Index(fields=['status', 'topic', '-created_at'])]
 
     def __str__(self) -> str:
         return f'{self.title[: settings.MAX_STR_LENGTH]}'

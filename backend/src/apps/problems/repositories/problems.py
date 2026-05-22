@@ -12,8 +12,15 @@ class ProblemsRepository:
     solution_model = Solution
     converter = ProblemConverter
 
-    def exists_problem(self, problem_id: int) -> bool:
-        return self.model.objects.filter(pk=problem_id).exists()
+    def exists_problem(
+        self,
+        problem_id: int,
+        filters: Q | None = None,
+    ) -> bool:
+        return self.model.objects.filter(
+            filters or Q(),
+            pk=problem_id,
+        ).exists()
 
     def get_problems_count(self, filters: Q | None = None) -> int:
         return self.model.objects.filter(filters or Q()).distinct().count()
@@ -24,9 +31,11 @@ class ProblemsRepository:
         problem_id: int,
         filters: Q | None = None,
         with_solutions: bool = True,
+        solution_filters: Q | None = None,
     ) -> ProblemEntity | None:
         queryset = self.model.objects.for_detail(
             with_solutions=with_solutions,
+            solution_filters=solution_filters,
         ).filter(pk=problem_id)
 
         if filters is not None:
@@ -65,7 +74,7 @@ class ProblemsRepository:
             source=dto.source,
             topic_id=dto.topic_id,
             author_id=dto.author_id,
-            is_published=dto.is_published,
+            status=dto.status,
         )
 
         if dto.tag_ids:
@@ -101,6 +110,12 @@ class ProblemsRepository:
 
         return True
 
-    def delete_problem(self, problem_id: int) -> bool:
-        deleted_count, _ = self.model.objects.filter(pk=problem_id).delete()
+    def delete_problem(
+        self,
+        problem_id: int,
+        filters: Q | None = None,
+    ) -> bool:
+        deleted_count, _ = self.model.objects.filter(
+            filters or Q(), pk=problem_id
+        ).delete()
         return deleted_count > 0

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from ninja import Schema
 
+from api.v1.mixins import BaseEnumSchema
 from api.v1.profile.schemas import UserShortOutSchema
 from api.v1.subjects.schemas import (
     DifficultyOutSchema,
@@ -15,7 +16,7 @@ from apps.problems.dto import (
     ProblemUpdateDTO,
 )
 from apps.problems.entities import ProblemEntity, SolutionEntity
-from apps.problems.enums import Difficulty
+from apps.problems.enums import Difficulty, PublicationStatus
 
 
 class ProblemCreateInSchema(Schema, extra='forbid'):
@@ -25,7 +26,7 @@ class ProblemCreateInSchema(Schema, extra='forbid'):
     source: str
     topic_id: int
     tag_ids: list[int]
-    is_published: bool
+    status: PublicationStatus = PublicationStatus.DRAFT
 
     def to_dto(self, *, author_id: int) -> ProblemCreateDTO:
         return ProblemCreateDTO(
@@ -36,7 +37,7 @@ class ProblemCreateInSchema(Schema, extra='forbid'):
             topic_id=self.topic_id,
             tag_ids=self.tag_ids,
             author_id=author_id,
-            is_published=self.is_published,
+            status=self.status,
         )
 
 
@@ -47,7 +48,7 @@ class ProblemUpdateInSchema(Schema, extra='forbid'):
     source: str | None = None
     topic_id: int | None = None
     tag_ids: list[int] | None = None
-    is_published: bool | None = None
+    status: PublicationStatus | None = None
 
     def to_dto(self) -> ProblemUpdateDTO:
         data = self.model_dump(exclude_unset=True)
@@ -96,6 +97,9 @@ class ProblemMutationOutSchema(Schema):
         )
 
 
+class StatusOutSchema(BaseEnumSchema): ...
+
+
 class ProblemOutSchema(Schema, extra='forbid'):
     id: int
     title: str
@@ -107,7 +111,7 @@ class ProblemOutSchema(Schema, extra='forbid'):
     tags: list[TagOutSchema]
     solutions: list[SolutionOutSchema]
     author: UserShortOutSchema | None = None
-    is_published: bool
+    status: StatusOutSchema
     created_at: datetime
     updated_at: datetime
 
@@ -129,7 +133,7 @@ class ProblemOutSchema(Schema, extra='forbid'):
             author=UserShortOutSchema.from_entity(entity.author)
             if entity.author
             else None,
-            is_published=entity.is_published,
+            status=StatusOutSchema.from_option(entity.status),
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )

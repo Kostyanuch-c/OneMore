@@ -42,7 +42,7 @@ class ProblemCreateDTO:
     topic_id: int
     tag_ids: list[int]
     author_id: int
-    is_published: bool
+    status: str
 
 
 @dataclass(frozen=True)
@@ -63,6 +63,7 @@ class SolutionCreateDTO:
     name: str
     content: str
     author_id: int
+    is_published: bool
 
 
 @dataclass(frozen=True)

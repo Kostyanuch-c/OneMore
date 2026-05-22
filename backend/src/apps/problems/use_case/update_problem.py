@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from django.db import transaction
 
@@ -11,6 +12,10 @@ from apps.problems.dto import (
 from apps.problems.services import ProblemService, TagService, TopicService
 
 
+if TYPE_CHECKING:
+    from apps.users.models import User
+
+
 @dataclass
 class UpdateProblemUseCase(BaseUseCase[ProblemMutationResult]):
     problem_service: ProblemService
@@ -19,13 +24,13 @@ class UpdateProblemUseCase(BaseUseCase[ProblemMutationResult]):
     update_data: ProblemUpdateDTO
     problem_id: int
     subject_slug: str
+    tutor: User
 
     @transaction.atomic()
     def act(self) -> ProblemMutationResult:
         # transaction because we need to update tags in a problem
         problem_id = self.problem_service.update_problem(
-            dto=self.update_data,
-            problem_id=self.problem_id,
+            dto=self.update_data, problem_id=self.problem_id, user=self.tutor
         )
 
         return ProblemMutationResult(

@@ -1,5 +1,6 @@
 from ninja import Schema
 
+from api.v1.mixins import BaseEnumSchema
 from apps.problems.dto import ProblemFiltersResult
 from apps.problems.entities import (
     SectionEntity,
@@ -7,7 +8,6 @@ from apps.problems.entities import (
     TagEntity,
     TopicEntity,
 )
-from apps.problems.enums import DifficultyData
 
 
 class SubjectOutSchema(Schema, extra='forbid'):
@@ -64,16 +64,7 @@ class TagOutSchema(Schema, extra='forbid'):
         )
 
 
-class DifficultyOutSchema(Schema, extra='forbid'):
-    value: str
-    label: str
-
-    @staticmethod
-    def from_option(option: DifficultyData) -> DifficultyOutSchema:
-        return DifficultyOutSchema(
-            value=option.value,
-            label=option.label,
-        )
+class DifficultyOutSchema(BaseEnumSchema): ...
 
 
 class ProblemFiltersOutSchema(Schema, extra='forbid'):
