@@ -21,3 +21,12 @@ class MainSolutionCannotBeHiddenError(ApplicationError):
         default_factory=lambda: {'field': 'is_published'}
     )
     status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class HiddenSolutionCannotBeMainError(ApplicationError):
+    message: str = 'Hidden solution cannot be main'
+    extra: dict[str, Any] = field(
+        default_factory=lambda: {'field': 'solution_id'}
+    )
+    status_code: int = HTTPStatus.CONFLICT

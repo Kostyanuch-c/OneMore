@@ -116,7 +116,7 @@ def invite_user_and_get_token(
                 data=json.dumps({'email': email}),
                 content_type='application/json',
             )
-        assert response.status_code == HTTPStatus.CREATED
+        assert response.status_code == HTTPStatus.OK
         assert len(callbacks) == 1
         assert len(mailoutbox) == 1
 

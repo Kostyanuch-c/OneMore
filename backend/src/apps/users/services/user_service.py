@@ -97,7 +97,6 @@ class UserService:
     def update_user(
         self, *, user_id: int, user_data: UserUpdateDTO
     ) -> UserEntity:
-
         try:
             return self.repository.update_user(
                 user_id=user_id,

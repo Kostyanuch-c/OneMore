@@ -1,10 +1,13 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 
+from django.conf import settings
 from django.db import transaction
 
 from apps.common import BaseUseCase
 from apps.users.dto import UserUpdateDTO
 from apps.users.entities import UserEntity
+from apps.users.exceptions.users import ReservedUserNameError
 from apps.users.services import UserService
 
 
@@ -20,3 +23,15 @@ class UpdateUser(BaseUseCase[UserEntity]):
                 user_id=self.user_id,
                 user_data=self.user_data,
             )
+
+    def get_validators(self) -> list[Callable[[], None]]:
+        return [
+            self.validate_username,
+        ]
+
+    def validate_username(self) -> None:
+        if (
+            self.user_data.username
+            and self.user_data.username.lower() in settings.RESERVED_USERNAMES
+        ):
+            raise ReservedUserNameError

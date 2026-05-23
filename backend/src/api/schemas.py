@@ -17,6 +17,10 @@ class ListPaginationResponse[TListSchema](Schema):
     pagination: PaginationOut
 
 
+class MessageSchema(Schema):
+    message: str
+
+
 class ApiResponse[TData](Schema):
     data: TData | dict[str, Any] = Field(default_factory=dict)
     meta: dict[str, Any] = Field(default_factory=dict)

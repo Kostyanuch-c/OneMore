@@ -37,6 +37,7 @@ class UpdateSolutionUseCase(BaseUseCase[SolutionMutationResult]):
     def get_validators(self) -> list[Callable[[], None]]:
         return [
             self.validate_empty_update_data,
+            self.validate_can_hide_solution,
         ]
 
     def validate_empty_update_data(self) -> None:

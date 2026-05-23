@@ -17,6 +17,15 @@ class SolutionRepository:
             is_main=True,
         ).exists()
 
+    def is_solution_published(
+        self, *, solution_id: int, problem_id: int
+    ) -> bool:
+        return self.model.objects.filter(
+            pk=solution_id,
+            problem_id=problem_id,
+            is_published=True,
+        ).exists()
+
     def unset_main_solutions(
         self, *, problem_id: int, exclude_solution_id: int | None = None
     ) -> None:

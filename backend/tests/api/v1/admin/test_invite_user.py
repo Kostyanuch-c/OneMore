@@ -8,7 +8,7 @@ from tests.api.utils import (
     get_api_data,
 )
 
-from api.v1.profile.schemas import UserOutSchema
+from api.schemas import MessageSchema
 
 
 def test_admin_user_invite_success(
@@ -33,10 +33,10 @@ def test_admin_user_invite_success(
 
     assert_api_success_response(
         response=response,
-        expected_status=HTTPStatus.CREATED,
+        expected_status=HTTPStatus.OK,
     )
-    data = get_api_data(response=response, schema=UserOutSchema)
-    assert data.email == email_for_create_user
+    data = get_api_data(response=response, schema=MessageSchema)
+    assert data.message == 'Invite sent'
 
     assert django_user_model.objects.count() == users_before + 1
     assert membership_model.objects.count() == memberships_before + 1
@@ -75,11 +75,11 @@ def test_admin_user_invite_existing_user_returns_ok_without_email(
         response=response,
         expected_status=HTTPStatus.OK,
     )
-    data = get_api_data(response=response, schema=UserOutSchema)
-    assert data.email == student.email
+    data = get_api_data(response=response, schema=MessageSchema)
+    assert data.message == 'Invite sent'
 
     assert django_user_model.objects.count() == users_before
-    assert membership_model.objects.count() == memberships_before
+    assert membership_model.objects.count() == memberships_before + 1
 
     assert len(callbacks) == 0
     assert len(mailoutbox) == 0

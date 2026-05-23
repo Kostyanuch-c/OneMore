@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from django.db import transaction
 
 from apps.a12n.services import AuthEmailService
-from apps.access.exceptions import TutorSelfInviteError
+from apps.access.exceptions import (
+    TutorSelfInviteError,
+    TutorStudentAlreadyExistsError,
+)
 from apps.access.services import TutorStudentMembershipService
 from apps.common import BaseUseCase
 from apps.users.entities import UserEntity
@@ -27,11 +30,22 @@ class InviteUser(BaseUseCase[tuple[UserEntity, bool]]):
 
     def act(self) -> tuple[UserEntity, bool]:
         if (user := self.get_existing_user()) is not None:
-            logger.info(
-                'Invite skipped: user already exists | tutor_id=%s student_id=%s field=email',
-                self.tutor_id,
-                user.id,
-            )
+            with transaction.atomic():
+                try:
+                    self.tutor_user_membership_service.create(
+                        tutor_id=self.tutor_id, student_id=user.id
+                    )
+                    logger.info(
+                        'Membership created for existing user | tutor_id=%s student_id=%s field=email',
+                        self.tutor_id,
+                        user.id,
+                    )
+                except TutorStudentAlreadyExistsError:
+                    logger.info(
+                        'Invite skipped: membership already exists | tutor_id=%s student_id=%s field=email',
+                        self.tutor_id,
+                        user.id,
+                    )
             return user, False
 
         with transaction.atomic():

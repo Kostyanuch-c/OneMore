@@ -1,12 +1,10 @@
-from http import HTTPStatus
-
-from ninja import Query, Router, Status
+from ninja import Query, Router
 from ninja.security import django_auth_is_staff
 
 from django.http import HttpRequest
 
 from api.filters import PaginationIn, PaginationOut
-from api.schemas import ApiResponse, ListPaginationResponse
+from api.schemas import ApiResponse, ListPaginationResponse, MessageSchema
 from api.v1.admin.filters import UserFiltersIn
 from api.v1.profile.schemas import UserInputSchema, UserOutSchema
 from api.v1.utils import get_authenticated_user
@@ -22,19 +20,16 @@ router = Router(tags=['admin'], auth=django_auth_is_staff)
 
 @router.post(
     '/user/',
-    response={
-        HTTPStatus.CREATED: ApiResponse[UserOutSchema],
-        HTTPStatus.OK: ApiResponse[UserOutSchema],
-    },
+    response=ApiResponse[MessageSchema],
     url_name='admin_user_invite',
 )
 def invite_user_view(
     request: HttpRequest,
     payload: UserInputSchema,
-) -> Status[ApiResponse[UserOutSchema]]:
+) -> ApiResponse[MessageSchema]:
     tutor = get_authenticated_user(request)
 
-    user, is_created = InviteUser(
+    InviteUser(
         user_service=UserService(),
         code_service=AuthEmailService(),
         tutor_user_membership_service=TutorStudentMembershipService(),
@@ -42,10 +37,7 @@ def invite_user_view(
         tutor_email=tutor.email,
         tutor_id=tutor.id,
     )()
-    return Status(
-        HTTPStatus.CREATED if is_created else HTTPStatus.OK,
-        ApiResponse.success(data=UserOutSchema.from_entity(user)),
-    )
+    return ApiResponse.success(data=MessageSchema(message='Invite sent'))
 
 
 @router.get(

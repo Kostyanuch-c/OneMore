@@ -155,7 +155,7 @@ def test_update_user_calls_repository_and_returns_result(
 ):
     expected_user = object()
     user_id = 1
-    user_data = {'username': 'new_username'}
+    user_data = UserUpdateDTO(username='new_username')
 
     user_repository_mock.update_user.return_value = expected_user
     user_service.repository = user_repository_mock

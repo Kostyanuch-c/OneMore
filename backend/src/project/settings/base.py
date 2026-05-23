@@ -152,3 +152,5 @@ SUPPORT_EMAIL = "support@studynotpain.com"
 MAX_STR_LENGTH = 25
 PAGE_LIMIT = 10
 MAX_PAGE_LIMIT = 100
+
+RESERVED_USERNAMES = {'me', 'admin', 'support', 'root', 'api'}

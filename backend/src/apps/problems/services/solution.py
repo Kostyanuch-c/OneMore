@@ -2,6 +2,7 @@ from django.db.models import Q
 
 from apps.problems.dto import SolutionCreateDTO, SolutionUpdateDTO
 from apps.problems.exceptions import (
+    HiddenSolutionCannotBeMainError,
     MainSolutionCannotBeHiddenError,
     SolutionNotFoundError,
 )
@@ -38,6 +39,12 @@ class SolutionService:
         return solution_id
 
     def set_main_solution(self, *, problem_id: int, solution_id: int) -> None:
+        if not self.repository.is_solution_published(
+            solution_id=solution_id,
+            problem_id=problem_id,
+        ):
+            raise HiddenSolutionCannotBeMainError
+
         self.repository.unset_main_solutions(
             problem_id=problem_id,
             exclude_solution_id=solution_id,

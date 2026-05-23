@@ -65,6 +65,7 @@ def test_use_case_invite_user_called_services(
     )
 
 
+@pytest.mark.usefixtures('transaction_mock')
 def test_use_case_invite_user_return_false_if_user_already_exists(
     user_entity,
     tutor,
@@ -91,7 +92,10 @@ def test_use_case_invite_user_return_false_if_user_already_exists(
     )
 
     user_service_mock.create_user.assert_not_called()
-    membership_service_mock.create.assert_not_called()
+    membership_service_mock.create.assert_called_once_with(
+        student_id=user_entity.id,
+        tutor_id=tutor.id,
+    )
     code_service_mock.send_invite_link.assert_not_called()
 
 

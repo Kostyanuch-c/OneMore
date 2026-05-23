@@ -30,3 +30,12 @@ class EmailAlreadyExistsError(UserServiceError):
 class UserCreateConflictError(UserServiceError):
     message: str = 'User create conflict by unique constraint'
     status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class ReservedUserNameError(UserServiceError):
+    message: str = 'This username is reserved'
+    extra: dict[str, Any] = field(
+        default_factory=lambda: {'field': 'username'}
+    )
+    status_code: int = HTTPStatus.BAD_REQUEST
