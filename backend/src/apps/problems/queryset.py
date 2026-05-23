@@ -1,14 +1,53 @@
 from django.db.models import Prefetch, Q, QuerySet
 
 
+AUTHOR_DEFERRED_FIELDS = (
+    'author__password',
+    'author__last_login',
+    'author__is_superuser',
+)
+
+TOPIC_DEFERRED_FIELDS = (
+    'topic__created_at',
+    'topic__updated_at',
+)
+
+SECTION_DEFERRED_FIELDS = (
+    'topic__section__created_at',
+    'topic__section__updated_at',
+)
+
+SUBJECT_DEFERRED_FIELDS = (
+    'topic__section__subject__created_at',
+    'topic__section__subject__updated_at',
+)
+
+
 class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
-    def _with_base_detail(self) -> ProblemQuerySet:
-        return self.select_related(
+    def _with_base_detail(
+        self,
+        *,
+        with_subject: bool = False,
+    ) -> ProblemQuerySet:
+        select_related = [
             'author',
             'topic__section',
-            'topic__section__subject',
-        ).prefetch_related(
-            'tags',
+        ]
+
+        deferred_fields = [
+            *AUTHOR_DEFERRED_FIELDS,
+            *TOPIC_DEFERRED_FIELDS,
+            *SECTION_DEFERRED_FIELDS,
+        ]
+
+        if with_subject:
+            select_related.append('topic__section__subject')
+            deferred_fields.extend(SUBJECT_DEFERRED_FIELDS)
+
+        return (
+            self.select_related(*select_related)
+            .defer(*deferred_fields)
+            .prefetch_related('tags')
         )
 
     def _with_solutions_detail(
@@ -37,9 +76,10 @@ class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
         self,
         *,
         with_solutions: bool = False,
+        with_subject: bool = False,
         solution_filters: Q | None = None,
     ) -> ProblemQuerySet:
-        queryset = self._with_base_detail()
+        queryset = self._with_base_detail(with_subject=with_subject)
 
         if with_solutions:
             queryset = queryset._with_solutions_detail(
@@ -48,5 +88,7 @@ class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
 
         return queryset.order_by('-created_at')
 
-    def for_list(self) -> ProblemQuerySet:
-        return self._with_base_detail().order_by('-created_at')
+    def for_list(self, *, with_subject: bool = False) -> ProblemQuerySet:
+        return self._with_base_detail(
+            with_subject=with_subject,
+        ).order_by('-created_at')

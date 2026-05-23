@@ -9,7 +9,7 @@ class SolutionRepository:
     model = Solution
 
     def exists_main_solution(
-            self, *, problem_id: int, filters: Q | None = None
+        self, *, problem_id: int, filters: Q | None = None
     ) -> bool:
         return self.model.objects.filter(
             filters or Q(),
@@ -18,17 +18,16 @@ class SolutionRepository:
         ).exists()
 
     def get_solution_published_status(
-            self, *, problem_id: int, solution_id: int
+        self, *, problem_id: int, solution_id: int
     ) -> bool | None:
         return (
-            self.model.objects
-            .filter(pk=solution_id, problem_id=problem_id)
+            self.model.objects.filter(pk=solution_id, problem_id=problem_id)
             .values_list('is_published', flat=True)
             .first()
         )
 
     def unset_main_solutions(
-            self, *, problem_id: int, exclude_solution_id: int | None = None
+        self, *, problem_id: int, exclude_solution_id: int | None = None
     ) -> None:
         queryset = self.model.objects.filter(
             problem_id=problem_id,
@@ -44,7 +43,7 @@ class SolutionRepository:
         )
 
     def set_solution_as_main(
-            self, *, problem_id: int, solution_id: int
+        self, *, problem_id: int, solution_id: int
     ) -> bool:
         updated_count = self.model.objects.filter(
             pk=solution_id,
@@ -69,11 +68,11 @@ class SolutionRepository:
         return solution.id
 
     def update_solution(
-            self,
-            *,
-            solution_id: int,
-            dto: SolutionUpdateDTO,
-            filters: Q | None = None,
+        self,
+        *,
+        solution_id: int,
+        dto: SolutionUpdateDTO,
+        filters: Q | None = None,
     ) -> bool:
         update_data = {
             **dto.data,

@@ -11,5 +11,6 @@ class UserEntity:
     full_name: str | None
     email: str
     is_active: bool
+    is_tutor: bool
     is_staff: bool
     date_joined: datetime

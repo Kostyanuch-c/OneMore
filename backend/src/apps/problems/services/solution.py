@@ -55,8 +55,8 @@ class SolutionService:
         )
 
         if not self.repository.set_solution_as_main(
-                problem_id=problem_id,
-                solution_id=solution_id,
+            problem_id=problem_id,
+            solution_id=solution_id,
         ):
             raise SolutionNotFoundError
 

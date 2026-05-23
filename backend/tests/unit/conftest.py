@@ -45,6 +45,7 @@ def user_entity() -> UserEntity:
         is_active=True,
         is_staff=False,
         date_joined=timezone.now(),
+        is_tutor=False,
     )
 
 

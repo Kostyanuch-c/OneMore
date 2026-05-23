@@ -36,17 +36,17 @@ class ProblemService:
         return public_query
 
     def _needs_distinct(
-            self, filters: PublicProblemFilters | ProfileProblemFilters
+        self, filters: PublicProblemFilters | ProfileProblemFilters
     ) -> bool:
         return bool(filters.tag_ids)
 
     def _get_problems_page(
-            self,
-            *,
-            filters: PublicProblemFilters | ProfileProblemFilters,
-            base_query: Q,
-            limit: int,
-            offset: int,
+        self,
+        *,
+        filters: PublicProblemFilters | ProfileProblemFilters,
+        base_query: Q,
+        limit: int,
+        offset: int,
     ) -> Page[ProblemEntity]:
         query = self.query_builder.build(
             filters=filters,
@@ -70,13 +70,13 @@ class ProblemService:
 
     def _lock_problem_for_update(self, *, problem_id: int, filters: Q) -> None:
         if not self.repository.exists_problem_for_update(
-                problem_id=problem_id,
-                filters=filters,
+            problem_id=problem_id,
+            filters=filters,
         ):
             raise ProblemNotFoundError
 
     def get_public_problem_detail(
-            self, *, problem_id: int, user: User | AnonymousUser
+        self, *, problem_id: int, user: User | AnonymousUser
     ) -> ProblemEntity:
         problem = self.repository.get_problem_detail_by_id(
             problem_id=problem_id,
@@ -91,7 +91,7 @@ class ProblemService:
         return problem
 
     def get_public_problems_page(
-            self, *, filters: PublicProblemFilters, limit: int, offset: int
+        self, *, filters: PublicProblemFilters, limit: int, offset: int
     ) -> Page[ProblemEntity]:
         return self._get_problems_page(
             filters=filters,
@@ -101,7 +101,7 @@ class ProblemService:
         )
 
     def get_my_problem_detail(
-            self, *, problem_id: int, user: User
+        self, *, problem_id: int, user: User
     ) -> ProblemEntity:
         problem = self.repository.get_problem_detail_by_id(
             problem_id=problem_id,
@@ -116,12 +116,12 @@ class ProblemService:
         return problem
 
     def get_my_problems_page(
-            self,
-            *,
-            filters: ProfileProblemFilters,
-            limit: int,
-            offset: int,
-            user: User,
+        self,
+        *,
+        filters: ProfileProblemFilters,
+        limit: int,
+        offset: int,
+        user: User,
     ) -> Page[ProblemEntity]:
         return self._get_problems_page(
             filters=filters,
@@ -134,10 +134,10 @@ class ProblemService:
         return self.repository.create_problem(dto=dto)
 
     def update_problem(
-            self, *, problem_id: int, dto: ProblemUpdateDTO, user: User
+        self, *, problem_id: int, dto: ProblemUpdateDTO, user: User
     ) -> int:
         if not self.repository.update_problem(
-                problem_id=problem_id, dto=dto, filters=Q(author_id=user.pk)
+            problem_id=problem_id, dto=dto, filters=Q(author_id=user.pk)
         ):
             raise ProblemNotFoundError
 
@@ -145,23 +145,23 @@ class ProblemService:
 
     def delete_my_problem(self, *, problem_id: int, user: User) -> None:
         if not self.repository.delete_problem(
-                problem_id=problem_id,
-                filters=Q(author_id=user.pk),
+            problem_id=problem_id,
+            filters=Q(author_id=user.pk),
         ):
             raise ProblemNotFoundError
 
     def lock_problem_available_for_solution_create(
-            self, *, problem_id: int, author_id: int
+        self, *, problem_id: int, author_id: int
     ) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
             filters=(
-                    Q(status=PublicationStatus.PUBLISHED) | Q(author_id=author_id)
+                Q(status=PublicationStatus.PUBLISHED) | Q(author_id=author_id)
             ),
         )
 
     def lock_my_problem_for_update_main_solution(
-            self, *, problem_id: int, tutor_id: int
+        self, *, problem_id: int, tutor_id: int
     ) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
@@ -169,7 +169,9 @@ class ProblemService:
         )
 
     def lock_problem_for_update(
-            self, *, problem_id: int,
+        self,
+        *,
+        problem_id: int,
     ) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
