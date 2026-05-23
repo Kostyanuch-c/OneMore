@@ -15,7 +15,7 @@ from api.v1.problems.schemas import (
     ProblemUpdateInSchema,
 )
 from api.v1.utils import get_tutor_user
-from apps.problems.dto import ProblemFilters
+from apps.problems.dto import ProfileProblemFilters
 from apps.problems.services import ProblemService, TagService, TopicService
 from apps.problems.use_case import CreateProblemUseCase, UpdateProblemUseCase
 
@@ -36,7 +36,7 @@ def get_my_problems_list_view(
     tutor = get_tutor_user(request)
 
     problems_page = ProblemService().get_my_problems_page(
-        filters=ProblemFilters(**filters.model_dump()),
+        filters=ProfileProblemFilters(**filters.model_dump()),
         offset=pagination_in.offset,
         limit=pagination_in.limit,
         user=tutor,

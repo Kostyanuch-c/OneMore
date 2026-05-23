@@ -17,3 +17,4 @@ class PublicProblemsFilterInSchema(BaseProblemsFilterInSchema): ...
 
 class MyProblemsFilterInSchema(BaseProblemsFilterInSchema):
     status: PublicationStatus | None = None
+    subject_slug: str | None = None

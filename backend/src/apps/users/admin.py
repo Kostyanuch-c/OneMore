@@ -14,19 +14,40 @@ class UserAdmin(BaseUserAdmin):
         'id',
         'username',
         'email',
-        'is_superuser',
+        'is_tutor',
+        'is_staff',
         'last_login',
         'date_joined',
     )
+
+    list_editable = ('is_tutor',)
+
     list_filter = (
         'is_superuser',
         'is_active',
+        'is_tutor',
         'date_joined',
     )
+
     search_fields = (
         'username',
         'email',
     )
+
     ordering = ('-date_joined',)
     empty_value_display = '-пусто-'
     readonly_fields = ('date_joined', 'last_login')
+
+    fieldsets = BaseUserAdmin.fieldsets + (  # type: ignore[operator]
+        (
+            'Роль пользователя',
+            {'fields': ('is_tutor',)},
+        ),
+    )
+
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        (
+            'Роль пользователя',
+            {'fields': ('is_tutor',)},
+        ),
+    )

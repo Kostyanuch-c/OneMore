@@ -20,8 +20,13 @@ class ProblemsRepository:
             pk=problem_id,
         ).exists()
 
-    def get_problems_count(self, *, filters: Q | None = None) -> int:
-        return self.model.objects.filter(filters or Q()).distinct().count()
+    def get_problems_count(self, *, filters: Q, distinct: bool) -> int:
+        queryset = self.model.objects.filter(filters)
+
+        if distinct:
+            queryset = queryset.distinct()
+
+        return queryset.count()
 
     def get_problem_detail_by_id(
         self,
@@ -51,9 +56,14 @@ class ProblemsRepository:
         )
 
     def get_problems_list(
-        self, *, filters: Q, limit: int, offset: int
+        self, *, filters: Q, limit: int, offset: int, distinct: bool
     ) -> list[ProblemEntity]:
-        queryset = self.model.objects.for_list().filter(filters).distinct()
+        queryset = self.model.objects.for_list().filter(filters)
+
+        if distinct:
+            queryset = queryset.distinct()
+
+        queryset = queryset.order_by('-created_at')
 
         return [
             self.converter.to_entity(model=problem)

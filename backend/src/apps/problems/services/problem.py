@@ -5,8 +5,9 @@ from django.db.models import Q
 from apps.common.base_entities import Page
 from apps.problems.dto import (
     ProblemCreateDTO,
-    ProblemFilters,
     ProblemUpdateDTO,
+    ProfileProblemFilters,
+    PublicProblemFilters,
 )
 from apps.problems.entities import ProblemEntity
 from apps.problems.enums import PublicationStatus
@@ -34,6 +35,39 @@ class ProblemService:
 
         return public_query
 
+    def _needs_distinct(
+        self, filters: PublicProblemFilters | ProfileProblemFilters
+    ) -> bool:
+        return bool(filters.tag_ids)
+
+    def _get_problems_page(
+        self,
+        *,
+        filters: PublicProblemFilters | ProfileProblemFilters,
+        base_query: Q,
+        limit: int,
+        offset: int,
+    ) -> Page[ProblemEntity]:
+        query = self.query_builder.build(
+            filters=filters,
+            base_query=base_query,
+        )
+
+        distinct = self._needs_distinct(filters=filters)
+
+        return Page(
+            items=self.repository.get_problems_list(
+                filters=query,
+                limit=limit,
+                offset=offset,
+                distinct=distinct,
+            ),
+            total=self.repository.get_problems_count(
+                filters=query,
+                distinct=distinct,
+            ),
+        )
+
     def _lock_problem_for_update(self, *, problem_id: int, filters: Q) -> None:
         if not self.repository.exists_problem_for_update(
             problem_id=problem_id,
@@ -57,20 +91,13 @@ class ProblemService:
         return problem
 
     def get_public_problems_page(
-        self, *, filters: ProblemFilters, limit: int, offset: int
+        self, *, filters: PublicProblemFilters, limit: int, offset: int
     ) -> Page[ProblemEntity]:
-        query = self.query_builder.build(
+        return self._get_problems_page(
             filters=filters,
             base_query=Q(status=PublicationStatus.PUBLISHED),
-        )
-
-        return Page(
-            items=self.repository.get_problems_list(
-                filters=query,
-                limit=limit,
-                offset=offset,
-            ),
-            total=self.repository.get_problems_count(filters=query),
+            limit=limit,
+            offset=offset,
         )
 
     def get_my_problem_detail(
@@ -89,20 +116,18 @@ class ProblemService:
         return problem
 
     def get_my_problems_page(
-        self, *, filters: ProblemFilters, limit: int, offset: int, user: User
+        self,
+        *,
+        filters: ProfileProblemFilters,
+        limit: int,
+        offset: int,
+        user: User,
     ) -> Page[ProblemEntity]:
-        query = self.query_builder.build(
+        return self._get_problems_page(
             filters=filters,
             base_query=Q(author_id=user.pk),
-        )
-
-        return Page(
-            items=self.repository.get_problems_list(
-                filters=query,
-                limit=limit,
-                offset=offset,
-            ),
-            total=self.repository.get_problems_count(filters=query),
+            limit=limit,
+            offset=offset,
         )
 
     def create_problem(self, *, dto: ProblemCreateDTO) -> int:

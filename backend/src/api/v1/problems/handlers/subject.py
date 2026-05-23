@@ -7,7 +7,7 @@ from api.schemas import ApiResponse, ListPaginationResponse
 from api.v1.problems.filters import PublicProblemsFilterInSchema
 from api.v1.problems.schemas import ProblemOutSchema
 from api.v1.subjects.schemas import ProblemFiltersOutSchema
-from apps.problems.dto import ProblemFilters
+from apps.problems.dto import PublicProblemFilters
 from apps.problems.repositories import (
     SectionRepository,
     SubjectRepository,
@@ -33,7 +33,7 @@ def get_public_problems_list_view(
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[ProblemOutSchema]]:
     problems_page = ProblemService().get_public_problems_page(
-        filters=ProblemFilters(
+        filters=PublicProblemFilters(
             subject_slug=subject_slug, **filters.model_dump()
         ),
         offset=pagination_in.offset,

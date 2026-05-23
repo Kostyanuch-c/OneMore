@@ -220,6 +220,10 @@ class Solution(BaseTimedModel):
                 condition=models.Q(is_main=True),
                 name='unique_main_solution_per_problem',
             ),
+            models.CheckConstraint(
+                condition=~models.Q(is_main=True, is_published=False),
+                name='main_solution_must_be_published',
+            ),
         ]
 
     def __str__(self) -> str:
