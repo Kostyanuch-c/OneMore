@@ -27,3 +27,9 @@ class ApplicationError(Exception):
                 extra=self.extra,
             ),
         ]
+
+
+@dataclass(eq=False)
+class EmptyUpdateDataError(ApplicationError):
+    message: str = 'Empty update data'
+    status_code: int = HTTPStatus.UNPROCESSABLE_ENTITY

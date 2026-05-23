@@ -78,7 +78,11 @@ class ProblemsRepository:
         return problem.pk
 
     def update_problem(
-        self, *, problem_id: int, dto: ProblemUpdateDTO
+        self,
+        *,
+        problem_id: int,
+        dto: ProblemUpdateDTO,
+        filters: Q | None = None,
     ) -> bool:
         # transaction we not use because we opened the transaction in the use case
         update_data = dto.data.copy()
@@ -86,15 +90,19 @@ class ProblemsRepository:
 
         update_data['updated_at'] = timezone.now()
 
-        updated_count = self.model.objects.filter(pk=problem_id).update(
-            **update_data
-        )
+        updated_count = self.model.objects.filter(
+            filters or Q(),
+            pk=problem_id,
+        ).update(**update_data)
 
         if updated_count == 0:
             return False
 
         if tag_ids is not None:
-            problem = self.model.objects.filter(pk=problem_id).first()
+            problem = self.model.objects.filter(
+                filters or Q(),
+                pk=problem_id,
+            ).first()
 
             if problem is None:
                 return False

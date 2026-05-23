@@ -10,3 +10,12 @@ class MainSolutionRequiredError(ApplicationError):
     message: str = 'First solution for problem must be main'
     extra: dict[str, Any] = field(default_factory=lambda: {'field': 'is_main'})
     status_code: int = HTTPStatus.CONFLICT
+
+
+@dataclass(eq=False)
+class SolutionNotFoundError(ApplicationError):
+    message: str = 'Solution not found'
+    extra: dict[str, Any] = field(
+        default_factory=lambda: {'field': 'solution_id'}
+    )
+    status_code: int = HTTPStatus.NOT_FOUND

@@ -16,6 +16,8 @@ from apps.problems.services.query_builder import ProblemQueryBuilder
 
 
 if TYPE_CHECKING:
+    from django.contrib.auth.models import AnonymousUser
+
     from apps.users.models import User
 
 
@@ -23,12 +25,30 @@ class ProblemService:
     repository = ProblemsRepository()
     query_builder = ProblemQueryBuilder()
 
-    def get_public_problem_detail(self, *, problem_id: int) -> ProblemEntity:
+    def _get_public_solution_filters(self, *, user: User | AnonymousUser) -> Q:
+        # For demonstration solutions for author where a solution not is_published
+        public_query = Q(is_published=True)
+
+        if user.is_authenticated and user.is_tutor:
+            return public_query | Q(author_id=user.pk)
+
+        return public_query
+
+    def _lock_problem_for_update(self, *, problem_id: int, filters: Q) -> None:
+        if not self.repository.exists_problem_for_update(
+            problem_id=problem_id,
+            filters=filters,
+        ):
+            raise ProblemNotFoundError
+
+    def get_public_problem_detail(
+        self, *, problem_id: int, user: User | AnonymousUser
+    ) -> ProblemEntity:
         problem = self.repository.get_problem_detail_by_id(
             problem_id=problem_id,
             filters=Q(status=PublicationStatus.PUBLISHED),
             with_solutions=True,
-            solution_filters=Q(is_published=True),
+            solution_filters=self._get_public_solution_filters(user=user),
         )
 
         if problem is None:
@@ -91,11 +111,8 @@ class ProblemService:
     def update_problem(
         self, *, problem_id: int, dto: ProblemUpdateDTO, user: User
     ) -> int:
-        if not self.repository.exists_problem(
-            problem_id=problem_id,
-            filters=Q(author_id=user.pk),
-        ) or not self.repository.update_problem(
-            problem_id=problem_id, dto=dto
+        if not self.repository.update_problem(
+            problem_id=problem_id, dto=dto, filters=Q(author_id=user.pk)
         ):
             raise ProblemNotFoundError
 
@@ -111,9 +128,17 @@ class ProblemService:
     def lock_problem_available_for_solution_create(
         self, *, problem_id: int, user: User
     ) -> None:
-        if not self.repository.exists_problem_for_update(
+        self._lock_problem_for_update(
             problem_id=problem_id,
-            filters=Q(status=PublicationStatus.PUBLISHED)
-            | Q(author_id=user.pk),
-        ):
-            raise ProblemNotFoundError
+            filters=(
+                Q(status=PublicationStatus.PUBLISHED) | Q(author_id=user.pk)
+            ),
+        )
+
+    def lock_my_problem_for_update(
+        self, *, problem_id: int, user: User
+    ) -> None:
+        self._lock_problem_for_update(
+            problem_id=problem_id,
+            filters=Q(author_id=user.pk),
+        )

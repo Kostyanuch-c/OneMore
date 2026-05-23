@@ -8,7 +8,7 @@ class ProblemQueryBuilder(BaseQueryBuilder[ProblemFilters]):
         'topic_ids': 'topic_id__in',
         'tag_ids': 'tags__id__in',
         'difficulty': 'difficulty',
-        'is_published': 'is_published',
+        'status': 'status',
         'created_from': 'created_at__gte',
         'created_to': 'created_at__lte',
     }

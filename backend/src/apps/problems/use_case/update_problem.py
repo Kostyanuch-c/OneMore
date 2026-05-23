@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from django.db import transaction
 
 from apps.common import BaseUseCase
+from apps.common.exception import EmptyUpdateDataError
 from apps.problems.dto import (
     ProblemMutationResult,
     ProblemUpdateDTO,
@@ -43,6 +44,7 @@ class UpdateProblemUseCase(BaseUseCase[ProblemMutationResult]):
         return [
             self.validate_topic_belongs_to_subject,
             self.validate_tags_exist,
+            self.validate_empty_update_data,
         ]
 
     def validate_topic_belongs_to_subject(self) -> None:
@@ -57,3 +59,7 @@ class UpdateProblemUseCase(BaseUseCase[ProblemMutationResult]):
             self.tag_service.ensure_tags_exist(
                 tag_ids=tag_ids  # type: ignore[arg-type]
             )
+
+    def validate_empty_update_data(self) -> None:
+        if not self.update_data.data:
+            raise EmptyUpdateDataError

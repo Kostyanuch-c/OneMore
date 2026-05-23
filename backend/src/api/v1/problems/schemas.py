@@ -15,6 +15,7 @@ from apps.problems.dto import (
     ProblemCreateDTO,
     ProblemMutationResult,
     ProblemUpdateDTO,
+    SolutionUpdateDTO,
 )
 from apps.problems.entities import ProblemEntity, SolutionEntity
 from apps.problems.enums import Difficulty, PublicationStatus
@@ -67,7 +68,21 @@ class ProblemUpdateInSchema(Schema, extra='forbid'):
         if data.get('difficulty') is not None:
             data['difficulty'] = data['difficulty'].value
 
+        if data.get('status') is not None:
+            data['status'] = data['status'].value
+
         return ProblemUpdateDTO(data=data)
+
+
+class SolutionUpdateInSchema(Schema, extra='forbid'):
+    name: str | None = None
+    content: str | None = None
+    is_published: bool | None = None
+
+    def to_dto(self) -> SolutionUpdateDTO:
+        return SolutionUpdateDTO(
+            data=self.model_dump(exclude_unset=True),
+        )
 
 
 class SolutionOutSchema(Schema, extra='forbid'):

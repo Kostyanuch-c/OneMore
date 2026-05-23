@@ -68,8 +68,7 @@ class SolutionCreateDTO:
 
 @dataclass(frozen=True)
 class SolutionUpdateDTO:
-    name: str | None = None
-    content: str | None = None
+    data: dict[str, object]
 
 
 @dataclass(frozen=True)

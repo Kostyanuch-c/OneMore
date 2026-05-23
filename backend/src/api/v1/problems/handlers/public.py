@@ -21,6 +21,7 @@ def get_public_problem_detail_view(
 ) -> ApiResponse[ProblemOutSchema]:
     problem = ProblemService().get_public_problem_detail(
         problem_id=problem_id,
+        user=request.user,
     )
 
     return ApiResponse.success(
