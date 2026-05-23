@@ -18,7 +18,7 @@ class SetMainSolutionUseCase(BaseUseCase[SolutionMutationResult]):
 
     @transaction.atomic()
     def act(self) -> SolutionMutationResult:
-        self.problem_service.lock_my_problem_for_update(
+        self.problem_service.lock_my_problem_for_update_main_solution(
             problem_id=self.problem_id,
             tutor_id=self.tutor_id,
         )

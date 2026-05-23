@@ -39,10 +39,14 @@ class SolutionService:
         return solution_id
 
     def set_main_solution(self, *, problem_id: int, solution_id: int) -> None:
-        if not self.repository.is_solution_published(
-            solution_id=solution_id,
+        is_published = self.repository.get_solution_published_status(
             problem_id=problem_id,
-        ):
+            solution_id=solution_id,
+        )
+        if is_published is None:
+            raise SolutionNotFoundError
+
+        if not is_published:
             raise HiddenSolutionCannotBeMainError
 
         self.repository.unset_main_solutions(
@@ -51,8 +55,8 @@ class SolutionService:
         )
 
         if not self.repository.set_solution_as_main(
-            problem_id=problem_id,
-            solution_id=solution_id,
+                problem_id=problem_id,
+                solution_id=solution_id,
         ):
             raise SolutionNotFoundError
 
