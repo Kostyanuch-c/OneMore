@@ -1,12 +1,12 @@
 from .problems import ProblemNotFoundError
-from .solution import MainSolutionRequiredError, SolutionNotFoundError
+from .solution import MainSolutionCannotBeHiddenError, SolutionNotFoundError
 from .subject import SubjectNotFoundError
 from .tag import TagNotFoundError
 from .topic import TopicNotFoundError
 
 
 __all__ = [
-    'MainSolutionRequiredError',
+    'MainSolutionCannotBeHiddenError',
     'ProblemNotFoundError',
     'SolutionNotFoundError',
     'SubjectNotFoundError',

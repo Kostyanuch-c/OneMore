@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from django.db import transaction
 
@@ -9,23 +8,18 @@ from apps.problems.services import ProblemService
 from apps.problems.services.solution import SolutionService
 
 
-if TYPE_CHECKING:
-    from apps.users.models import User
-
-
 @dataclass
 class CreateSolutionUseCase(BaseUseCase[SolutionMutationResult]):
     problem_service: ProblemService
     solution_service: SolutionService
     create_data: SolutionCreateDTO
-    user: User
 
     @transaction.atomic()
     def act(self) -> SolutionMutationResult:
         # transaction because we need to block the problem,
         self.problem_service.lock_problem_available_for_solution_create(
             problem_id=self.create_data.problem_id,
-            user=self.user,
+            author_id=self.create_data.author_id,
         )
 
         solution_id = self.solution_service.create_solution(

@@ -20,7 +20,7 @@ from apps.problems.services import ProblemService, TagService, TopicService
 from apps.problems.use_case import CreateProblemUseCase, UpdateProblemUseCase
 
 
-router = Router(tags=['Teacher Problems'], auth=django_auth)
+router = Router(tags=['Tutor Problems'], auth=django_auth)
 
 
 @router.get(

@@ -1,6 +1,5 @@
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from apps.common import BaseUseCase
 from apps.common.exception import EmptyUpdateDataError
@@ -12,10 +11,6 @@ from apps.problems.services import ProblemService
 from apps.problems.services.solution import SolutionService
 
 
-if TYPE_CHECKING:
-    from apps.users.models import User
-
-
 @dataclass
 class UpdateSolutionUseCase(BaseUseCase[SolutionMutationResult]):
     problem_service: ProblemService
@@ -23,13 +18,13 @@ class UpdateSolutionUseCase(BaseUseCase[SolutionMutationResult]):
     update_data: SolutionUpdateDTO
     problem_id: int
     solution_id: int
-    user: User
+    tutor_id: int
 
     def act(self) -> SolutionMutationResult:
         solution_id = self.solution_service.update_solution(
             dto=self.update_data,
             solution_id=self.solution_id,
-            user=self.user,
+            tutor_id=self.tutor_id,
             problem_id=self.problem_id,
         )
 
@@ -47,3 +42,14 @@ class UpdateSolutionUseCase(BaseUseCase[SolutionMutationResult]):
     def validate_empty_update_data(self) -> None:
         if not self.update_data.data:
             raise EmptyUpdateDataError
+
+    def validate_can_hide_solution(self) -> None:
+        # You can't hide the main solution
+        if self.update_data.data.get('is_published') is not False:
+            return
+
+        self.solution_service.ensure_solution_can_be_hidden(
+            solution_id=self.solution_id,
+            problem_id=self.problem_id,
+            tutor_id=self.tutor_id,
+        )

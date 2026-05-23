@@ -8,8 +8,11 @@ from apps.problems.models import Solution
 class SolutionRepository:
     model = Solution
 
-    def exists_main_solution(self, *, problem_id: int) -> bool:
+    def exists_main_solution(
+        self, *, problem_id: int, filters: Q | None = None
+    ) -> bool:
         return self.model.objects.filter(
+            filters or Q(),
             problem_id=problem_id,
             is_main=True,
         ).exists()

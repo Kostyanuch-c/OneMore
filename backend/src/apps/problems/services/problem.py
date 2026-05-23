@@ -126,19 +126,19 @@ class ProblemService:
             raise ProblemNotFoundError
 
     def lock_problem_available_for_solution_create(
-        self, *, problem_id: int, user: User
+        self, *, problem_id: int, author_id: int
     ) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
             filters=(
-                Q(status=PublicationStatus.PUBLISHED) | Q(author_id=user.pk)
+                Q(status=PublicationStatus.PUBLISHED) | Q(author_id=author_id)
             ),
         )
 
     def lock_my_problem_for_update(
-        self, *, problem_id: int, user: User
+        self, *, problem_id: int, tutor_id: int
     ) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
-            filters=Q(author_id=user.pk),
+            filters=Q(author_id=tutor_id),
         )
