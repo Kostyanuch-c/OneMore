@@ -5,6 +5,12 @@ from django.utils import timezone
 
 import pytest
 
+from tests.factories.problems import (
+    ProblemFactory,
+    SectionFactory,
+    SubjectFactory,
+    TopicFactory,
+)
 from tests.factories.tutor_student_membership import (
     TutorStudentMembershipFactory,
 )
@@ -13,6 +19,8 @@ from tests.factories.user import UserFactory
 from apps.a12n.services import AuthEmailService
 from apps.access.models import TutorStudentMembership
 from apps.access.services import TutorStudentMembershipService
+from apps.problems.enums import PublicationStatus
+from apps.problems.models import Problem
 from apps.users.services import UserService
 from apps.users.use_cases import InviteUser
 
@@ -46,6 +54,86 @@ def users(user_factory):
             date_joined=now - timedelta(minutes=i),
         )
         for i in range(15)
+    ]
+
+
+@pytest.fixture
+def subject_factory() -> type[SubjectFactory]:
+    return SubjectFactory
+
+
+@pytest.fixture
+def section_factory() -> type[SectionFactory]:
+    return SectionFactory
+
+
+@pytest.fixture
+def topic_factory() -> type[TopicFactory]:
+    return TopicFactory
+
+
+@pytest.fixture
+def problem_factory() -> type[ProblemFactory]:
+    return ProblemFactory
+
+
+@pytest.fixture
+def problem_model():
+    return Problem
+
+
+@pytest.fixture
+def subject(subject_factory):
+    return subject_factory.create(slug='chemistry')
+
+
+@pytest.fixture
+def section(section_factory, subject):
+    return section_factory.create(subject=subject)
+
+
+@pytest.fixture
+def topic(topic_factory, section):
+    return topic_factory.create(section=section)
+
+
+@pytest.fixture
+def problem(problem_factory, topic, tutor):
+    return problem_factory.create(
+        topic=topic,
+        author=tutor,
+        status=PublicationStatus.PUBLISHED,
+    )
+
+
+@pytest.fixture
+def problems(problem_factory, topic):
+    now = timezone.now()
+
+    return [
+        problem_factory.create(
+            topic=topic,
+            status=(
+                PublicationStatus.PUBLISHED
+                if i < 5  # noqa: PLR2004
+                else PublicationStatus.DRAFT
+            ),
+            created_at=now - timedelta(minutes=i),
+        )
+        for i in range(15)
+    ]
+
+
+@pytest.fixture
+def other_subject_problems(problem_factory):
+    now = timezone.now()
+
+    return [
+        problem_factory.create(
+            status=PublicationStatus.PUBLISHED,
+            created_at=now - timedelta(minutes=100 + i),
+        )
+        for i in range(10)
     ]
 
 

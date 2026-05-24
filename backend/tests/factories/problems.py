@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 import factory
 from factory.django import DjangoModelFactory
 
@@ -33,13 +35,27 @@ class TopicFactory(DjangoModelFactory):
 class ProblemFactory(DjangoModelFactory):
     class Meta:
         model = Problem
+        skip_postgeneration_save = True
 
     title = factory.Sequence(lambda n: f'Problem {n}')
-    question = 'What is 2+2?'
+    question = factory.Sequence(lambda n: f'What is 2+2? Problem #{n}')
+    source = factory.Sequence(lambda n: f'Test source {n}')
+
     difficulty = Difficulty.EASY
     status = PublicationStatus.PUBLISHED
+
     topic = factory.SubFactory(TopicFactory)
-    author = factory.SubFactory(UserFactory)
+    author = factory.SubFactory(UserFactory, is_tutor=True)
+
+    created_at = factory.LazyFunction(timezone.now)
+
+    @factory.post_generation
+    def tags(self, create, extracted, **kwargs):  # noqa
+        if not create:
+            return
+
+        if extracted:
+            self.tags.add(*extracted)
 
 
 class SolutionFactory(DjangoModelFactory):

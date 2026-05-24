@@ -42,6 +42,13 @@ def admin_user_invite_url() -> str:
 
 
 @pytest.fixture
+def public_problem_list_url(subject) -> str:
+    return reverse(
+        'api-v1:subject_problems_list', kwargs={'subject_slug': subject.slug}
+    )
+
+
+@pytest.fixture
 def admin_users_list_url() -> Callable[..., str]:
     def _build_url(**query_params) -> str:
         base_url = reverse('api-v1:admin_users_list')

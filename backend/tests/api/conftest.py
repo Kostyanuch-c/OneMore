@@ -20,6 +20,7 @@ def tutor(user_factory):
         username='tutor',
         email='tutor@mail.ru',
         is_staff=True,
+        is_tutor=True,
     )
 
 
