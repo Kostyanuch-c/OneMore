@@ -14,6 +14,7 @@ router = Router(tags=['Public Problems'])
     '/{problem_id}/',
     response=ApiResponse[ProblemOutSchema],
     url_name='problem_detail',
+    exclude_none=True,
 )
 def get_public_problem_detail_view(
     request: HttpRequest,

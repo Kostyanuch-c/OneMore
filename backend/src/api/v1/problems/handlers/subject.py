@@ -25,6 +25,7 @@ router = Router(tags=['Public Problems'])
     '/{subject_slug}/problems/',
     response=ApiResponse[ListPaginationResponse[ProblemOutSchema]],
     url_name='subject_problems_list',
+    exclude_none=True,
 )
 def get_public_problems_list_view(
     request: HttpRequest,

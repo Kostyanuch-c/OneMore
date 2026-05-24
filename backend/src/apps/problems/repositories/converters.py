@@ -91,7 +91,10 @@ class SolutionConverter:
 class ProblemConverter:
     @staticmethod
     def to_entity(
-        *, model: Problem, with_solutions: bool = False
+        *,
+        model: Problem,
+        with_solutions: bool = False,
+        with_subject: bool = False,
     ) -> ProblemEntity:
         return ProblemEntity(
             id=model.pk,
@@ -103,6 +106,14 @@ class ProblemConverter:
             ),
             source=model.source,
             topic=TopicConverter.to_entity(model=model.topic),
+            section=SectionConverter.to_entity(model=model.topic.section),
+            subject=(
+                SubjectConverter.to_entity(
+                    model=model.topic.section.subject,
+                )
+                if with_subject
+                else None
+            ),
             tags=[
                 TagConverter.to_entity(model=tag) for tag in model.tags.all()
             ],
@@ -121,5 +132,4 @@ class ProblemConverter:
             ),
             created_at=model.created_at,
             updated_at=model.updated_at,
-            section=SectionConverter.to_entity(model=model.topic.section),
         )

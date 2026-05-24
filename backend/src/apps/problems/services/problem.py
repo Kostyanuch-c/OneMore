@@ -47,6 +47,7 @@ class ProblemService:
         base_query: Q,
         limit: int,
         offset: int,
+        with_subject: bool = False,
     ) -> Page[ProblemEntity]:
         query = self.query_builder.build(
             filters=filters,
@@ -61,6 +62,7 @@ class ProblemService:
                 limit=limit,
                 offset=offset,
                 distinct=distinct,
+                with_subject=with_subject,
             ),
             total=self.repository.get_problems_count(
                 filters=query,
@@ -108,6 +110,7 @@ class ProblemService:
             filters=Q(author_id=user.pk),
             with_solutions=True,
             solution_filters=None,
+            with_subject=True,
         )
 
         if problem is None:
@@ -128,6 +131,7 @@ class ProblemService:
             base_query=Q(author_id=user.pk),
             limit=limit,
             offset=offset,
+            with_subject=True,
         )
 
     def create_problem(self, *, dto: ProblemCreateDTO) -> int:

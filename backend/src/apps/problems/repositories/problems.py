@@ -34,10 +34,12 @@ class ProblemsRepository:
         problem_id: int,
         filters: Q | None = None,
         with_solutions: bool = True,
+        with_subject: bool = False,
         solution_filters: Q | None = None,
     ) -> ProblemEntity | None:
         queryset = self.model.objects.for_detail(
             with_solutions=with_solutions,
+            with_subject=with_subject,
             solution_filters=solution_filters,
         ).filter(pk=problem_id)
 
@@ -56,9 +58,17 @@ class ProblemsRepository:
         )
 
     def get_problems_list(
-        self, *, filters: Q, limit: int, offset: int, distinct: bool
+        self,
+        *,
+        filters: Q,
+        limit: int,
+        offset: int,
+        distinct: bool,
+        with_subject: bool = False,
     ) -> list[ProblemEntity]:
-        queryset = self.model.objects.for_list().filter(filters)
+        queryset = self.model.objects.for_list(
+            with_subject=with_subject
+        ).filter(filters)
 
         if distinct:
             queryset = queryset.distinct()

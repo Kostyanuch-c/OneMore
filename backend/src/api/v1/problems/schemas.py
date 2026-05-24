@@ -8,6 +8,7 @@ from api.v1.profile.schemas import UserShortOutSchema
 from api.v1.subjects.schemas import (
     DifficultyOutSchema,
     SectionOutSchema,
+    SubjectOutSchema,
     TagOutSchema,
     TopicOutSchema,
 )
@@ -126,12 +127,13 @@ class ProblemOutSchema(Schema, extra='forbid'):
     question: str
     source: str
     difficulty: DifficultyOutSchema
+    status: StatusOutSchema
+    subject: SubjectOutSchema | None = None
     section: SectionOutSchema
     topic: TopicOutSchema
     tags: list[TagOutSchema]
-    solutions: list[SolutionOutSchema]
     author: UserShortOutSchema | None = None
-    status: StatusOutSchema
+    solutions: list[SolutionOutSchema]
     permissions: ProblemPermissionsOutSchema
     created_at: datetime
     updated_at: datetime
@@ -146,22 +148,25 @@ class ProblemOutSchema(Schema, extra='forbid'):
             question=entity.question,
             source=entity.source,
             difficulty=DifficultyOutSchema.from_option(entity.difficulty),
+            status=StatusOutSchema.from_option(entity.status),
+            subject=SubjectOutSchema.from_entity(entity.subject)
+            if entity.subject
+            else None,
             section=SectionOutSchema.from_entity(entity.section),
             topic=TopicOutSchema.from_entity(entity.topic),
             tags=[TagOutSchema.from_entity(tag) for tag in entity.tags],
-            solutions=[  # Empty list if no solutions
-                SolutionOutSchema.from_entity(entity=solution, user=user)
-                for solution in entity.solutions
-            ],
             author=UserShortOutSchema.from_entity(entity.author)
             if entity.author
             else None,
-            status=StatusOutSchema.from_option(entity.status),
-            created_at=entity.created_at,
-            updated_at=entity.updated_at,
+            solutions=[  # If not a solution is empty list
+                SolutionOutSchema.from_entity(entity=solution, user=user)
+                for solution in entity.solutions
+            ],
             permissions=ProblemPermissionsOutSchema(
                 **build_problem_permissions(problem=entity, user=user)
             ),
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
         )
 
 

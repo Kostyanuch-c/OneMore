@@ -50,3 +50,4 @@ class ProblemEntity(BaseEntity):
     topic: TopicEntity
     tags: list[TagEntity]
     solutions: list[SolutionEntity]
+    subject: SubjectEntity | None = None
