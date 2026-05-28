@@ -12,6 +12,7 @@ ENV/
 backend/src/logs
 *.log
 .python-version
+.node-version
 
 # Django
 *.pyc

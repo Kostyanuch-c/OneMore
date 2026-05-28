@@ -16,10 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
-          bun-version-file: "frontend/.bun-version"
+          node-version-file: "frontend/.node-version"
 
       - name: Install dependencies
         run: make ci-install
