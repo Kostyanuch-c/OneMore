@@ -76,7 +76,7 @@ class ProblemsRepository:
         queryset = queryset.order_by('-created_at')
 
         return [
-            self.converter.to_entity(model=problem)
+            self.converter.to_entity(model=problem, with_subject=with_subject)
             for problem in queryset[offset : offset + limit]
         ]
 

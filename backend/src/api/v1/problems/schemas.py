@@ -170,6 +170,38 @@ class ProblemOutSchema(Schema, extra='forbid'):
         )
 
 
+class ProblemListItemOutSchema(Schema, extra='forbid'):
+    id: int
+    title: str
+    question: str
+    subject: SubjectOutSchema | None = None
+    section: SectionOutSchema
+    topic: TopicOutSchema
+    difficulty: DifficultyOutSchema
+    tags: list[TagOutSchema]
+    detail_url: str
+    created_at: datetime
+    updated_at: datetime
+
+    @staticmethod
+    def from_entity(entity: ProblemEntity) -> ProblemListItemOutSchema:
+        return ProblemListItemOutSchema(
+            id=entity.id,
+            title=entity.title,
+            question=entity.question,
+            subject=SubjectOutSchema.from_entity(entity.subject)
+            if entity.subject
+            else None,
+            section=SectionOutSchema.from_entity(entity.section),
+            topic=TopicOutSchema.from_entity(entity.topic),
+            difficulty=DifficultyOutSchema.from_option(entity.difficulty),
+            tags=[TagOutSchema.from_entity(tag) for tag in entity.tags],
+            detail_url=f'/problems/{entity.id}',
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+        )
+
+
 class ProblemPermissionsOutSchema(Schema, extra='forbid'):
     can_edit: bool
     can_create_solution: bool

@@ -7,21 +7,25 @@ from ninja import Schema
 from api.filters import PaginationOut
 
 
-class ApiError(Schema):
+class ApiError(Schema, extra='forbid'):
     message: str
     extra: dict[str, Any] | None = Field(default_factory=dict)
 
 
-class ListPaginationResponse[TListSchema](Schema):
+class ListResponse[TListSchema](Schema, extra='forbid'):
+    items: list[TListSchema]
+
+
+class ListPaginationResponse[TListSchema](Schema, extra='forbid'):
     items: list[TListSchema]
     pagination: PaginationOut
 
 
-class MessageSchema(Schema):
+class MessageSchema(Schema, extra='forbid'):
     message: str
 
 
-class ApiResponse[TData](Schema):
+class ApiResponse[TData](Schema, extra='forbid'):
     data: TData | dict[str, Any] = Field(default_factory=dict)
     meta: dict[str, Any] = Field(default_factory=dict)
     errors: list[ApiError] = Field(default_factory=list)

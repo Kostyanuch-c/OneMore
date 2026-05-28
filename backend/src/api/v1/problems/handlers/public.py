@@ -2,12 +2,28 @@ from ninja import Router
 
 from django.http import HttpRequest
 
-from api.schemas import ApiResponse
-from api.v1.problems.schemas import ProblemOutSchema
+from api.schemas import ApiResponse, ListResponse
+from api.v1.problems.schemas import ProblemListItemOutSchema, ProblemOutSchema
 from apps.problems.services import ProblemService
 
 
 router = Router(tags=['Public Problems'])
+
+
+@router.get(
+    '/recent/',
+    response=ApiResponse[ListResponse[ProblemListItemOutSchema]],
+    url_name='recents_problems_list',
+)
+def get_recent_problems_list_view(
+    request: HttpRequest,
+) -> ApiResponse[ListResponse[ProblemListItemOutSchema]]:
+    problems = ProblemService().get_recent_problems()
+    items = [
+        ProblemListItemOutSchema.from_entity(entity=problem)
+        for problem in problems
+    ]
+    return ApiResponse.success(data=ListResponse(items=items))
 
 
 @router.get(

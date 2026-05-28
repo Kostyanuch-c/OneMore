@@ -3,23 +3,7 @@ from django.db.models import Prefetch, Q, QuerySet
 
 AUTHOR_DEFERRED_FIELDS = (
     'author__password',
-    'author__last_login',
     'author__is_superuser',
-)
-
-TOPIC_DEFERRED_FIELDS = (
-    'topic__created_at',
-    'topic__updated_at',
-)
-
-SECTION_DEFERRED_FIELDS = (
-    'topic__section__created_at',
-    'topic__section__updated_at',
-)
-
-SUBJECT_DEFERRED_FIELDS = (
-    'topic__section__subject__created_at',
-    'topic__section__subject__updated_at',
 )
 
 
@@ -36,13 +20,10 @@ class ProblemQuerySet(QuerySet):  # type: ignore[type-arg]
 
         deferred_fields = [
             *AUTHOR_DEFERRED_FIELDS,
-            *TOPIC_DEFERRED_FIELDS,
-            *SECTION_DEFERRED_FIELDS,
         ]
 
         if with_subject:
             select_related.append('topic__section__subject')
-            deferred_fields.extend(SUBJECT_DEFERRED_FIELDS)
 
         return (
             self.select_related(*select_related)

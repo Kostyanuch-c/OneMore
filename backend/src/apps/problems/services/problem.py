@@ -172,12 +172,17 @@ class ProblemService:
             filters=Q(author_id=tutor_id),
         )
 
-    def lock_problem_for_update(
-        self,
-        *,
-        problem_id: int,
-    ) -> None:
+    def lock_problem_for_update(self, *, problem_id: int) -> None:
         self._lock_problem_for_update(
             problem_id=problem_id,
             filters=Q(),
+        )
+
+    def get_recent_problems(self) -> list[ProblemEntity]:
+        return self.repository.get_problems_list(
+            filters=Q(),
+            limit=6,
+            offset=0,
+            distinct=False,
+            with_subject=True,
         )
