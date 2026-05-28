@@ -26,7 +26,7 @@ class MessageSchema(Schema, extra='forbid'):
 
 
 class ApiResponse[TData](Schema, extra='forbid'):
-    data: TData | dict[str, Any] = Field(default_factory=dict)
+    data: TData | None = None
     meta: dict[str, Any] = Field(default_factory=dict)
     errors: list[ApiError] = Field(default_factory=list)
 
