@@ -344,12 +344,7 @@ export interface components {
     };
     /** ApiResponse[AuthOutSchema] */
     ApiResponse_AuthOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["AuthOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["AuthOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -369,12 +364,7 @@ export interface components {
     };
     /** ApiResponse[AuthUserOutSchema] */
     ApiResponse_AuthUserOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["AuthUserOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["AuthUserOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -424,12 +414,7 @@ export interface components {
     };
     /** ApiResponse[MessageSchema] */
     ApiResponse_MessageSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["MessageSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["MessageSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -473,12 +458,9 @@ export interface components {
     };
     /** ApiResponse[ListPaginationResponse[UserOutSchema]] */
     ApiResponse_ListPaginationResponse_UserOutSchema__: {
-      /** Data */
       data?:
         | components["schemas"]["ListPaginationResponse_UserOutSchema_"]
-        | {
-            [key: string]: unknown;
-          };
+        | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -503,12 +485,7 @@ export interface components {
     };
     /** ApiResponse[UserOutSchema] */
     ApiResponse_UserOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["UserOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["UserOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -565,12 +542,9 @@ export interface components {
     PublicationStatus: "draft" | "published";
     /** ApiResponse[ListPaginationResponse[ProblemOutSchema]] */
     ApiResponse_ListPaginationResponse_ProblemOutSchema__: {
-      /** Data */
       data?:
         | components["schemas"]["ListPaginationResponse_ProblemOutSchema_"]
-        | {
-            [key: string]: unknown;
-          };
+        | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -706,12 +680,7 @@ export interface components {
     };
     /** ApiResponse[ProblemOutSchema] */
     ApiResponse_ProblemOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["ProblemOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["ProblemOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -721,12 +690,7 @@ export interface components {
     };
     /** ApiResponse[ProblemMutationOutSchema] */
     ApiResponse_ProblemMutationOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["ProblemMutationOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["ProblemMutationOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -776,12 +740,7 @@ export interface components {
     };
     /** ApiResponse[SolutionMutationOutSchema] */
     ApiResponse_SolutionMutationOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["SolutionMutationOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["SolutionMutationOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -824,11 +783,7 @@ export interface components {
     /** ApiResponse[list[SubjectOutSchema]] */
     ApiResponse_list_SubjectOutSchema__: {
       /** Data */
-      data?:
-        | components["schemas"]["SubjectOutSchema"][]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["SubjectOutSchema"][] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -863,12 +818,7 @@ export interface components {
     };
     /** ApiResponse[ProblemFiltersOutSchema] */
     ApiResponse_ProblemFiltersOutSchema_: {
-      /** Data */
-      data?:
-        | components["schemas"]["ProblemFiltersOutSchema"]
-        | {
-            [key: string]: unknown;
-          };
+      data?: components["schemas"]["ProblemFiltersOutSchema"] | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -889,12 +839,9 @@ export interface components {
     };
     /** ApiResponse[ListResponse[ProblemListItemOutSchema]] */
     ApiResponse_ListResponse_ProblemListItemOutSchema__: {
-      /** Data */
       data?:
         | components["schemas"]["ListResponse_ProblemListItemOutSchema_"]
-        | {
-            [key: string]: unknown;
-          };
+        | null;
       /** Meta */
       meta?: {
         [key: string]: unknown;

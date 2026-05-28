@@ -10,6 +10,8 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { getCurrentUser } from "@/features/auth/api/auth";
+import { getSubjects } from "@/features/subjects/api/subjects";
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +31,16 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [subjects, currentUser] = await Promise.all([
+    getSubjects(),
+    getCurrentUser().catch(() => null),
+  ]);
+
   return (
     <html suppressHydrationWarning lang="ru">
       <head />
@@ -41,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
           <div className="relative flex flex-col h-screen">
-            <Navbar />
+            <Navbar currentUser={currentUser} subjects={subjects} />
             <main className="container mx-auto max-w-7xl pt-16 px-6 grow">
               {children}
             </main>

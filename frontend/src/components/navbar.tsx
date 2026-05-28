@@ -1,49 +1,47 @@
 "use client";
 
+import type { CurrentUser } from "@/features/auth/api/auth";
+import type { Subject } from "@/features/subjects/api/subjects";
+
 import {
   Navbar as HeroUINavbar,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
+  NavbarContent,
   NavbarItem,
+  NavbarMenu,
   NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@heroui/navbar";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/dropdown";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { BeakerIcon } from "@/components/icons";
 
-export const Navbar = () => {
-  // const searchInput = (
-  //   <Input
-  //     aria-label="Search"
-  //     classNames={{
-  //       inputWrapper: "bg-default-100",
-  //       input: "text-sm",
-  //     }}
-  //     endContent={
-  //       <Kbd className="hidden lg:inline-block" keys={["command"]}>
-  //         K
-  //       </Kbd>
-  //     }
-  //     labelPlacement="outside"
-  //     placeholder="Search..."
-  //     startContent={
-  //       <SearchIcon className="text-base text-default-400 pointer-events-none shrink-0" />
-  //     }
-  //     type="search"
-  //   />
-  // );
+type NavbarProps = {
+  subjects: Subject[];
+  currentUser?: CurrentUser | null;
+};
+
+export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const isSubjectPage = pathname.endsWith("/problems");
+  const authHref = currentUser ? "/profile" : "/login";
+  const authLabel = currentUser ? "Профиль" : "Войти";
 
   return (
     <HeroUINavbar
@@ -61,22 +59,94 @@ export const Navbar = () => {
         </NavbarBrand>
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="center">
-        <ul className="hidden md:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
-                )}
-                color="foreground"
-                data-active={pathname === item.href}
-                href={item.href}
+        <ul className="hidden md:flex gap-4 justify-start ml-2 items-center">
+          <NavbarItem>
+            <NextLink
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "data-[active=true]:text-primary data-[active=true]:font-medium",
+              )}
+              data-active={pathname === "/"}
+              href="/"
+            >
+              Главная
+            </NextLink>
+          </NavbarItem>
+
+          <NavbarItem>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  disableAnimation
+                  disableRipple
+                  className={clsx(
+                    "px-0 data-[active=true]:text-primary data-[active=true]:font-medium",
+                    linkStyles({ color: "foreground" }),
+                  )}
+                  data-active={isSubjectPage}
+                  radius="none"
+                  variant="light"
+                >
+                  Задачи
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Список предметов"
+                disabledKeys={subjects.length === 0 ? ["empty"] : []}
+                onAction={(key) => {
+                  setIsMenuOpen(false);
+                  router.push(`/${String(key)}/problems`);
+                }}
               >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
+                {subjects.length === 0 ? (
+                  <DropdownItem key="empty">Пока нет предметов</DropdownItem>
+                ) : (
+                  subjects.map((subject) => (
+                    <DropdownItem key={subject.slug}>
+                      {subject.name}
+                    </DropdownItem>
+                  ))
+                )}
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarItem>
+
+          <NavbarItem>
+            <NextLink
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "data-[active=true]:text-primary data-[active=true]:font-medium",
+              )}
+              data-active={pathname === "/about"}
+              href="/about"
+            >
+              О сайте
+            </NextLink>
+          </NavbarItem>
+
+          <NavbarItem>
+            <NextLink
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "data-[active=true]:text-primary data-[active=true]:font-medium",
+              )}
+              data-active={pathname === "/teachers"}
+              href="/teachers"
+            >
+              Учителя
+            </NextLink>
+          </NavbarItem>
+
+          <NavbarItem>
+            <span
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "opacity-50 cursor-not-allowed",
+              )}
+            >
+              Презентации
+            </span>
+          </NavbarItem>
         </ul>
       </NavbarContent>
 
@@ -94,10 +164,10 @@ export const Navbar = () => {
             as={Link}
             className="text-sm font-normal"
             color="primary"
-            href="/"
+            href={authHref}
             variant="flat"
           >
-            Войти
+            {authLabel}
           </Button>
         </NavbarItem>
       </NavbarContent>
@@ -113,28 +183,65 @@ export const Navbar = () => {
 
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color="foreground"
-                href={item.href}
-                size="lg"
-                onPress={() => setIsMenuOpen(false)}
+          <NavbarMenuItem>
+            <Link
+              color="foreground"
+              href="/"
+              size="lg"
+              onPress={() => setIsMenuOpen(false)}
+            >
+              Главная
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <p className="text-default-500 text-sm px-1">Задачи</p>
+          </NavbarMenuItem>
+          {subjects.map((subject) => (
+            <NavbarMenuItem key={subject.slug}>
+              <NextLink
+                className={clsx(linkStyles({ color: "foreground" }), "pl-4")}
+                href={`/${subject.slug}/problems`}
+                onClick={() => setIsMenuOpen(false)}
               >
-                {item.label}
-              </Link>
+                {subject.name}
+              </NextLink>
             </NavbarMenuItem>
           ))}
+          <NavbarMenuItem>
+            <Link
+              color="foreground"
+              href="/about"
+              size="lg"
+              onPress={() => setIsMenuOpen(false)}
+            >
+              О сайте
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link
+              color="foreground"
+              href="/teachers"
+              size="lg"
+              onPress={() => setIsMenuOpen(false)}
+            >
+              Учителя
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link isDisabled color="foreground" size="lg">
+              Презентации (soon)
+            </Link>
+          </NavbarMenuItem>
           <NavbarMenuItem>
             <Button
               as={Link}
               className="w-full"
               color="primary"
-              href="/"
+              href={authHref}
               variant="flat"
               onPress={() => setIsMenuOpen(false)}
             >
-              Войти
+              {authLabel}
             </Button>
           </NavbarMenuItem>
         </div>

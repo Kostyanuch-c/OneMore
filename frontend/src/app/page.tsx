@@ -1,42 +1,11 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Link } from "@heroui/link";
-import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
 
-import { problemsData } from "@/lib/data/problemsData";
 import { title } from "@/components/primitives";
+import { getRecentProblems } from "@/features/problems/api/problems";
+import { RecentProblemCard } from "@/features/problems/components/RecentProblemCard";
 
-export default function Home() {
-  const recentProblems = [...problemsData]
-    .sort(
-      (a, b) =>
-        new Date(b.publishedDate).getTime() -
-        new Date(a.publishedDate).getTime(),
-    )
-    .slice(0, 6);
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "легкая":
-        return "success";
-      case "средняя":
-        return "warning";
-      case "сложная":
-        return "danger";
-      default:
-        return "default";
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString("ru-RU", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+export default async function Home() {
+  const recentProblems = (await getRecentProblems()).slice(0, 6);
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -82,46 +51,17 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {recentProblems.map((problem) => (
-            <Card
-              key={problem.id}
-              isPressable
-              as={Link}
-              href={`/problems/${problem.id}`}
-            >
-              <CardHeader className="flex-col items-start gap-2">
-                <div className="flex justify-between w-full items-center">
-                  <Chip
-                    color={getDifficultyColor(problem.difficulty) as any}
-                    size="sm"
-                    variant="flat"
-                  >
-                    {problem.difficulty}
-                  </Chip>
-                  <span className="text-xs text-default-500">
-                    📅 {formatDate(problem.publishedDate)}
-                  </span>
-                </div>
-                <h4 className="text-lg font-semibold">{problem.title}</h4>
-              </CardHeader>
-              <CardBody className="pt-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm">🏷️</span>
-                  <span className="text-sm text-default-600">
-                    {problem.topic}
-                  </span>
-                </div>
-                <p className="text-sm text-default-500 line-clamp-3">
-                  {problem.problem}
-                </p>
-              </CardBody>
-              <CardFooter>
-                <Button className="w-full" color="primary" variant="flat">
-                  Посмотреть решение
-                </Button>
-              </CardFooter>
-            </Card>
+            <RecentProblemCard key={problem.id} problem={problem} />
           ))}
         </div>
+
+        {recentProblems.length === 0 ? (
+          <Card>
+            <CardBody className="text-center text-default-600 py-10">
+              Пока нет опубликованных задач.
+            </CardBody>
+          </Card>
+        ) : null}
       </div>
     </section>
   );
