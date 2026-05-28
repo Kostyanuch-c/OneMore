@@ -9,12 +9,12 @@ Frontend application for the ChemRepetitor platform, built with Next.js.
 - TypeScript
 - HeroUI
 - Tailwind CSS 4
-- bun
+- npm
 
 ## Run Locally
 
 ```bash
-bun install
+npm install
 make dev
 ```
 

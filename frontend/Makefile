@@ -1,25 +1,34 @@
-.PHONY: dev
-dev:
-	@bun run dev
+.PHONY: install ci-install dev build start lint generate-api test test-watch check ci-check
 
-.PHONY: ci-install
+install:
+	@npm install
+
 ci-install:
-	@bun install --frozen-lockfile
+	@npm ci
 
-.PHONY: build
+dev:
+	@npm run dev
+
 build:
-	@bun run build
+	@npm run build
 
-.PHONY: start
 start:
-	@bun run start
+	@npm run start
 
-.PHONY: lint
 lint:
-	@bun run lint
+	@npm run lint
 
-.PHONY: check
-check: lint
+generate-api:
+	@npm run generate-api
 
-.PHONY: ci-check
-ci-check: check
+test:
+	@npm run test
+
+test-watch:
+	@npm run test:watch
+
+check:
+	@npm run check
+
+ci-check:
+	@npm run ci:check
