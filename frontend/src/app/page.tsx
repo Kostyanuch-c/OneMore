@@ -1,8 +1,8 @@
 import { Card, CardBody } from "@heroui/card";
 
-import { title } from "@/components/primitives";
+import { title, subtitle } from "@/components/primitives";
+import { RecentProblemCard } from "@/components/problems/RecentProblemCard";
 import { getRecentProblems } from "@/features/problems/api/problems";
-import { RecentProblemCard } from "@/features/problems/components/RecentProblemCard";
 
 export default async function Home() {
   const recentProblems = (await getRecentProblems()).slice(0, 6);
@@ -11,11 +11,11 @@ export default async function Home() {
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       {/* Hero Section */}
       <div className="inline-block max-w-4xl text-center justify-center mb-8">
-        <h1 className="text-4xl lg:text-5xl font-bold mb-4 ">
+        <h1 className="text-4xl lg:text-5xl font-bold mb-4">
           Добро пожаловать на платформу{" "}
           <span className={title({ color: "blue" })}>ХимРепетитор</span>
         </h1>
-        <p className="text-lg text-default-600">
+        <p className={subtitle()}>
           Подробные разборы задач по химии с пошаговыми решениями и понятными
           объяснениями
         </p>
@@ -42,17 +42,12 @@ export default async function Home() {
           </CardBody>
         </Card>
       </div>
+
       {/* Recent Problems */}
       <div className="w-full max-w-6xl">
         <div className="flex items-center gap-2 mb-6">
           <span className="text-2xl">📈</span>
           <h2 className="text-2xl font-bold">Последние задачи</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {recentProblems.map((problem) => (
-            <RecentProblemCard key={problem.id} problem={problem} />
-          ))}
         </div>
 
         {recentProblems.length === 0 ? (
@@ -61,7 +56,13 @@ export default async function Home() {
               Пока нет опубликованных задач.
             </CardBody>
           </Card>
-        ) : null}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {recentProblems.map((problem) => (
+              <RecentProblemCard key={problem.id} problem={problem} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

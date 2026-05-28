@@ -1,54 +1,71 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 
+import { title, subtitle } from "@/components/primitives";
+import { ProblemsPagination } from "@/components/problems/ProblemsPagination";
+import { SubjectProblemCard } from "@/components/problems/SubjectProblemCard";
 import {
   getSubjectProblems,
   SubjectProblemsNotFoundError,
 } from "@/features/problems/api/problems";
 
+const PROBLEMS_PER_PAGE = 8;
+
 type SubjectProblemsPageProps = {
   params: Promise<{
     subjectSlug: string;
+  }>;
+  searchParams: Promise<{
+    page?: string;
   }>;
 };
 
 export default async function SubjectProblemsPage({
   params,
+  searchParams,
 }: SubjectProblemsPageProps) {
   const { subjectSlug } = await params;
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
   try {
-    const problems = await getSubjectProblems(subjectSlug);
+    const { items: problems, pagination } = await getSubjectProblems(
+      subjectSlug,
+      currentPage,
+      PROBLEMS_PER_PAGE,
+    );
+
+    const totalPages = Math.ceil(pagination.total / PROBLEMS_PER_PAGE);
+    const subjectName = problems[0]?.subject?.name ?? subjectSlug;
 
     return (
-      <section className="py-8">
-        <h1 className="mb-6 text-2xl font-bold">
-          Задачи по предмету: {problems[0]?.subject?.name ?? subjectSlug}
-        </h1>
+      <section className="py-8 max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className={title({ size: "sm", color: "foreground" })}>
+            Задачи по предмету
+          </h1>
+          <p className={subtitle()}>{subjectName}</p>
+        </div>
 
         {problems.length === 0 ? (
-          <p className="text-default-600">Пока нет опубликованных задач.</p>
+          <div className="text-center py-16">
+            <p className={subtitle()}>Пока нет опубликованных задач.</p>
+          </div>
         ) : (
-          <ul className="space-y-4">
-            {problems.map((problem) => (
-              <li
-                key={problem.id}
-                className="rounded-md border border-default-200 p-4"
-              >
-                <p className="mb-1 text-sm text-default-500">
-                  {problem.difficulty.label}
-                </p>
+          <>
+            <ul className="space-y-4">
+              {problems.map((problem) => (
+                <li key={problem.id}>
+                  <SubjectProblemCard problem={problem} />
+                </li>
+              ))}
+            </ul>
 
-                <h2 className="font-semibold">{problem.title}</h2>
-
-                <p className="mt-2 text-default-600">{problem.question}</p>
-
-                <p className="mt-3">
-                  <Link href={`/problems/${problem.id}`}>Открыть задачу</Link>
-                </p>
-              </li>
-            ))}
-          </ul>
+            <ProblemsPagination
+              basePath={`/${subjectSlug}/problems`}
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
+          </>
         )}
       </section>
     );

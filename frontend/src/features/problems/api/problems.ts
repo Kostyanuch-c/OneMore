@@ -1,10 +1,16 @@
-import type { components } from "@/shared/api/schema";
+import type {
+  ProblemListItem,
+  SubjectProblemsResult,
+} from "@/features/problems/types";
 
 import { apiClient } from "@/shared/api/client";
 
-export type ProblemListItem = components["schemas"]["ProblemListItemOutSchema"];
-
-export type Problem = components["schemas"]["ProblemOutSchema"];
+export type {
+  ProblemListItem,
+  Problem,
+  PaginationOut,
+  SubjectProblemsResult,
+} from "@/features/problems/types";
 
 export class SubjectProblemsNotFoundError extends Error {
   readonly status = 404;
@@ -33,7 +39,11 @@ export async function getRecentProblems(): Promise<ProblemListItem[]> {
 
 export async function getSubjectProblems(
   subjectSlug: string,
-): Promise<Problem[]> {
+  page = 1,
+  limit = 10,
+): Promise<SubjectProblemsResult> {
+  const offset = (page - 1) * limit;
+
   const {
     data: apiResponse,
     error,
@@ -42,6 +52,10 @@ export async function getSubjectProblems(
     params: {
       path: {
         subject_slug: subjectSlug,
+      },
+      query: {
+        offset,
+        limit,
       },
     },
   });
@@ -56,5 +70,10 @@ export async function getSubjectProblems(
     );
   }
 
-  return apiResponse?.data?.items ?? [];
+  const data = apiResponse?.data;
+
+  return {
+    items: data?.items ?? [],
+    pagination: data?.pagination ?? { offset, limit, total: 0 },
+  };
 }

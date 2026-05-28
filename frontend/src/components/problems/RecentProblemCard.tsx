@@ -1,29 +1,17 @@
-import type { ProblemListItem } from "@/features/problems/api/problems";
+import type { ProblemListItem } from "@/features/problems/types";
 
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import { Link } from "@heroui/link";
-import { Button } from "@heroui/button";
+import { link as linkStyles } from "@heroui/theme";
+import clsx from "clsx";
+import NextLink from "next/link";
+
+import { getDifficultyColor } from "@/features/problems/lib/difficulty";
+import { formatProblemDate } from "@/features/problems/lib/formatProblemDate";
 
 type RecentProblemCardProps = {
   problem: ProblemListItem;
 };
-
-const difficultyColors = {
-  easy: "success",
-  medium: "warning",
-  hard: "danger",
-} as const;
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-
-  return date.toLocaleDateString("ru-RU", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 function getDetailHref(problem: ProblemListItem): string {
   if (problem.detail_url.startsWith("http")) {
@@ -34,37 +22,52 @@ function getDetailHref(problem: ProblemListItem): string {
 }
 
 export function RecentProblemCard({ problem }: RecentProblemCardProps) {
-  const difficultyColor =
-    difficultyColors[
-      problem.difficulty.value as keyof typeof difficultyColors
-    ] ?? "default";
+  const difficultyColor = getDifficultyColor(problem.difficulty.value);
+  const href = getDetailHref(problem);
 
   return (
-    <Card isPressable as={Link} href={getDetailHref(problem)}>
+    <Card className="h-full">
       <CardHeader className="flex-col items-start gap-2">
         <div className="flex justify-between w-full items-center gap-2">
           <Chip color={difficultyColor} size="sm" variant="flat">
             {problem.difficulty.label}
           </Chip>
           <span className="text-xs text-default-500">
-            {formatDate(problem.created_at)}
+            {formatProblemDate(problem.created_at)}
           </span>
         </div>
         <h4 className="text-base font-semibold leading-5">{problem.title}</h4>
       </CardHeader>
       <CardBody className="pt-0 gap-2">
         <p className="text-sm text-default-600">
-          Предмет: {problem.subject?.name ?? "Без предмета"}
+          {problem.subject?.name ?? "Без предмета"}
         </p>
-        <p className="text-sm text-default-600">Тема: {problem.topic.name}</p>
+        <p className="text-sm text-default-500">
+          {problem.section.name} · {problem.topic.name}
+        </p>
+        {problem.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {problem.tags.map((tag) => (
+              <Chip key={tag.id} size="sm" variant="bordered">
+                {tag.name}
+              </Chip>
+            ))}
+          </div>
+        )}
         <p className="text-sm text-default-500 line-clamp-3">
           {problem.question}
         </p>
       </CardBody>
       <CardFooter>
-        <Button className="w-full" color="primary" variant="flat">
+        <NextLink
+          className={clsx(
+            linkStyles({ color: "primary" }),
+            "w-full text-center text-sm",
+          )}
+          href={href}
+        >
           Открыть задачу
-        </Button>
+        </NextLink>
       </CardFooter>
     </Card>
   );
