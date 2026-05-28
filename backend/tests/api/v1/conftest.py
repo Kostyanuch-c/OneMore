@@ -23,7 +23,7 @@ def profile_me_update_url() -> str:
 
 @pytest.fixture
 def auth_authorise_url() -> str:
-    return reverse('api-v1:auth_authorise')
+    return reverse('api-v1:request_login_code')
 
 
 @pytest.fixture

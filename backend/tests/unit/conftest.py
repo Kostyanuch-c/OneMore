@@ -97,7 +97,7 @@ def transaction_mock(mocker):
 @pytest.fixture
 def login_session_mock(mocker, auth_service):
     return mocker.patch.object(
-        auth_service.login_strategy,
+        auth_service.auth_strategy,
         'login',
         return_value=None,
     )

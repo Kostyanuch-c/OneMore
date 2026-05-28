@@ -20,7 +20,7 @@ def test_auth_service_authorise(auth_service, mocker, email, user):
         return_value=None,
     )
 
-    result = auth_service.authorise(email=email)
+    result = auth_service.request_login_code(email=email)
 
     assert result is None
     get_user_mock.assert_called_once_with(email=email)
@@ -68,7 +68,7 @@ def test_auth_service_confirm(
         return_value=is_verify,
     )
     login_mock = mocker.patch.object(
-        auth_service.login_strategy,
+        auth_service.auth_strategy,
         'login',
         return_value=None,
     )

@@ -1,7 +1,11 @@
 import logging
 from typing import TYPE_CHECKING, Any, Protocol
 
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import (
+    get_user_model,
+    login as django_login,
+    logout as django_logout,
+)
 from django.http import HttpRequest
 
 from .auth_email import AuthEmailService
@@ -20,19 +24,24 @@ if TYPE_CHECKING:
 logger = logging.getLogger('apps.a12n.auth')
 
 
-class LoginStrategy(Protocol):
-    def login(self, *, request: Any, user: Any) -> Any: ...
+class AuthenticationStrategy(Protocol):
+    def login(self, *, request: HttpRequest, user: Any) -> None: ...
+
+    def logout(self, *, request: HttpRequest) -> None: ...
 
 
-class SessionLoginStrategy(LoginStrategy):
+class SessionAuthenticationStrategy(AuthenticationStrategy):
     def login(self, *, request: HttpRequest, user: User) -> None:
-        login(request, user)
+        django_login(request, user)
+
+    def logout(self, *, request: HttpRequest) -> None:
+        django_logout(request)
 
 
 class AuthService:
     user_service = UserService()
     code_service = AuthEmailService()
-    login_strategy: LoginStrategy = SessionLoginStrategy()
+    auth_strategy: AuthenticationStrategy = SessionAuthenticationStrategy()
 
     def _find_user_by_email(self, *, email: str) -> User | None:
         return get_user_model().objects.filter(email__iexact=email).first()
@@ -46,7 +55,7 @@ class AuthService:
             raise RuntimeError('Invite token resolved to missing user')
         return user
 
-    def authorise(self, *, email: str) -> None:
+    def request_login_code(self, *, email: str) -> None:
         if not self._find_user_by_email(email=email):
             logger.warning('Login code request rejected')
             return
@@ -69,7 +78,7 @@ class AuthService:
             logger.warning('Login confirmation failed')
             raise InvalidLoginCodeError
 
-        self.login_strategy.login(request=request, user=user)
+        self.auth_strategy.login(request=request, user=user)
         logger.info('User logged in successfully | user_id=%s', user.id)
         return UserConverter.to_entity(model=user)
 
@@ -83,5 +92,9 @@ class AuthService:
 
         user = self._get_user_model_by_email(email=email)
 
-        self.login_strategy.login(request=request, user=user)
+        self.auth_strategy.login(request=request, user=user)
         return UserConverter.to_entity(model=user)
+
+    def logout(self, *, request: HttpRequest) -> None:
+        self.auth_strategy.logout(request=request)
+        logger.info('User logged out')

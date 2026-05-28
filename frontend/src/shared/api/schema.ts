@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  "/api/v1/auth/authorise/": {
+  "/api/v1/auth/login/code/": {
     parameters: {
       query?: never;
       header?: never;
@@ -13,15 +13,15 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Authorise View */
-    post: operations["api_v1_auth_handlers_authorise_view"];
+    /** Request Login Code View */
+    post: operations["api_v1_auth_handlers_request_login_code_view"];
     delete?: never;
     options?: never;
     head?: never;
     patch?: never;
     trace?: never;
   };
-  "/api/v1/auth/confirm/": {
+  "/api/v1/auth/login/confirm/": {
     parameters: {
       query?: never;
       header?: never;
@@ -49,6 +49,23 @@ export interface paths {
     put?: never;
     /** Invite Confirm View */
     post: operations["api_v1_auth_handlers_invite_confirm_view"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/auth/logout/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Logout View */
+    post: operations["api_v1_auth_handlers_logout_view"];
     delete?: never;
     options?: never;
     head?: never;
@@ -270,6 +287,23 @@ export interface paths {
     };
     /** Get Problems Filters View */
     get: operations["api_v1_problems_handlers_subject_get_problems_filters_view"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/problems/recent/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Recent Problems List View */
+    get: operations["api_v1_problems_handlers_public_get_recent_problems_list_view"];
     put?: never;
     post?: never;
     delete?: never;
@@ -853,6 +887,53 @@ export interface components {
       /** Difficulties */
       difficulties: components["schemas"]["DifficultyOutSchema"][];
     };
+    /** ApiResponse[ListResponse[ProblemListItemOutSchema]] */
+    ApiResponse_ListResponse_ProblemListItemOutSchema__: {
+      /** Data */
+      data?:
+        | components["schemas"]["ListResponse_ProblemListItemOutSchema_"]
+        | {
+            [key: string]: unknown;
+          };
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Errors */
+      errors?: components["schemas"]["ApiError"][];
+    };
+    /** ListResponse[ProblemListItemOutSchema] */
+    ListResponse_ProblemListItemOutSchema_: {
+      /** Items */
+      items: components["schemas"]["ProblemListItemOutSchema"][];
+    };
+    /** ProblemListItemOutSchema */
+    ProblemListItemOutSchema: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Question */
+      question: string;
+      subject?: components["schemas"]["SubjectOutSchema"] | null;
+      section: components["schemas"]["SectionOutSchema"];
+      topic: components["schemas"]["TopicOutSchema"];
+      difficulty: components["schemas"]["DifficultyOutSchema"];
+      /** Tags */
+      tags: components["schemas"]["TagOutSchema"][];
+      /** Detail Url */
+      detail_url: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -862,7 +943,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  api_v1_auth_handlers_authorise_view: {
+  api_v1_auth_handlers_request_login_code_view: {
     parameters: {
       query?: never;
       header?: never;
@@ -931,6 +1012,24 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["ApiResponse_AuthUserOutSchema_"];
         };
+      };
+    };
+  };
+  api_v1_auth_handlers_logout_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };
@@ -1305,6 +1404,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ApiResponse_ProblemFiltersOutSchema_"];
+        };
+      };
+    };
+  };
+  api_v1_problems_handlers_public_get_recent_problems_list_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApiResponse_ListResponse_ProblemListItemOutSchema__"];
         };
       };
     };
