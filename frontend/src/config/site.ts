@@ -9,11 +9,15 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Все задачи",
-      href: "/about",
+      label: "Занятия",
+      href: "/lessons",
     },
     {
-      label: "Наборы задач",
+      label: "Преподаватели",
+      href: "/teachers",
+    },
+    {
+      label: "О проекте",
       href: "/about",
     },
   ],
@@ -23,17 +27,21 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Все задачи",
-      href: "/about",
+      label: "Занятия",
+      href: "/lessons",
     },
     {
-      label: "Наборы задач",
+      label: "Преподаватели",
+      href: "/teachers",
+    },
+    {
+      label: "О проекте",
       href: "/about",
     },
   ],
-  links: {
-    github: "https://github.com",
-    twitter: "https://twitter.com",
-    discord: "https://discord.gg",
+  contacts: {
+    telegram: "https://t.me/your_username",
+    discord: "https://t.me/your_username",
+    max: "https://t.me/your_username",
   },
 };

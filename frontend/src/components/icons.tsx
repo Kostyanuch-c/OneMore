@@ -1,4 +1,4 @@
-import type { IconSvgProps } from "@/types";
+import type { IconSvgProps } from "@/shared/types";
 
 export const BeakerIcon = (props: IconSvgProps) => (
   <svg

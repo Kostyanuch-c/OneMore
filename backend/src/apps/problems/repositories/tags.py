@@ -1,4 +1,5 @@
 from apps.problems.entities import TagEntity
+from apps.problems.enums import PublicationStatus
 from apps.problems.models import Tag
 from apps.problems.repositories.converters import TagConverter
 
@@ -12,7 +13,7 @@ class TagRepository:
             self.converter.to_entity(model=tag)
             for tag in self.model.objects.filter(
                 problems__topic__section__subject_id=subject_id,
-                problems__is_published=True,
+                problems__status=PublicationStatus.PUBLISHED,
             )
             .distinct()
             .order_by('name')

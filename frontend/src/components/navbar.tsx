@@ -2,6 +2,11 @@
 
 import type { CurrentUser } from "@/features/auth/api/auth";
 import type { Subject } from "@/features/subjects/api/subjects";
+import type {
+  MobileProblemsMenuListProps,
+  NavItemConfig,
+  ProblemsDropdownProps,
+} from "@/shared/types/navbar";
 
 import {
   Navbar as HeroUINavbar,
@@ -28,20 +33,122 @@ import { useState } from "react";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { BeakerIcon } from "@/components/icons";
+import { siteConfig } from "@/config/site";
 
 type NavbarProps = {
   subjects: Subject[];
   currentUser?: CurrentUser | null;
 };
 
+const ProblemsDropdown = ({
+  subjects,
+  isProblemsPage,
+  onSelectProblemSubject,
+}: ProblemsDropdownProps) => (
+  <Dropdown>
+    <DropdownTrigger>
+      <Button
+        disableAnimation
+        disableRipple
+        className={clsx(
+          "px-0 data-[active=true]:text-primary data-[active=true]:font-medium",
+          linkStyles({ color: "foreground" }),
+        )}
+        data-active={isProblemsPage}
+        radius="none"
+        variant="light"
+      >
+        Задачи
+      </Button>
+    </DropdownTrigger>
+    <DropdownMenu
+      aria-label="Список предметов"
+      disabledKeys={subjects.length === 0 ? ["empty"] : []}
+      onAction={(key) => onSelectProblemSubject(String(key))}
+    >
+      {subjects.length === 0 ? (
+        <DropdownItem key="empty">Пока нет предметов</DropdownItem>
+      ) : (
+        subjects.map((subject) => (
+          <DropdownItem key={subject.slug}>{subject.name}</DropdownItem>
+        ))
+      )}
+    </DropdownMenu>
+  </Dropdown>
+);
+
+const MobileProblemsMenuList = ({
+  subjects,
+  onCloseMenu,
+}: MobileProblemsMenuListProps) => (
+  <>
+    <NavbarMenuItem>
+      <p className="text-default-500 text-sm px-1">Задачи</p>
+    </NavbarMenuItem>
+    {subjects.length === 0 ? (
+      <NavbarMenuItem>
+        <span className="pl-4 text-default-400">Пока нет предметов</span>
+      </NavbarMenuItem>
+    ) : (
+      subjects.map((subject) => (
+        <NavbarMenuItem key={subject.slug}>
+          <NextLink
+            className={clsx(linkStyles({ color: "foreground" }), "pl-4")}
+            href={`/${subject.slug}/problems`}
+            onClick={onCloseMenu}
+          >
+            {subject.name}
+          </NextLink>
+        </NavbarMenuItem>
+      ))
+    )}
+  </>
+);
+
 export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
-  const isSubjectPage = pathname.endsWith("/problems");
+  const isProblemsPage = pathname.endsWith("/problems");
   const authHref = currentUser ? "/profile" : "/login";
   const authLabel = currentUser ? "Профиль" : "Войти";
+  const navLinkClassName = clsx(
+    linkStyles({ color: "foreground" }),
+    "data-[active=true]:text-primary data-[active=true]:font-medium",
+  );
+  const [homeNavItem, ...restNavItems] = siteConfig.navItems;
+  const [homeMenuItem, ...restMenuItems] = siteConfig.navMenuItems;
+  const closeMenu = () => setIsMenuOpen(false);
+  const handleProblemSelect = (subjectSlug: string) => {
+    closeMenu();
+    router.push(`/${subjectSlug}/problems`);
+  };
+
+  const renderDesktopNavLink = (item: NavItemConfig) => (
+    <NavbarItem key={item.href}>
+      <NextLink
+        className={navLinkClassName}
+        data-active={pathname === item.href}
+        href={item.href}
+      >
+        {item.label}
+      </NextLink>
+    </NavbarItem>
+  );
+
+  const renderMobileNavLink = (item: NavItemConfig) => (
+    <NavbarMenuItem key={item.href}>
+      <NextLink
+        className={clsx(navLinkClassName, "text-large")}
+        data-active={pathname === item.href}
+        href={item.href}
+        onClick={closeMenu}
+      >
+        {item.label}
+      </NextLink>
+    </NavbarMenuItem>
+  );
 
   return (
     <HeroUINavbar
@@ -60,82 +167,15 @@ export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="center">
         <ul className="hidden md:flex gap-4 justify-start ml-2 items-center">
+          {homeNavItem ? renderDesktopNavLink(homeNavItem) : null}
           <NavbarItem>
-            <NextLink
-              className={clsx(
-                linkStyles({ color: "foreground" }),
-                "data-[active=true]:text-primary data-[active=true]:font-medium",
-              )}
-              data-active={pathname === "/"}
-              href="/"
-            >
-              Главная
-            </NextLink>
+            <ProblemsDropdown
+              isProblemsPage={isProblemsPage}
+              subjects={subjects}
+              onSelectProblemSubject={handleProblemSelect}
+            />
           </NavbarItem>
-
-          <NavbarItem>
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  disableAnimation
-                  disableRipple
-                  className={clsx(
-                    "px-0 data-[active=true]:text-primary data-[active=true]:font-medium",
-                    linkStyles({ color: "foreground" }),
-                  )}
-                  data-active={isSubjectPage}
-                  radius="none"
-                  variant="light"
-                >
-                  Задачи
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                aria-label="Список предметов"
-                disabledKeys={subjects.length === 0 ? ["empty"] : []}
-                onAction={(key) => {
-                  setIsMenuOpen(false);
-                  router.push(`/${String(key)}/problems`);
-                }}
-              >
-                {subjects.length === 0 ? (
-                  <DropdownItem key="empty">Пока нет предметов</DropdownItem>
-                ) : (
-                  subjects.map((subject) => (
-                    <DropdownItem key={subject.slug}>
-                      {subject.name}
-                    </DropdownItem>
-                  ))
-                )}
-              </DropdownMenu>
-            </Dropdown>
-          </NavbarItem>
-
-          <NavbarItem>
-            <NextLink
-              className={clsx(
-                linkStyles({ color: "foreground" }),
-                "data-[active=true]:text-primary data-[active=true]:font-medium",
-              )}
-              data-active={pathname === "/about"}
-              href="/about"
-            >
-              О сайте
-            </NextLink>
-          </NavbarItem>
-
-          <NavbarItem>
-            <NextLink
-              className={clsx(
-                linkStyles({ color: "foreground" }),
-                "data-[active=true]:text-primary data-[active=true]:font-medium",
-              )}
-              data-active={pathname === "/teachers"}
-              href="/teachers"
-            >
-              Учителя
-            </NextLink>
-          </NavbarItem>
+          {restNavItems.map(renderDesktopNavLink)}
 
           <NavbarItem>
             <span
@@ -183,50 +223,9 @@ export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
 
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          <NavbarMenuItem>
-            <Link
-              color="foreground"
-              href="/"
-              size="lg"
-              onPress={() => setIsMenuOpen(false)}
-            >
-              Главная
-            </Link>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <p className="text-default-500 text-sm px-1">Задачи</p>
-          </NavbarMenuItem>
-          {subjects.map((subject) => (
-            <NavbarMenuItem key={subject.slug}>
-              <NextLink
-                className={clsx(linkStyles({ color: "foreground" }), "pl-4")}
-                href={`/${subject.slug}/problems`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {subject.name}
-              </NextLink>
-            </NavbarMenuItem>
-          ))}
-          <NavbarMenuItem>
-            <Link
-              color="foreground"
-              href="/about"
-              size="lg"
-              onPress={() => setIsMenuOpen(false)}
-            >
-              О сайте
-            </Link>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <Link
-              color="foreground"
-              href="/teachers"
-              size="lg"
-              onPress={() => setIsMenuOpen(false)}
-            >
-              Учителя
-            </Link>
-          </NavbarMenuItem>
+          {homeMenuItem ? renderMobileNavLink(homeMenuItem) : null}
+          <MobileProblemsMenuList subjects={subjects} onCloseMenu={closeMenu} />
+          {restMenuItems.map(renderMobileNavLink)}
           <NavbarMenuItem>
             <Link isDisabled color="foreground" size="lg">
               Презентации (soon)
@@ -239,7 +238,7 @@ export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
               color="primary"
               href={authHref}
               variant="flat"
-              onPress={() => setIsMenuOpen(false)}
+              onPress={closeMenu}
             >
               {authLabel}
             </Button>

@@ -2,6 +2,7 @@ import { Card, CardBody } from "@heroui/card";
 
 import { title, subtitle } from "@/components/primitives";
 import { RecentProblemCard } from "@/components/problems/RecentProblemCard";
+import { TutoringCTA } from "@/components/tutoring-cta";
 import { getRecentProblems } from "@/features/problems/api/problems";
 
 export default async function Home() {
@@ -63,6 +64,10 @@ export default async function Home() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="w-full max-w-6xl">
+        <TutoringCTA />
       </div>
     </section>
   );

@@ -52,7 +52,10 @@ export function SubjectProblemCard({ problem }: SubjectProblemCardProps) {
       </CardBody>
       <CardFooter className="pt-0">
         <NextLink
-          className={clsx(linkStyles({ color: "primary" }), "text-sm font-medium")}
+          className={clsx(
+            linkStyles({ color: "primary" }),
+            "text-sm font-medium",
+          )}
           href={`/problems/${problem.id}`}
         >
           Открыть задачу →
