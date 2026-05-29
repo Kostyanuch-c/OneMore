@@ -21,16 +21,15 @@ jobs:
         with:
           node-version: ${{ vars.NODE_VERSION }}
 
+      - name: Use same npm version as local
+        run: npm install -g npm@11.6.2
+
       - name: Install dependencies
         run: |
-          pwd
-          ls -la
           node -v
           npm -v
-          cat .npmrc || true
-          grep -n "@emnapi/runtime" package-lock.json || true
-          grep -n "@emnapi/core" package-lock.json || true
           npm ci
 
       - name: Run frontend checks
         run: make ci-check
+
