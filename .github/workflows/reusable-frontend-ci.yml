@@ -30,7 +30,7 @@ jobs:
           cat .npmrc || true
           grep -n "@emnapi/runtime" package-lock.json || true
           grep -n "@emnapi/core" package-lock.json || true
-          make ci-check
+          npm ci
 
       - name: Run frontend checks
         run: make ci-check
