@@ -1,7 +1,10 @@
 import type { components } from "@/shared/api/schema";
 
+import { mutate } from "swr";
+
 import { apiClient } from "@/shared/api/client";
 import { getCsrfHeaders } from "@/shared/api/csrf";
+import { swrKeys } from "@/shared/api/swr-keys";
 
 export type CurrentUser = components["schemas"]["UserOutSchema"];
 export type RequestLoginCodeInput = components["schemas"]["AuthInputSchema"];
@@ -71,7 +74,11 @@ export async function confirmLoginCode(
     throw new Error("Confirm login code response is empty.");
   }
 
-  return apiResponse.data;
+  const data = apiResponse.data;
+
+  await mutate(swrKeys.currentUser, data.user, { revalidate: false });
+
+  return data;
 }
 
 export async function logout(): Promise<void> {
@@ -82,4 +89,6 @@ export async function logout(): Promise<void> {
   if (!response.ok || error) {
     throw new Error(`Failed to logout. Status: ${response.status}`);
   }
+
+  await mutate(swrKeys.currentUser, null, { revalidate: false });
 }

@@ -1,17 +1,17 @@
 import type { Subject } from "@/features/subjects/api/subjects";
 
-export type NavItemConfig = {
+export interface NavItemConfig {
   label: string;
   href: string;
-};
+}
 
-export type ProblemsDropdownProps = {
+export interface ProblemsDropdownProps {
   subjects: Subject[];
   isProblemsPage: boolean;
   onSelectProblemSubject: (subjectSlug: string) => void;
-};
+}
 
-export type MobileProblemsMenuListProps = {
+export interface MobileProblemsMenuListProps {
   subjects: Subject[];
   onCloseMenu: () => void;
-};
+}

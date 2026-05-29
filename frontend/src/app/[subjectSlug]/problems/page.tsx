@@ -10,14 +10,14 @@ import {
 
 const PROBLEMS_PER_PAGE = 8;
 
-type SubjectProblemsPageProps = {
+interface SubjectProblemsPageProps {
   params: Promise<{
     subjectSlug: string;
   }>;
   searchParams: Promise<{
     page?: string;
   }>;
-};
+}
 
 export default async function SubjectProblemsPage({
   params,

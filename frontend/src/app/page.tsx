@@ -1,12 +1,26 @@
+"use client";
+
+import useSWR from "swr";
 import { Card, CardBody } from "@heroui/card";
+import { Skeleton } from "@heroui/skeleton";
 
 import { title, subtitle } from "@/components/primitives";
 import { RecentProblemCard } from "@/components/problems/RecentProblemCard";
 import { TutoringCTA } from "@/components/tutoring-cta";
 import { getRecentProblems } from "@/features/problems/api/problems";
+import { swrKeys } from "@/shared/api/swr-keys";
 
-export default async function Home() {
-  const recentProblems = (await getRecentProblems()).slice(0, 6);
+export default function Home() {
+  const {
+    data: recentProblems = [],
+    isLoading,
+    error,
+  } = useSWR(swrKeys.recentProblems, getRecentProblems, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+  });
+
+  const visibleProblems = recentProblems.slice(0, 6);
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -51,7 +65,27 @@ export default async function Home() {
           <h2 className="text-2xl font-bold">Последние задачи</h2>
         </div>
 
-        {recentProblems.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="h-full">
+                <CardBody className="gap-3">
+                  <Skeleton className="rounded-lg h-6 w-24" />
+                  <Skeleton className="rounded-lg h-10 w-full" />
+                  <Skeleton className="rounded-lg h-4 w-32" />
+                  <Skeleton className="rounded-lg h-4 w-48" />
+                  <Skeleton className="rounded-lg h-20 w-full" />
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        ) : error ? (
+          <Card>
+            <CardBody className="text-center text-danger py-10">
+              Произошла ошибка при загрузке задач.
+            </CardBody>
+          </Card>
+        ) : visibleProblems.length === 0 ? (
           <Card>
             <CardBody className="text-center text-default-600 py-10">
               Пока нет опубликованных задач.
@@ -59,7 +93,7 @@ export default async function Home() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {recentProblems.map((problem) => (
+            {visibleProblems.map((problem) => (
               <RecentProblemCard key={problem.id} problem={problem} />
             ))}
           </div>

@@ -35,16 +35,18 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { BeakerIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
-type NavbarProps = {
+interface NavbarProps {
   subjects: Subject[];
   currentUser?: CurrentUser | null;
-};
+  isLoading?: boolean;
+}
 
 const ProblemsDropdown = ({
   subjects,
   isProblemsPage,
   onSelectProblemSubject,
-}: ProblemsDropdownProps) => (
+  isLoading,
+}: ProblemsDropdownProps & { isLoading?: boolean }) => (
   <Dropdown>
     <DropdownTrigger>
       <Button
@@ -63,10 +65,12 @@ const ProblemsDropdown = ({
     </DropdownTrigger>
     <DropdownMenu
       aria-label="Список предметов"
-      disabledKeys={subjects.length === 0 ? ["empty"] : []}
+      disabledKeys={subjects.length === 0 || isLoading ? ["empty"] : []}
       onAction={(key) => onSelectProblemSubject(String(key))}
     >
-      {subjects.length === 0 ? (
+      {isLoading ? (
+        <DropdownItem key="empty">Загрузка...</DropdownItem>
+      ) : subjects.length === 0 ? (
         <DropdownItem key="empty">Пока нет предметов</DropdownItem>
       ) : (
         subjects.map((subject) => (
@@ -80,12 +84,17 @@ const ProblemsDropdown = ({
 const MobileProblemsMenuList = ({
   subjects,
   onCloseMenu,
-}: MobileProblemsMenuListProps) => (
+  isLoading,
+}: MobileProblemsMenuListProps & { isLoading?: boolean }) => (
   <>
     <NavbarMenuItem>
       <p className="text-default-500 text-sm px-1">Задачи</p>
     </NavbarMenuItem>
-    {subjects.length === 0 ? (
+    {isLoading ? (
+      <NavbarMenuItem>
+        <span className="pl-4 text-default-400">Загрузка...</span>
+      </NavbarMenuItem>
+    ) : subjects.length === 0 ? (
       <NavbarMenuItem>
         <span className="pl-4 text-default-400">Пока нет предметов</span>
       </NavbarMenuItem>
@@ -105,14 +114,22 @@ const MobileProblemsMenuList = ({
   </>
 );
 
-export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
+export const Navbar = ({
+  subjects,
+  currentUser = null,
+  isLoading = false,
+}: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   const isProblemsPage = pathname.endsWith("/problems");
   const authHref = currentUser ? "/profile" : "/login";
-  const authLabel = currentUser ? "Профиль" : "Войти";
+  const authLabel = isLoading
+    ? "Загрузка..."
+    : currentUser
+      ? "Профиль"
+      : "Войти";
   const navLinkClassName = clsx(
     linkStyles({ color: "foreground" }),
     "data-[active=true]:text-primary data-[active=true]:font-medium",
@@ -170,6 +187,7 @@ export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
           {homeNavItem ? renderDesktopNavLink(homeNavItem) : null}
           <NavbarItem>
             <ProblemsDropdown
+              isLoading={isLoading}
               isProblemsPage={isProblemsPage}
               subjects={subjects}
               onSelectProblemSubject={handleProblemSelect}
@@ -224,7 +242,11 @@ export const Navbar = ({ subjects, currentUser = null }: NavbarProps) => {
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {homeMenuItem ? renderMobileNavLink(homeMenuItem) : null}
-          <MobileProblemsMenuList subjects={subjects} onCloseMenu={closeMenu} />
+          <MobileProblemsMenuList
+            isLoading={isLoading}
+            subjects={subjects}
+            onCloseMenu={closeMenu}
+          />
           {restMenuItems.map(renderMobileNavLink)}
           <NavbarMenuItem>
             <Link isDisabled color="foreground" size="lg">

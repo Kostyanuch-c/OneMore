@@ -1,4 +1,4 @@
-export type Teacher = {
+export interface Teacher {
   id: number;
   name: string;
   slug: string;
@@ -9,7 +9,7 @@ export type Teacher = {
   achievements: string[];
   lessonFormat: string[];
   imageUrl?: string;
-};
+}
 
 export const teachers: Teacher[] = [
   {

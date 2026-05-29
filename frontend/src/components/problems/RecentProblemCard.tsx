@@ -9,9 +9,9 @@ import NextLink from "next/link";
 import { getDifficultyColor } from "@/features/problems/lib/difficulty";
 import { formatProblemDate } from "@/features/problems/lib/formatProblemDate";
 
-type RecentProblemCardProps = {
+interface RecentProblemCardProps {
   problem: ProblemListItem;
-};
+}
 
 function getDetailHref(problem: ProblemListItem): string {
   if (problem.detail_url.startsWith("http")) {

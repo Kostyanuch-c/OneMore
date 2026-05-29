@@ -3,11 +3,11 @@
 import { Pagination } from "@heroui/pagination";
 import { useRouter } from "next/navigation";
 
-type ProblemsPaginationProps = {
+interface ProblemsPaginationProps {
   currentPage: number;
   totalPages: number;
   basePath: string;
-};
+}
 
 export function ProblemsPagination({
   currentPage,

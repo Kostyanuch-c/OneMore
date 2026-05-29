@@ -9,9 +9,9 @@ import NextLink from "next/link";
 import { getDifficultyColor } from "@/features/problems/lib/difficulty";
 import { formatProblemDate } from "@/features/problems/lib/formatProblemDate";
 
-type SubjectProblemCardProps = {
+interface SubjectProblemCardProps {
   problem: Problem;
-};
+}
 
 export function SubjectProblemCard({ problem }: SubjectProblemCardProps) {
   const difficultyColor = getDifficultyColor(problem.difficulty.value);
