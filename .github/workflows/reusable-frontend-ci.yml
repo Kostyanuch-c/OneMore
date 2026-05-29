@@ -25,13 +25,12 @@ jobs:
         run: |
           pwd
           ls -la
-          ls -la frontend
           node -v
           npm -v
-          grep -n "@emnapi/runtime" frontend/package-lock.json || true
-          grep -n "@emnapi/core" frontend/package-lock.json || true
-          make ci-install
-          
+          cat .npmrc || true
+          grep -n "@emnapi/runtime" package-lock.json || true
+          grep -n "@emnapi/core" package-lock.json || true
+          make ci-check
 
       - name: Run frontend checks
         run: make ci-check
