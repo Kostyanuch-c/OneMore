@@ -22,7 +22,16 @@ jobs:
           node-version: ${{ vars.NODE_VERSION }}
 
       - name: Install dependencies
-        run: make ci-install
+        run: |
+          pwd
+          ls -la
+          ls -la frontend
+          node -v
+          npm -v
+          grep -n "@emnapi/runtime" frontend/package-lock.json || true
+          grep -n "@emnapi/core" frontend/package-lock.json || true
+          make ci-install
+          
 
       - name: Run frontend checks
         run: make ci-check
