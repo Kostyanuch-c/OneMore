@@ -31,7 +31,8 @@ export const NavbarContainer = () => {
   return (
     <Navbar
       currentUser={currentUser}
-      isLoading={isSubjectsLoading || isCurrentUserLoading}
+      isCurrentUserLoading={isCurrentUserLoading}
+      isSubjectsLoading={isSubjectsLoading}
       subjects={subjects}
     />
   );

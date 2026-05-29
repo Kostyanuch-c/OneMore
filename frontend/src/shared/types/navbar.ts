@@ -8,10 +8,12 @@ export interface NavItemConfig {
 export interface ProblemsDropdownProps {
   subjects: Subject[];
   isProblemsPage: boolean;
+  isSubjectsLoading?: boolean;
   onSelectProblemSubject: (subjectSlug: string) => void;
 }
 
 export interface MobileProblemsMenuListProps {
   subjects: Subject[];
+  isSubjectsLoading?: boolean;
   onCloseMenu: () => void;
 }

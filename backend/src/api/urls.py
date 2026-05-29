@@ -88,7 +88,7 @@ def exception_handler(
             request,
             ApiResponse.failure(
                 message='Integrity error',
-                extra={'details': str(exc)},
+                extra={}
             ),
             status=HTTPStatus.CONFLICT,
         )

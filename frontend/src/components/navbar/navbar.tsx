@@ -38,15 +38,16 @@ import { siteConfig } from "@/config/site";
 interface NavbarProps {
   subjects: Subject[];
   currentUser?: CurrentUser | null;
-  isLoading?: boolean;
+  isSubjectsLoading?: boolean;
+  isCurrentUserLoading?: boolean;
 }
 
 const ProblemsDropdown = ({
   subjects,
   isProblemsPage,
   onSelectProblemSubject,
-  isLoading,
-}: ProblemsDropdownProps & { isLoading?: boolean }) => (
+  isSubjectsLoading,
+}: ProblemsDropdownProps) => (
   <Dropdown>
     <DropdownTrigger>
       <Button
@@ -65,10 +66,10 @@ const ProblemsDropdown = ({
     </DropdownTrigger>
     <DropdownMenu
       aria-label="Список предметов"
-      disabledKeys={subjects.length === 0 || isLoading ? ["empty"] : []}
+      disabledKeys={subjects.length === 0 || isSubjectsLoading ? ["empty"] : []}
       onAction={(key) => onSelectProblemSubject(String(key))}
     >
-      {isLoading ? (
+      {isSubjectsLoading ? (
         <DropdownItem key="empty">Загрузка...</DropdownItem>
       ) : subjects.length === 0 ? (
         <DropdownItem key="empty">Пока нет предметов</DropdownItem>
@@ -84,13 +85,13 @@ const ProblemsDropdown = ({
 const MobileProblemsMenuList = ({
   subjects,
   onCloseMenu,
-  isLoading,
-}: MobileProblemsMenuListProps & { isLoading?: boolean }) => (
+  isSubjectsLoading,
+}: MobileProblemsMenuListProps) => (
   <>
     <NavbarMenuItem>
       <p className="text-default-500 text-sm px-1">Задачи</p>
     </NavbarMenuItem>
-    {isLoading ? (
+    {isSubjectsLoading ? (
       <NavbarMenuItem>
         <span className="pl-4 text-default-400">Загрузка...</span>
       </NavbarMenuItem>
@@ -117,7 +118,8 @@ const MobileProblemsMenuList = ({
 export const Navbar = ({
   subjects,
   currentUser = null,
-  isLoading = false,
+  isSubjectsLoading = false,
+  isCurrentUserLoading = false,
 }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -125,11 +127,7 @@ export const Navbar = ({
 
   const isProblemsPage = pathname.endsWith("/problems");
   const authHref = currentUser ? "/profile" : "/login";
-  const authLabel = isLoading
-    ? "Загрузка..."
-    : currentUser
-      ? "Профиль"
-      : "Войти";
+  const authLabel = currentUser ? "Профиль" : "Войти";
   const navLinkClassName = clsx(
     linkStyles({ color: "foreground" }),
     "data-[active=true]:text-primary data-[active=true]:font-medium",
@@ -187,8 +185,8 @@ export const Navbar = ({
           {homeNavItem ? renderDesktopNavLink(homeNavItem) : null}
           <NavbarItem>
             <ProblemsDropdown
-              isLoading={isLoading}
               isProblemsPage={isProblemsPage}
+              isSubjectsLoading={isSubjectsLoading}
               subjects={subjects}
               onSelectProblemSubject={handleProblemSelect}
             />
@@ -219,10 +217,12 @@ export const Navbar = ({
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
           <Button
-            as={Link}
+            as={NextLink}
             className="text-sm font-normal"
             color="primary"
             href={authHref}
+            isDisabled={isCurrentUserLoading}
+            isLoading={isCurrentUserLoading}
             variant="flat"
           >
             {authLabel}
@@ -243,7 +243,7 @@ export const Navbar = ({
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {homeMenuItem ? renderMobileNavLink(homeMenuItem) : null}
           <MobileProblemsMenuList
-            isLoading={isLoading}
+            isSubjectsLoading={isSubjectsLoading}
             subjects={subjects}
             onCloseMenu={closeMenu}
           />
@@ -255,10 +255,12 @@ export const Navbar = ({
           </NavbarMenuItem>
           <NavbarMenuItem>
             <Button
-              as={Link}
+              as={NextLink}
               className="w-full"
               color="primary"
               href={authHref}
+              isDisabled={isCurrentUserLoading}
+              isLoading={isCurrentUserLoading}
               variant="flat"
               onPress={closeMenu}
             >
