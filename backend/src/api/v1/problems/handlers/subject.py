@@ -8,6 +8,8 @@ from api.v1.problems.filters import PublicProblemsFilterInSchema
 from api.v1.problems.schemas import ProblemOutSchema
 from api.v1.subjects.schemas import ProblemFiltersOutSchema
 from apps.problems.dto import PublicProblemFilters
+from apps.problems.exceptions import SubjectNotFoundError
+from apps.problems.models import Subject
 from apps.problems.repositories import (
     SectionRepository,
     SubjectRepository,
@@ -33,6 +35,11 @@ def get_public_problems_list_view(
     filters: Query[PublicProblemsFilterInSchema],
     pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginationResponse[ProblemOutSchema]]:
+    # TODO убрать заглушку на валидацию по предмету, реализовать use_case
+    # Заглушка!!!!
+    if not Subject.objects.filter(slug=subject_slug).exists():
+        raise SubjectNotFoundError
+
     problems_page = ProblemService().get_public_problems_page(
         filters=PublicProblemFilters(
             subject_slug=subject_slug, **filters.model_dump()

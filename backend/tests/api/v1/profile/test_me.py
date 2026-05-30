@@ -81,13 +81,14 @@ def test_patch_profile_me_invalid_cases(
         assert_api_unauthorized_response(response=response)
     else:
         assert response.status_code == status
-        assert set(response.json().keys()) == {'detail'}
+        assert_api_failure_response(response=response, expected_status=status)
+        errors = get_api_errors(response)
+        assert_errors_structure(errors)
+        error = errors[0]
+        extra = error.extra
 
-        detail = response.json()['detail']
-        assert isinstance(detail, list)
-        assert all(
-            {'loc', 'msg', 'type'} <= set(item.keys()) for item in detail
-        )
+        assert extra is not None
+        assert {'loc', 'field', 'type', 'ctx'}.issubset(extra)
 
         assert_user_state_in_db(
             user_from_db=django_user_model.objects.get(id=random_user.id),

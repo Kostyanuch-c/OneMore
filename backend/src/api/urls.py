@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from ninja import NinjaAPI
+from ninja.errors import ValidationError as NinjaValidationError
 
 from django.core.exceptions import (
     PermissionDenied,
@@ -29,6 +30,48 @@ api.add_router('v1/', v1_router)
 urlpatterns = [
     path('', api.urls),
 ]
+
+
+@api.exception_handler(NinjaValidationError)
+def ninja_validation_error_handler(
+    request: HttpRequest,
+    exc: NinjaValidationError,
+) -> HttpResponse:
+    errors: list[ApiError] = []
+
+    for error in exc.errors:
+        loc = error.get('loc', [])
+        field = loc[-1] if loc else None
+
+        errors.append(
+            ApiError(
+                message=error.get('msg', 'Invalid input'),
+                extra={
+                    'field': field,
+                    'loc': loc,
+                    'type': error.get('type'),
+                    'ctx': error.get('ctx'),
+                },
+            )
+        )
+
+    return api.create_response(
+        request,
+        ApiResponse.failure(errors=errors),
+        status=HTTPStatus.UNPROCESSABLE_CONTENT,
+    )
+
+
+@api.exception_handler(Http404)
+def http404_exception_handler(
+    request: HttpRequest,
+    exc: Http404,
+) -> HttpResponse:
+    return api.create_response(
+        request,
+        ApiResponse.failure(message='Not found', extra={}),
+        status=HTTPStatus.NOT_FOUND,
+    )
 
 
 @api.exception_handler(Exception)
@@ -64,14 +107,6 @@ def exception_handler(
             request,
             ApiResponse.failure(errors=errors),
             status=HTTPStatus.UNPROCESSABLE_CONTENT,
-        )
-
-    # 404 errors
-    if isinstance(exc, Http404):
-        return api.create_response(
-            request,
-            ApiResponse.failure(message='Not found', extra={}),
-            status=HTTPStatus.NOT_FOUND,
         )
 
     # Permission errors
