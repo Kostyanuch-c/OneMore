@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from apps.problems.entities import TopicEntity
 from apps.problems.models import Topic
 from apps.problems.repositories.converters import TopicConverter
@@ -24,3 +26,6 @@ class TopicRepository:
             pk=topic_id,
             section__subject__slug=subject_slug,
         ).exists()
+
+    def get_topic_count(self, *, filters: Q | None) -> int:
+        return self.model.objects.filter(filters or Q()).count()

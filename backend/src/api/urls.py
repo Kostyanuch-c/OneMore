@@ -86,10 +86,7 @@ def exception_handler(
     if isinstance(exc, IntegrityError):
         return api.create_response(
             request,
-            ApiResponse.failure(
-                message='Integrity error',
-                extra={}
-            ),
+            ApiResponse.failure(message='Integrity error', extra={}),
             status=HTTPStatus.CONFLICT,
         )
 

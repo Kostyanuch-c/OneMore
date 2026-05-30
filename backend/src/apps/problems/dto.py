@@ -45,6 +45,14 @@ class ProblemFiltersResult:
 
 
 @dataclass(frozen=True)
+class MainStatistics:
+    total_problems: int
+    total_solutions: int
+    total_sections: int
+    total_topics: int
+
+
+@dataclass(frozen=True)
 class ProblemCreateDTO:
     title: str
     question: str

@@ -4,8 +4,7 @@ from django.db import transaction
 
 from apps.common import BaseUseCase
 from apps.problems.dto import SolutionCreateDTO, SolutionMutationResult
-from apps.problems.services import ProblemService
-from apps.problems.services.solution import SolutionService
+from apps.problems.services import ProblemService, SolutionService
 
 
 @dataclass

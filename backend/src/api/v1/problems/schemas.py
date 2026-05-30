@@ -13,6 +13,7 @@ from api.v1.subjects.schemas import (
     TopicOutSchema,
 )
 from apps.problems.dto import (
+    MainStatistics,
     ProblemCreateDTO,
     ProblemMutationResult,
     ProblemUpdateDTO,
@@ -209,3 +210,19 @@ class ProblemPermissionsOutSchema(Schema, extra='forbid'):
 
 class SolutionPermissionsOutSchema(Schema, extra='forbid'):
     can_edit: bool
+
+
+class MainStatisticsOutSchema(Schema, extra='forbid'):
+    total_problems: int
+    total_solutions: int
+    total_sections: int
+    total_topics: int
+
+    @staticmethod
+    def from_result(*, result: MainStatistics) -> MainStatisticsOutSchema:
+        return MainStatisticsOutSchema(
+            total_problems=result.total_problems,
+            total_solutions=result.total_solutions,
+            total_sections=result.total_sections,
+            total_topics=result.total_topics,
+        )

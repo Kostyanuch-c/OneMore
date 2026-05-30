@@ -18,3 +18,6 @@ class TopicService:
                     'fields': ['topic_id', 'subject_slug'],
                 },
             )
+
+    def get_all_topic_count(self) -> int:
+        return self.repository.get_topic_count(filters=None)

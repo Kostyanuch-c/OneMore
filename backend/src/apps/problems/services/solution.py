@@ -68,3 +68,6 @@ class SolutionService:
             filters=Q(pk=solution_id, author_id=tutor_id),
         ):
             raise MainSolutionCannotBeHiddenError
+
+    def get_all_published_solution_count(self) -> int:
+        return self.repository.get_solution_count(filters=Q(is_published=True))

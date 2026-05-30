@@ -77,6 +77,11 @@ class ProblemService:
         ):
             raise ProblemNotFoundError
 
+    def get_all_published_problem_count(self) -> int:
+        return self.repository.get_problems_count(
+            filters=Q(status=PublicationStatus.PUBLISHED), distinct=False
+        )
+
     def get_public_problem_detail(
         self, *, problem_id: int, user: User | AnonymousUser
     ) -> ProblemEntity:

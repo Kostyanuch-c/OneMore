@@ -84,3 +84,11 @@ class SolutionRepository:
         ).update(**update_data)
 
         return updated_count > 0
+
+    def get_solution_count(self, *, filters: Q, distinct: bool = False) -> int:
+        queryset = self.model.objects.filter(filters)
+
+        if distinct:
+            queryset = queryset.distinct()
+
+        return queryset.count()

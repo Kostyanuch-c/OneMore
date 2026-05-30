@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from apps.problems.entities import SectionEntity
 from apps.problems.models import Section
 from apps.problems.repositories.converters import SectionConverter
@@ -16,3 +18,6 @@ class SectionRepository:
                 subject_id=subject_id,
             ).order_by('name')
         ]
+
+    def get_section_count(self, *, filters: Q | None) -> int:
+        return self.model.objects.filter(filters or Q()).count()
