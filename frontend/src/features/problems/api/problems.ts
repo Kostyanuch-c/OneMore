@@ -4,6 +4,7 @@ import type {
 } from "@/features/problems/types";
 
 import { apiClient } from "@/shared/api/client";
+import { handleApiResult } from "@/shared/api/response";
 
 export type {
   ProblemListItem,
@@ -12,15 +13,6 @@ export type {
   SubjectProblemsResult,
 } from "@/features/problems/types";
 
-export class SubjectProblemsNotFoundError extends Error {
-  readonly status = 404;
-
-  constructor(subjectSlug: string) {
-    super(`Subject not found: ${subjectSlug}`);
-    this.name = "SubjectProblemsNotFoundError";
-  }
-}
-
 export async function getRecentProblems(): Promise<ProblemListItem[]> {
   const {
     data: apiResponse,
@@ -28,16 +20,16 @@ export async function getRecentProblems(): Promise<ProblemListItem[]> {
     response,
   } = await apiClient.GET("/api/v1/problems/recent/", {});
 
-  if (!response.ok || error) {
-    throw new Error(
-      `Failed to load recent problems. Status: ${response.status}`,
-    );
-  }
+  const data = handleApiResult<{ items: ProblemListItem[] }>({
+    apiResponse,
+    error,
+    response,
+  });
 
-  return apiResponse?.data?.items ?? [];
+  return data.items;
 }
 
-export async function getSubjectProblems(
+export async function getSubjectProblemsClient(
   subjectSlug: string,
   page = 1,
   limit = 10,
@@ -60,20 +52,9 @@ export async function getSubjectProblems(
     },
   });
 
-  if (response.status === 404) {
-    throw new SubjectProblemsNotFoundError(subjectSlug);
-  }
-
-  if (!response.ok || error) {
-    throw new Error(
-      `Failed to load subject problems for "${subjectSlug}". Status: ${response.status}`,
-    );
-  }
-
-  const data = apiResponse?.data;
-
-  return {
-    items: data?.items ?? [],
-    pagination: data?.pagination ?? { offset, limit, total: 0 },
-  };
+  return handleApiResult<SubjectProblemsResult>({
+    apiResponse,
+    error,
+    response,
+  });
 }

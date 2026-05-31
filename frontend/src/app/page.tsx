@@ -5,7 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Skeleton } from "@heroui/skeleton";
 
 import { title, subtitle } from "@/components/primitives";
-import { RecentProblemCard } from "@/components/problems/RecentProblemCard";
+import { RecentProblemCard } from "@/features/problems/ui/RecentProblemCard";
 import { TutoringCTA } from "@/components/tutoring-cta";
 import { getRecentProblems } from "@/features/problems/api/problems";
 import { swrKeys } from "@/shared/api/swr-keys";

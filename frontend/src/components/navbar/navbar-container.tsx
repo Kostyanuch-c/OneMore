@@ -22,9 +22,11 @@ export const NavbarContainer = () => {
     swrKeys.currentUser,
     getCurrentUser,
     {
-      revalidateOnFocus: true,
+      refreshInterval: 0,
+      revalidateOnFocus: false,
       revalidateOnReconnect: true,
       shouldRetryOnError: false,
+      dedupingInterval: 5000,
     },
   );
 

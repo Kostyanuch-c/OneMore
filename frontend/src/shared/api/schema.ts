@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+  "/api/v1/main_statistics/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get Main Statistics View
+     * @description Get main statistics of the site.
+     */
+    get: operations["api_v1_problems_handlers_statistics_get_main_statistics_view"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/auth/login/code/": {
     parameters: {
       query?: never;
@@ -341,6 +361,27 @@ export interface components {
       extra?: {
         [key: string]: unknown;
       } | null;
+    };
+    /** ApiResponse[MainStatisticsOutSchema] */
+    ApiResponse_MainStatisticsOutSchema_: {
+      data?: components["schemas"]["MainStatisticsOutSchema"] | null;
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Errors */
+      errors?: components["schemas"]["ApiError"][];
+    };
+    /** MainStatisticsOutSchema */
+    MainStatisticsOutSchema: {
+      /** Total Problems */
+      total_problems: number;
+      /** Total Solutions */
+      total_solutions: number;
+      /** Total Sections */
+      total_sections: number;
+      /** Total Topics */
+      total_topics: number;
     };
     /** ApiResponse[AuthOutSchema] */
     ApiResponse_AuthOutSchema_: {
@@ -890,6 +931,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  api_v1_problems_handlers_statistics_get_main_statistics_view: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApiResponse_MainStatisticsOutSchema_"];
+        };
+      };
+    };
+  };
   api_v1_auth_handlers_request_login_code_view: {
     parameters: {
       query?: never;

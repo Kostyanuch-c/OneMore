@@ -5,6 +5,7 @@ import { mutate } from "swr";
 import { apiClient } from "@/shared/api/client";
 import { getCsrfHeaders } from "@/shared/api/csrf";
 import { swrKeys } from "@/shared/api/swr-keys";
+import { handleApiResult, handleEmptyApiResult } from "@/shared/api/response";
 
 export type CurrentUser = components["schemas"]["UserOutSchema"];
 export type RequestLoginCodeInput = components["schemas"]["AuthInputSchema"];
@@ -15,20 +16,21 @@ export type ConfirmLoginCodeResponse =
   components["schemas"]["AuthUserOutSchema"];
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const { data: apiResponse, response } = await apiClient.GET(
-    "/api/v1/profile/me/",
-    {},
-  );
+  const {
+    data: apiResponse,
+    error,
+    response,
+  } = await apiClient.GET("/api/v1/profile/me/", {});
 
   if (response.status === 401 || response.status === 403) {
     return null;
   }
 
-  if (!response.ok) {
-    throw new Error(`Failed to load current user. Status: ${response.status}`);
-  }
-
-  return apiResponse?.data ?? null;
+  return handleApiResult<CurrentUser>({
+    apiResponse,
+    error,
+    response,
+  });
 }
 
 export async function requestLoginCode(
@@ -43,15 +45,11 @@ export async function requestLoginCode(
     headers: getCsrfHeaders(),
   });
 
-  if (!response.ok || error) {
-    throw new Error(`Failed to request login code. Status: ${response.status}`);
-  }
-
-  if (!apiResponse?.data) {
-    throw new Error("Request login code response is empty.");
-  }
-
-  return apiResponse.data;
+  return handleApiResult<RequestLoginCodeResponse>({
+    apiResponse,
+    error,
+    response,
+  });
 }
 
 export async function confirmLoginCode(
@@ -66,15 +64,11 @@ export async function confirmLoginCode(
     headers: getCsrfHeaders(),
   });
 
-  if (!response.ok || error) {
-    throw new Error(`Failed to confirm login code. Status: ${response.status}`);
-  }
-
-  if (!apiResponse?.data) {
-    throw new Error("Confirm login code response is empty.");
-  }
-
-  const data = apiResponse.data;
+  const data = handleApiResult<ConfirmLoginCodeResponse>({
+    apiResponse,
+    error,
+    response,
+  });
 
   await mutate(swrKeys.currentUser, data.user, { revalidate: false });
 
@@ -86,9 +80,10 @@ export async function logout(): Promise<void> {
     headers: getCsrfHeaders(),
   });
 
-  if (!response.ok || error) {
-    throw new Error(`Failed to logout. Status: ${response.status}`);
-  }
+  handleEmptyApiResult({
+    error,
+    response,
+  });
 
   await mutate(swrKeys.currentUser, null, { revalidate: false });
 }
