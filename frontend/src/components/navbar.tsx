@@ -1,7 +1,5 @@
 "use client";
 
-import type { CurrentUser } from "@/features/auth/api/auth";
-import type { Subject } from "@/features/subjects/api/subjects";
 import type {
   MobileProblemsMenuListProps,
   NavItemConfig,
@@ -34,13 +32,8 @@ import { useState } from "react";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { BeakerIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-
-interface NavbarProps {
-  subjects: Subject[];
-  currentUser?: CurrentUser | null;
-  isSubjectsLoading?: boolean;
-  isCurrentUserLoading?: boolean;
-}
+import { useSubjects } from "@/features/subjects/hooks/use-subjects";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 const ProblemsDropdown = ({
   subjects,
@@ -115,12 +108,11 @@ const MobileProblemsMenuList = ({
   </>
 );
 
-export const Navbar = ({
-  subjects,
-  currentUser = null,
-  isSubjectsLoading = false,
-  isCurrentUserLoading = false,
-}: NavbarProps) => {
+export const Navbar = () => {
+  const { data: subjects = [], isLoading: isSubjectsLoading } = useSubjects();
+  const { data: currentUser = null, isLoading: isCurrentUserLoading } =
+    useCurrentUser();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();

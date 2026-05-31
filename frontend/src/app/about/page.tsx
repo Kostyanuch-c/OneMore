@@ -3,7 +3,7 @@ import { Card, CardBody } from "@heroui/card";
 export default function AboutPage() {
   return (
     <section className="py-8 md:py-10">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <header className="space-y-4">
           <h1 className="text-3xl font-bold md:text-4xl">О проекте</h1>
           <p className="text-default-600">
@@ -64,7 +64,7 @@ export default function AboutPage() {
             </CardBody>
           </Card>
 
-          <Card className="border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 md:col-span-2">
+          <Card className="border border-primary/20 bg-linear-to-r from-primary/10 to-primary/5 md:col-span-2">
             <CardBody className="space-y-3">
               <h2 className="text-xl font-semibold text-foreground">
                 Почему проекту можно доверять

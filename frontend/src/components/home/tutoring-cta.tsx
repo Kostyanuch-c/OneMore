@@ -7,7 +7,7 @@ import NextLink from "next/link";
 
 import { siteConfig } from "@/config/site";
 
-export function TutoringCTA() {
+function TutoringCTA() {
   return (
     <Card className="border border-primary/20 bg-linear-to-r from-primary/10 to-primary/5">
       <CardBody className="p-6 text-center md:p-8">
@@ -70,3 +70,5 @@ export function TutoringCTA() {
     </Card>
   );
 }
+
+export default TutoringCTA;

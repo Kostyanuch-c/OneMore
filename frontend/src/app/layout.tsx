@@ -8,8 +8,9 @@ import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { NavbarContainer } from "@/components/navbar";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import AppBackground from "@/components/app_background";
 
 export const metadata: Metadata = {
   title: {
@@ -40,14 +41,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "system" }}>
-          <div className="relative flex flex-col h-screen">
-            <NavbarContainer />
-            <main className="container mx-auto max-w-7xl pt-16 px-6 grow">
-              {children}
-            </main>
+          <AppBackground>
+            <div className="relative flex min-h-screen flex-col">
+              <Navbar />
 
-            <Footer />
-          </div>
+              <main className="container mx-auto max-w-7xl pt-16 px-6 grow">
+                {children}
+              </main>
+
+              <Footer />
+            </div>
+          </AppBackground>
         </Providers>
       </body>
     </html>

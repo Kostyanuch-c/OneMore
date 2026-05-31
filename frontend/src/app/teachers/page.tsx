@@ -10,13 +10,11 @@ import { teachers } from "@/features/teachers/teachers";
 export default function TeachersPage() {
   return (
     <section className="py-8 md:py-10">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <header className="space-y-3">
           <h1 className="text-3xl font-bold md:text-4xl">Преподаватели</h1>
           <p className="text-default-600">
-            Выберите преподавателя под ваш предмет и цель: от регулярной
-            системной подготовки до точечной помощи перед контрольной или
-            экзаменом.
+            Выберите преподавателя под ваш предмет и цель.
           </p>
         </header>
 

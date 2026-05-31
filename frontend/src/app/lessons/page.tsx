@@ -1,9 +1,11 @@
 import { Card, CardBody } from "@heroui/card";
 
+import LessonAccessInfo from "@/components/lessons/lesson-access-info";
+
 export default function LessonsPage() {
   return (
     <section className="py-8 md:py-10">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <header className="space-y-4">
           <h1 className="text-3xl font-bold md:text-4xl">
             Как проходят занятия
@@ -110,38 +112,52 @@ export default function LessonsPage() {
             конкретный запрос, и мы готовы гибко идти навстречу в этом выборе.
           </p>
         </div>
+        <LessonAccessInfo />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Кому подойдут занятия</h2>
+            <p className="text-default-600">
+              Занятия можно использовать как для регулярной подготовки, так и
+              для точечной помощи перед контрольной, экзаменом или сложной
+              темой.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card className="border border-default-200/70">
-            <CardBody className="space-y-3">
-              <h2 className="text-xl font-semibold">Кому подойдут занятия</h2>
-              <ul className="list-disc space-y-2 pl-5 text-default-600">
-                <li>Если сложно разобраться в теме самостоятельно.</li>
-                <li>Если скоро контрольная или экзамен.</li>
-                <li>Если есть пробелы за прошлые классы.</li>
-                <li>Если хочется больше практики по задачам.</li>
-                <li>
-                  Если нужен преподаватель, который объяснит спокойно и понятно.
-                </li>
-              </ul>
-            </CardBody>
-          </Card>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Card className="border border-default-200/70">
+              <CardBody className="space-y-3">
+                <h3 className="text-xl font-semibold">
+                  Когда стоит записаться
+                </h3>
+                <ul className="list-disc space-y-2 pl-5 text-default-600">
+                  <li>Если сложно разобраться в теме самостоятельно.</li>
+                  <li>Если скоро контрольная или экзамен.</li>
+                  <li>Если есть пробелы за прошлые классы.</li>
+                  <li>Если хочется больше практики по задачам.</li>
+                  <li>
+                    Если нужен преподаватель, который объяснит спокойно и
+                    понятно.
+                  </li>
+                </ul>
+              </CardBody>
+            </Card>
 
-          <Card className="border border-default-200/70">
-            <CardBody className="space-y-3">
-              <h2 className="text-xl font-semibold">
-                Что может быть на занятии
-              </h2>
-              <ul className="list-disc space-y-2 pl-5 text-default-600">
-                <li>Объяснение темы и ключевых принципов.</li>
-                <li>Разбор задач разного уровня сложности.</li>
-                <li>Работа с ошибками и сложными моментами.</li>
-                <li>Подготовка к контрольной, проверочной или экзамену.</li>
-                <li>Домашнее задание для закрепления.</li>
-                <li>Рекомендации, что повторить и потренировать дальше.</li>
-              </ul>
-            </CardBody>
-          </Card>
+            <Card className="border border-default-200/70">
+              <CardBody className="space-y-3">
+                <h3 className="text-xl font-semibold">
+                  Что может быть на занятии
+                </h3>
+                <ul className="list-disc space-y-2 pl-5 text-default-600">
+                  <li>Объяснение темы и ключевых принципов.</li>
+                  <li>Разбор задач разного уровня сложности.</li>
+                  <li>Работа с ошибками и сложными моментами.</li>
+                  <li>Подготовка к контрольной, проверочной или экзамену.</li>
+                  <li>Домашнее задание для закрепления.</li>
+                  <li>Рекомендации, что повторить и потренировать дальше.</li>
+                </ul>
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </div>
     </section>
